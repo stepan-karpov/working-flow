@@ -24,7 +24,7 @@ const ld EPS = 1e-8;
 
 void solve() {
     ll n; cin >> n;
-    cout << n * 5 << endl;
+    cout << n * 4 << endl;
 }
 
 int main(){
