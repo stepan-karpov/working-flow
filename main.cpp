@@ -23,15 +23,8 @@ const ld EPS = 1e-8;
 
 
 void solve() {
-    cout << "Hello world" << endl;
-    cout << "Hello world" << endl;
-    cout << "Hello world" << endl;
-    cout << "Hello world" << endl;
-    cout << "Hello world" << endl;
-    cout << "Hello world" << endl;
-    cout << "sdf" << endl;
-    cout << "sdf" << endl;
-    cout << "Adding data1" << endl; 
+    ll n; cin >> n;
+    cout << n * 5 << endl;
 }
 
 int main(){
