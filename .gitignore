@@ -1,0 +1,6 @@
+.vscode/
+*.exe
+*.dSYM
+*.cppWithExt
+*.cppWithExt********
+*.DS_Store
