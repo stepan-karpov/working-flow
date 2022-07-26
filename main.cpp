@@ -31,6 +31,7 @@ void solve() {
     cout << "Hello world" << endl;
     cout << "sdf" << endl;
     cout << "sdf" << endl;
+    cout << "Adding data1" << endl; 
 }
 
 int main(){
