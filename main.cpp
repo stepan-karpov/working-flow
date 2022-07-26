@@ -26,6 +26,7 @@ void solve() {
     cout << "Hello world" << endl;
     cout << "Hello world" << endl;
     cout << "sdf" << endl;
+    cout << "adding data 2" << endl;
 }
 
 int main(){
