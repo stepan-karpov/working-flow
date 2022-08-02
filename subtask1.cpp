@@ -23,18 +23,9 @@ const ld EPS = 1e-8;
 
 
 void solve() {
-    for (ll a = 0; a <= 100; ++a) {
-        for (ll b = 0; b <= 100; ++b) {
-            for (ll u = 0; u <= 100; ++u) {
-                ll s1 = (a & b) | u;
-                ll s2 = (a | u) & (b | u);
-                if (s1 != s2) {
-                    cout << a << " " << b << " " << u << endl;
-                }
-            }
-        }
-    }
-    cout << (1 << 12) << endl;
+    string t = "abcdefg";
+
+    cout << t.substr(3, 100) << endl;
 }
 
 int main(){
