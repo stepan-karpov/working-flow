@@ -21,76 +21,31 @@ const ld EPS = 1e-8;
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
+ll bin_search(ll n, ll k) {
+
+    ll l = 0;
+    ll r = 1e6;
+
+    while (r - l > 1) {
+        ll m = (l + r) / 2;
+
+        ll curV = (m + 1) * (k + m);
+        if (curV >= 2 * n) {
+            r = m;
+        } else {
+            l = m;
+        }
+
+    }
+
+    return r;
+
+}
 
 void solve() {
-    string t; cin >> t;
-    ll n; cin >> n;
-    vector<string> a(n);
+    ll n, k; cin >> n >> k;
+    
 
-    for (ll i = 0; i < n; ++i) {
-        cin >> a[i];
-    }
-
-    vll dp(t.size() + 100, INF);
-    vector<string> addedStr(t.size() + 100);
-    vll pnt(t.size() + 100, -1);
-
-    for (ll i = 0; i < t.size(); ++i) {
-        for (ll j = 0; j < n; ++j) {
-            ll start = i - a[j].size() + 1;
-            if (start < 0) {
-                continue;
-            }
-            string curS = t.substr(start, a[j].size());
-
-            if (curS != a[j])
-                continue;
-
-            if (start == 0) {
-                dp[i] = 1;
-                addedStr[i] = curS;
-                pnt[i] = -1;
-                continue;
-            }
-
-            for (ll k = start - 1; k < i; ++k) {
-                if (dp[k] + 1 < dp[i]) {
-                    dp[i] = dp[k] + 1;
-                    addedStr[i] = curS;
-                    pnt[i] = k;
-                }
-            }
-
-        }
-    }
-
-    if (dp[t.size() - 1] == INF) {
-        cout << -1 << endl;
-        return;
-    }
-
-    ll curPnt = t.size() - 1;
-
-    vector<pll> ans;
-
-    while (curPnt != -1) {
-
-        for (ll i = 0; i < n; ++i) {
-            if (addedStr[curPnt] == a[i]) {
-                ans.push_back({i + 1, curPnt - a[i].size() + 2});
-                break;
-            }
-        }
-
-        curPnt = pnt[curPnt];
-
-    }
-
-    cout << dp[t.size() - 1] << endl;
-
-    for (ll i = ans.size() - 1; i >= 0; --i) {
-        cout << ans[i].first << " " << ans[i].second << endl;
-    }
 
 }
 
@@ -99,7 +54,7 @@ int main(){
     cin.tie(nullptr);
     cout.tie(nullptr);
     ll t = 1;
-    cin >> t;
+    // cin >> t;
     // cout << fixed << setprecision(10);
     
     while (t--) {

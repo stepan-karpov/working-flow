@@ -1,17 +1,59 @@
-t = int(input())
+import queue
 
-for test in range(0, t):
-    s = int(input())
-    curV = ""
+def solve():
+    x, k = list(map(int, input().split()))
 
-    curVal = 9
+    n = int(input())
+    d = []
+    if (n != 0):
+        d = list(map(int, input().split()))
 
-    while (s > curVal):
-        curV = str(curVal) + curV
-        s -= curVal
-        curVal -= 1
+    d.sort()
 
-    if (s != 0):
-        curV = str(s) + curV
+    possible = {
+        1: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        2: [0, 2, 4, 6, 8],
+        3: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        4: [0, 2, 4, 6, 8],
+        5: [0, 5],
+        6: [0, 2, 4, 6, 8],
+        7: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        8: [0, 2, 4, 6, 8],
+        9: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+    }
 
-    print(curV)
+    if (x % k == 0):
+        return x
+
+    ls = k % 10
+    ok = False
+
+    for i in d:
+        if (i in possible[ls]):
+            ok = True
+
+    if (not ok):
+        return -1
+
+    ans = -1
+
+    q = queue.Queue()
+    q.put(x)
+
+    ans = -1
+
+    while (not q.empty()):
+        x = q.get()
+
+        if (x % k == 0):
+            if (ans == -1):
+                ans = x
+            ans = min(ans, x)
+            break
+
+        for i in d:
+            q.put(int(str(x) + str(i)))
+
+    return ans
+
+print(solve())

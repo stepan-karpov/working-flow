@@ -1,29 +1,71 @@
 #include <bits/stdc++.h>
 using namespace std;
-// #pragma GCC optimize("unroll-loops")
-// #pragma GCC optimize("Ofast")
-// #pragma GCC optimize("no-stack-protector")
-// #pragma GCC target("sse,sse2,sse3,ssse3,popcnt,abm,mmx,avx,tune=native")
-// #pragma GCC optimize("fast-math")
-// #pragma GCC optimize(2)
-// #pragma GCC optimize("Ofast","inline","-ffast-math")
-// #pragma GCC optimize "-O3"
 
-using ll = long long;
-using pll = pair<ll, ll>;
-using pii = pair<int, int>;
+using ll = int;
 using vll = vector<ll>;
 using vvll = vector<vll>;
-using ld = long double;
 
-const ll INF = 1e16;
-const ld EPS = 1e-8;
+const ll MOD = 998244353;
 
-// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
+ll bin_search(ll n, ll k) {
+
+    ll l = 0;
+    ll r = 1e4;
+
+    while (r - l > 1) {
+        ll m = (l + r) / 2;
+
+        ll curV = (m + 1) * (k + m);
+        if (curV >= 2 * n) {
+            r = m;
+        } else {
+            l = m;
+        }
+
+    }
+
+    return r;
+
+}
 
 void solve() {
-    
+    ll n, k; cin >> n >> k;
+    ll x = bin_search(n, k);
+    cout << x << endl;
+    vvll a(x + 100, vll(n + 10, 0));
+    a[0][0] = 1;
+    vll ans(n + 10, 0);
+
+    ll cur_s = k;
+    ll cur_add = k;
+    for (ll i = 1; i <= x; ++i) {
+        for (ll j = cur_s; j <= n; ++j) {
+            a[i][j] = (a[i][j - cur_add] + a[i - 1][j - cur_add]) % MOD;
+            ans[j] = (ans[j] + a[i][j]) % MOD;
+        }
+        ++cur_add;
+        cur_s += cur_add;
+    }
+
+    // for (ll i = 0; i <= x; ++i) {
+    //     cout << i << ": ";
+    //     for (ll j = 0; j <= n; ++j) {
+    //         cout << a[i][j] << " ";
+    //     }
+    //     cout << endl;
+    // }
+
+    for (ll i = 1; i <= n; ++i) {
+        cout << ans[i] << " ";
+    }
+    cout << endl;
+
+
+
+
+
+
 }
 
 int main(){
