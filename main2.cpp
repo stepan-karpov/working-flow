@@ -21,32 +21,49 @@ const ld EPS = 1e-8;
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-ll bin_search(ll n, ll k) {
+bool possible(ll n, vll &a) {
+    if (n == 0) {
+        return 1;
+    } else if (n == 1) {
+        a[0] = 0;
+        return 1;
+    } else if (n == 2) {
+        a[0] = 1;
+        a[1] = 0;
+        return 1;
+    }
+    ll curV = 0;
 
-    ll l = 0;
-    ll r = 1e6;
-
-    while (r - l > 1) {
-        ll m = (l + r) / 2;
-
-        ll curV = (m + 1) * (k + m);
-        if (curV >= 2 * n) {
-            r = m;
-        } else {
-            l = m;
-        }
-
+    while (curV * curV < (n - 1)) {
+        ++curV;
     }
 
-    return r;
+    ll start = curV * curV - n + 1;
+
+    if (!(0 <= start && start < n))
+        return 0;
+
+    for (ll i = start; i < n; ++i) {
+        a[i] = n - (i - start) - 1;
+    }
+    return possible(start, a);
 
 }
 
 void solve() {
-    ll n, k; cin >> n >> k;
-    
+    ll n; cin >> n;
+    vll a(n, 0);
 
-
+    if (!possible(n, a)) {
+        cout << -1 << endl;
+        return;
+    } else {
+        for (ll i = 0; i < n; ++i) {
+            cout << a[i] << " ";
+        }
+        cout << endl;
+    }
+ 
 }
 
 int main(){
@@ -54,7 +71,7 @@ int main(){
     cin.tie(nullptr);
     cout.tie(nullptr);
     ll t = 1;
-    // cin >> t;
+    cin >> t;
     // cout << fixed << setprecision(10);
     
     while (t--) {

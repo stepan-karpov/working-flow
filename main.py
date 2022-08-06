@@ -1,59 +1,33 @@
-import queue
+from random import shuffle
+a = []
 
-def solve():
-    x, k = list(map(int, input().split()))
+for i in range(0, 16):
+    a.append(0)
+for i in range(0, 8):
+    a.append(1)
+for i in range(0, 4):
+    a.append(2)
+for i in range(0, 2):
+    a.append(3)
+for i in range(0, 1):
+    a.append(4)
+for i in range(0, 1):
+    a.append(5)
 
-    n = int(input())
-    d = []
-    if (n != 0):
-        d = list(map(int, input().split()))
 
-    d.sort()
+shuffle(a)
 
-    possible = {
-        1: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-        2: [0, 2, 4, 6, 8],
-        3: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-        4: [0, 2, 4, 6, 8],
-        5: [0, 5],
-        6: [0, 2, 4, 6, 8],
-        7: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-        8: [0, 2, 4, 6, 8],
-        9: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-    }
+a = [0, 3, 2, 0, 0, 0, 2, 0, 1, 0, 0, 0, 0, 5, 0, 1, 0, 1, 0, 1, 3, 0, 2, 0, 1, 1, 4, 0, 0, 2, 1, 1]
 
-    if (x % k == 0):
-        return x
+x1 = int(input())
+x2 = int(input())
 
-    ls = k % 10
-    ok = False
+x1 -= 1
+x2 -= 1
 
-    for i in d:
-        if (i in possible[ls]):
-            ok = True
-
-    if (not ok):
-        return -1
-
-    ans = -1
-
-    q = queue.Queue()
-    q.put(x)
-
-    ans = -1
-
-    while (not q.empty()):
-        x = q.get()
-
-        if (x % k == 0):
-            if (ans == -1):
-                ans = x
-            ans = min(ans, x)
-            break
-
-        for i in d:
-            q.put(int(str(x) + str(i)))
-
-    return ans
-
-print(solve())
+if (a[x1] == a[x2]):
+    print(0)
+elif (a[x1] > a[x2]):
+    print(1)
+else:
+    print(2)
