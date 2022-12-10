@@ -17,11 +17,14 @@ int main() {
   // Point a5 = {3, 1};
   // Polygon t(a1, a2, a3, a4, a5);
 
+
   // Point a1 = {1, 1};
   // Point a2 = {1, 2};
   // Point a3 = {2, 2};
   // Point a4 = {2, 1};
   // Polygon t(a1, a2, a3, a4);
+
+  // std::cout << t.isConvex() << '\n';
 
   // to test Ellips with some 
   // non-trivial rotations!!!
@@ -39,7 +42,7 @@ int main() {
   // std::cout << d2.B << '\n';
   // std::cout << d2.C << '\n';
 
-  // Circle a({0, 0}, 5);
+  // Circle a({2, 2}, 5);
 
   // std::cout << a.radius() << '\n';
 
@@ -53,12 +56,12 @@ int main() {
   // double a = 2;
   // std::cout << atan2(a, 1) << '\n';
 
-  // Rectangle a({1, 0}, {6, 3}, 0.6);
+  // Rectangle a({0, 0}, {5, 3}, 1.6666666);
 
-  // std::cout << a.getVertices()[0].x << " " << a.getVertices()[0].y << '\n';
-  // std::cout << a.getVertices()[1].x << " " << a.getVertices()[1].y << '\n';
-  // std::cout << a.getVertices()[2].x << " " << a.getVertices()[2].y << '\n';
-  // std::cout << a.getVertices()[3].x << " " << a.getVertices()[3].y << '\n';
+  // std::cout << a.getVertices()[0] << '\n';
+  // std::cout << a.getVertices()[1] << '\n';
+  // std::cout << a.getVertices()[2] << '\n';
+  // std::cout << a.getVertices()[3] << '\n';
   // std::cout << a.diagonals().first.A << " " << a.diagonals().first.B << " " << a.diagonals().first.C << '\n';
   // std::cout << a.diagonals().second.A << " " << a.diagonals().second.B << " " << a.diagonals().second.C << '\n';
   // Rectangle a({2, 2}, {5, 6}, 2);
@@ -71,13 +74,19 @@ int main() {
 
   // Square a({3, 2}, {7, 6});
 
+  // std::cout << a.getVertices()[0] << '\n';
+  // std::cout << a.getVertices()[1] << '\n';
+  // std::cout << a.getVertices()[2] << '\n';
+  // std::cout << a.getVertices()[3] << '\n';
   // std::cout << a.center() << '\n';
   // std::cout << a.inscribedCircle().center() << '\n';
   // std::cout << a.inscribedCircle().radius() << '\n';
 
   // Triangle t1({0, 0}, {3, 0}, {3, 4});
-
-
+  // std::cout << t1.centroid() << '\n';
+  // std::cout << t1.orthocenter() << '\n';
+  // std::cout << t1.inscribedCircleCenter() << '\n';
+  // std::cout << t1.circumscribedCircleCenter() << '\n';
   // std::cout << t1.circumscribedCircle().center() << '\n';
   // std::cout << t1.circumscribedCircle().radius() << '\n';
   // std::cout << t1.inscribedCircle().center() << '\n';
@@ -92,7 +101,10 @@ int main() {
   a.push_back(new Square({-2, -2}, {-3, -3}));
   a.push_back(new Triangle({-2, 2}, {-4, 2}, {-3, 3.732050808}));
 
-  bool t = a[0] == a[1];
-  std::cout
+  for (int i = 0; i < 1; ++i) {
+    std::cout << a->perimeter() << '\n';
+  }
+
+  // bool t = a[0] == a[1];
 
 }
