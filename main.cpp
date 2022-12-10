@@ -1,90 +1,78 @@
-#include <bits/stdc++.h>
-using namespace std;
-// #pragma GCC optimize("unroll-loops")
-// #pragma GCC optimize("Ofast")
-// #pragma GCC optimize("no-stack-protector")
-// #pragma GCC target("sse,sse2,sse3,ssse3,popcnt,abm,mmx,avx,tune=native")
-// #pragma GCC optimize("fast-math")
-// #pragma GCC optimize(2)
-// #pragma GCC optimize("Ofast","inline","-ffast-math")
-// #pragma GCC optimize "-O3"
+#include <iostream>
+#include <vector>
 
-using ll = long long;
-using pll = pair<ll, ll>;
-using pii = pair<int, int>;
-using vll = vector<ll>;
-using vvll = vector<vll>;
-using ld = long double;
-
-const ll INF = 1e16;
-const ld EPS = 1e-8;
-
-// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
-
-ll find_tree(ll n, ll l, ll r, vll &eq) {
-
-    if (r - l == 2) {
-        cout << "? " << l << " " << l + 1 << endl;
-        cout.flush();
-        ll ans; cin >> ans;
-        if (ans == 1) {
-            return l;
-        }
-        return l + 1;
-    }
-
-    ll m = (l + r) / 2;
-
-    ll left_m = find_tree(n, l, m, eq);
-    ll right_m = find_tree(n, m, r, eq);
-
-    if (eq[left_m] == 1) {
-        return right_m;
-    } else if (eq[right_m] == 1) {
-        return left_m;
-    }
-
-    cout << "? " << left_m << " " << right_m << endl;
-    cout.flush();
-    ll ans; cin >> ans;
-    if (ans == 0) {
-        eq[left_m] = 1;
-        eq[right_m] = 1;
-        return left_m;
-    } else if (ans == 1) {
-        return left_m;
-    }
-
-    return right_m;
-
+void Init() {
+  std::ios_base::sync_with_stdio(false);
+  std::cin.tie(nullptr);
+  std::cout.tie(nullptr);
 }
 
-void solve() {
-    ll n; cin >> n;
-    
-    vll eq((1 << n) + 10, 0);
-    ll x = find_tree(n, 1, (1 << n) + 1, eq);
-    cout << "! " << x << endl;
-    cout.flush();
-
+void Input(int* ptrs[], const int max_size, const int sizes[]) {
+  for (int i = 0; i < max_size - 1; ++i) {
+    ptrs[i] = new int[sizes[i]];
+    for (int j = 0; j < sizes[i]; ++j) {
+      std::cin >> ptrs[i][j];
+    }
+  }
 }
 
-int main(){
-    ios_base::sync_with_stdio(false);
-    cin.tie(nullptr);
-    cout.tie(nullptr);
-    ll t = 1;
-    // cin >> t;
-    // cout << fixed << setprecision(10);
-    
-    while (t--) {
-        solve();
-        // cout << solve() << endl;
-        // if (solve())
-        //    cout << "Yes" << endl;
-        // else
-        //    cout << "No" << endl;
-    }
+int MaxValue(const int max_size, const int sizes[]) {
+  int ans = -1e9;
+  for (int i = 0; i < max_size - 1; ++i) {
+    ans = std::max(ans, sizes[i]);
+  }
+  return ans;
+}
 
-    return 0;
+long long Backtrack(const int max_size, int* const ptrs[], const int sizes[], int nums[], int depth) {
+  if (depth == max_size - 1) {
+    long long cur_mult = 1;
+    for (int i = 0; i < max_size - 1; ++i) {
+      cur_mult *= ptrs[i][nums[i]];
+    }
+    return cur_mult;
+  }
+  
+  long long ans = 0;
+  for (int i = 0; i < sizes[depth]; ++i) {
+    nums[depth] = i;
+    bool is_ok = true;
+    for (int j = 0; j < depth; ++j) {
+      if (nums[j] == nums[depth]) {
+        is_ok = false;
+        break;
+      }
+    }
+    if (!is_ok) continue;
+    ans += Backtrack(max_size, ptrs, sizes, nums, depth + 1);
+  }
+  return ans;
+}
+
+void ClearMemory(int* ptrs[], int nums[], int argc, int sizes[]) {
+  for (int i = 0; i < argc - 1; ++i) {
+    delete[] ptrs[i];
+  }
+  delete[] ptrs;
+  delete[] nums;
+  delete[] sizes;
+}
+
+int main(int argc, char* argv[]) {
+  Init();
+
+  int* sizes = new int[argc - 1];
+  for (int i = 1; i < argc; ++i) {
+    sizes[i - 1] = atoi(argv[i]); 
+  }
+
+  int** const ptrs = new int*[argc - 1];
+  Input(ptrs, argc, sizes);
+
+  int* nums = new int[MaxValue(argc, sizes)];
+  long long ans = Backtrack(argc, ptrs, sizes, nums, 0);
+  std::cout << ans << '\n';
+
+  ClearMemory(ptrs, nums, argc, sizes);
+  return 0;
 }
