@@ -116,7 +116,7 @@ int main() {
 
   // Polygon a(Point(1, 1), Point(1, 3), Point(3, 3), Point(2, 2), Point(3, 1));
 
-  // a.rotate({1, 0}, 90);
+  // a.scale({1, 0}, 2);
 
   // std::cout << a.getVertices()[0] << '\n';
   // std::cout << a.getVertices()[1] << '\n';
@@ -124,6 +124,11 @@ int main() {
   // std::cout << a.getVertices()[3] << '\n';
   // std::cout << a.getVertices()[4] << '\n';
 
+  Ellipse a({1, 0}, {-1, 0}, 4);
   
+  a.scale({1, 0}, 5);
+
+  std::cout << a.focuses().first << '\n';  
+  std::cout << a.focuses().second << '\n';  
 
 }

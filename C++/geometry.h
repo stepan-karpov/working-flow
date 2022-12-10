@@ -96,6 +96,14 @@ class Line {
     return abs(a) / sqrt(A * A + B * B);
   }
 
+  Point NormalVector() const {
+    return {A, B};
+  }
+
+  double coeff_A() const { return A; }
+  double coeff_B() const { return B; }
+  double coeff_C() const { return C; }
+
 };
 
 
@@ -129,6 +137,9 @@ class Shape {
   virtual double perimeter() const = 0;
   virtual double area() const = 0;
   virtual void rotate(const Point& center, double angle) = 0;
+  virtual void reflect(const Point& center) = 0;
+  virtual void reflect(const Line& axis) = 0;
+  virtual void scale(const Point& center, double coefficient) = 0;
   // virtual bool operator!=(const Shape& another) const = 0;
 };
 
@@ -211,6 +222,34 @@ class Polygon : public Shape {
     }
   }
 
+  // reflects Polygon relatively to the point center
+  void reflect(const Point& center) final {
+    for (int i = 0; i < int(vertices.size()); ++i) {
+      vertices[i] = center + center - vertices[i];
+    }
+  }
+
+  void reflect(const Line& axis) final {
+    for (int i = 0; i < int(vertices.size()); ++i) {
+      double x = vertices[i].x;
+      double y = vertices[i].y;
+      const double A = axis.coeff_A();
+      const double B = axis.coeff_B();
+      const double C = axis.coeff_C();
+      double cur_distance = A * x + B * y + C;
+      cur_distance = -cur_distance / (A * A + B * B);
+      cur_distance *= 2;
+      vertices[i] = vertices[i] + axis.NormalVector() * cur_distance;
+    }
+  }
+
+  void scale(const Point& center, double coefficient) final {
+    for (int i = 0; i < int(vertices.size()); ++i) {
+      Point vector = vertices[i] - center;
+      vector = vector * coefficient;
+      vertices[i] = vector + center;
+    }
+  }
 };
 
 
@@ -269,8 +308,35 @@ class Ellipse : public Shape {
     focus2 = focus2 + center;
   }
 
-  friend bool operator==(const Shape&, const Shape&);
+  void reflect(const Point& center) final {
+    focus1 = center + center - focus1;
+    focus2 = center + center - focus2;
+  }
 
+  void reflect(const Line& axis) final {
+    const double A = axis.coeff_A();
+    const double B = axis.coeff_B();
+    const double C = axis.coeff_C();
+    double cur_distance = A * focus1.x + B * focus1.y + C;
+    cur_distance = -cur_distance / (A * A + B * B);
+    cur_distance *= 2;
+    focus1 = focus1 + axis.NormalVector() * cur_distance;
+    cur_distance = A * focus2.x + B * focus2.y + C;
+    cur_distance = -cur_distance / (A * A + B * B);
+    cur_distance *= 2;
+    focus2 = focus2 + axis.NormalVector() * cur_distance;
+  }
+
+  void scale(const Point& center, double coefficient) final {
+    focus1 = focus1 - center;
+    focus1 = focus1 * coefficient;
+    focus1 = focus1 + center;
+    focus2 = focus2 - center;
+    focus2 = focus2 * coefficient;
+    focus2 = focus2 + center;
+  }
+
+  friend bool operator==(const Shape&, const Shape&);
 };
 
 class Circle : public Ellipse {
