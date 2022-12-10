@@ -1,5 +1,7 @@
 #include <iostream>
 #include <math.h>
+#include <vector>
+#include <algorithm>
 
 const double EPS = 1e-5;
 const double PI = 3.14159265358979323846;
@@ -68,7 +70,7 @@ double Length(const Point& point) {
 }
 
 std::ostream& operator<<(std::ostream& os, const Point& point) {
-  os << "{" << point.x << ", " << point.y << "}";
+  os << "(" << point.x << ", " << point.y << ")";
   return os;
 }
 
@@ -123,7 +125,11 @@ bool operator!=(const Line& line1, const Line& line2) {
 }
 
 class Shape {
-  virtual 
+ public:
+  virtual double perimeter() const = 0;
+  virtual double area() const = 0;
+  virtual void rotate(const Point& center, double angle) = 0;
+  // virtual bool operator!=(const Shape& another) const = 0;
 };
 
 class Polygon : public Shape {
@@ -147,11 +153,11 @@ class Polygon : public Shape {
   Polygon(std::vector<Point> points) :
           vertices(points) {}
 
-  int verticesCount() {
+  int verticesCount() const {
     return vertices.size();
   }
 
-  std::vector<Point> getVertices() {
+  std::vector<Point> getVertices() const {
     return vertices;
   }
 
@@ -174,7 +180,39 @@ class Polygon : public Shape {
     }
     return true;
   }
+  double perimeter() const final {
+    double ans = 0;
+    int n = vertices.size();
+    for (int i = 0; i < n; ++i) {
+      Point cur_point = vertices[i];
+      Point next_point = vertices[(i + 1) % n];
+      ans += Length(next_point - cur_point);
+    }
+    return ans;
+  }
+
+  double area() const final {
+    double ans = 0;
+    int n = vertices.size();
+    for (int i = 1; i < n; ++i) {
+      Point vector1 = vertices[i] - vertices[0];
+      Point vector2 = vertices[(i + 1) % n] - vertices[0];
+      ans += CrossProduct(vector1, vector2) / 2;
+    }
+    return abs(ans);
+  }
+
+  // rotates Polygon on angle DEGREES counterclockwise
+  void rotate(const Point& center, double angle) final {
+    for (int i = 0; i < int(vertices.size()); ++i) {
+      Point vector = vertices[i] - center;
+      vector = Rotate(vector, angle / 180 * PI);
+      vertices[i] = vector + center;
+    }
+  }
+
 };
+
 
 class Ellipse : public Shape {
  protected:
@@ -212,6 +250,27 @@ class Ellipse : public Shape {
     Point normal = {(focus1 - focus2).y, (focus2 - focus1).x};
     return {Line(center() + d, center() + d + normal), Line(center() - d, center() - d + normal)};
   }
+
+  double perimeter() const final {
+    return PI * (3 * (a + b) - sqrt((3 * a + b) * (a + 3 * b)));
+  }
+  
+  double area() const final {
+    return PI * a * b;
+  }
+
+  // rotates Ellipse on angle DEGREES
+  void rotate(const Point& center, double angle) final {
+    focus1 = focus1 - center;
+    focus1 = Rotate(focus1, angle / 180 * PI);
+    focus1 = focus1 + center;
+    focus2 = focus2 - center;
+    focus2 = Rotate(focus2, angle / 180 * PI);
+    focus2 = focus2 + center;
+  }
+
+  friend bool operator==(const Shape&, const Shape&);
+
 };
 
 class Circle : public Ellipse {
@@ -329,5 +388,61 @@ class Triangle : public Polygon {
       (vertices[0] + vertices[2]) / 2);
     return temp.circumscribedCircle();
   }
-
 };
+
+bool operator==(const Shape& first, const Shape& second) {
+  const Polygon* polygon1 = dynamic_cast<const Polygon*>(&first);
+  const Polygon* polygon2 = dynamic_cast<const Polygon*>(&second);
+  if (polygon1 != nullptr && polygon2 != nullptr) {
+    if (polygon1->verticesCount() != polygon2->verticesCount()) {
+      return false;
+    }
+    int n = polygon1->verticesCount();
+    std::vector<Point> points1 = polygon1->getVertices();
+    std::vector<Point> points2 = polygon2->getVertices();
+    int start = -1;
+    for (int i = 0; i < n; ++i) {
+      if (points2[i] == points1[0]) {
+        start = i;
+        break;
+      }
+    }
+    if (start == -1) {
+      return false;
+    }
+    int cur_check = (start + 1) % n;
+    int accord = 1;
+    while (cur_check != start) {
+      if (points1[accord] != points2[cur_check]) {
+        return false;
+      }
+      accord = (accord + 1) % n;
+      cur_check = (cur_check + 1) % n;
+    }
+    return true;
+  }
+  const Ellipse* ellipse1 = dynamic_cast<const Ellipse*>(&first);
+  const Ellipse* ellipse2 = dynamic_cast<const Ellipse*>(&second);
+  if (ellipse1 != nullptr && ellipse2 != nullptr) {
+    std::vector<std::pair<double, double>> f1;
+    std::vector<std::pair<double, double>> f2;
+    f1.push_back({ellipse1->focus1.x, ellipse1->focus1.y});
+    f1.push_back({ellipse1->focus2.x, ellipse1->focus2.y});
+    f2.push_back({ellipse2->focus1.x, ellipse2->focus1.y});
+    f2.push_back({ellipse2->focus2.x, ellipse2->focus2.y});
+    std::sort(f1.begin(), f1.end());
+    std::sort(f2.begin(), f2.end());
+    if (f1 != f2) {
+      return false;
+    }
+    if (ellipse1->a != ellipse2->a) {
+      return false;
+    }
+    return true;
+  }
+  return false;
+}
+
+bool operator!=(const Shape& first, const Shape& second) {
+  return !(first == second);
+}

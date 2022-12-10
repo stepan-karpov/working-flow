@@ -92,19 +92,38 @@ int main() {
   // std::cout << t1.inscribedCircle().center() << '\n';
   // std::cout << t1.inscribedCircle().radius() << '\n';
 
-  std::vector<Shape*> a;
+  // std::vector<Shape*> a;
   
-  a.push_back(new Polygon(Point(1, 1), Point(1, 3), Point(3, 3), Point(2, 2), Point(3, 1)));
-  a.push_back(new Ellipse({1, 0}, {-1, 0}, 4));
-  a.push_back(new Circle({1, 1}, 1));
-  a.push_back(new Rectangle({2, -2}, {5, -4}, 1.5));
-  a.push_back(new Square({-2, -2}, {-3, -3}));
-  a.push_back(new Triangle({-2, 2}, {-4, 2}, {-3, 3.732050808}));
+  // a.push_back(new Polygon(Point(1, 1), Point(1, 3), Point(3, 3), Point(2, 2), Point(3, 1)));
+  // a.push_back(new Ellipse({1, 0}, {-1, 0}, 4));
+  // a.push_back(new Circle({1, 1}, 1));
+  // a.push_back(new Rectangle({2, -2}, {5, -4}, 1.5));
+  // a.push_back(new Square({-2, -2}, {-3, -3}));
+  // a.push_back(new Triangle({-2, 2}, {-4, 2}, {-3, 3.732050808}));
+  // a.push_back(new Polygon(Point(1, 1), Point(1, 3), Point(3, 3), Point(2, 2), Point(3, 1)));
+  // a.push_back(new Polygon(Point(-2, -2), Point(-2, -3), Point(-3, -3), Point(-3, -2)));
 
-  for (int i = 0; i < 1; ++i) {
-    std::cout << a->perimeter() << '\n';
-  }
+  // // for (int i = 0; i < int(a.size()); ++i) {
+  // //   std::cout << a[i]->area() << '\n';
+  // // }
 
-  // bool t = a[0] == a[1];
+  // std::cout << (*a[0] == *a[3]) << '\n';
+  // std::cout << (*a[1] == *a[2]) << '\n';
+  // std::cout << (*a[1] == *a[3]) << '\n';
+  // std::cout << (*a[0] == *a[6]) << '\n';
+  // std::cout << (*a[4] == *a[7]) << '\n';
+
+
+  // Polygon a(Point(1, 1), Point(1, 3), Point(3, 3), Point(2, 2), Point(3, 1));
+
+  // a.rotate({1, 0}, 90);
+
+  // std::cout << a.getVertices()[0] << '\n';
+  // std::cout << a.getVertices()[1] << '\n';
+  // std::cout << a.getVertices()[2] << '\n';
+  // std::cout << a.getVertices()[3] << '\n';
+  // std::cout << a.getVertices()[4] << '\n';
+
+  
 
 }
