@@ -21,7 +21,14 @@ struct Point {
 };
 
 bool operator==(const Point& point1, const Point& point2) {
-  return (point1.x == point2.x && point1.y == point2.y);
+  return (Equal(point1.x, point2.x) && Equal(point1.y, point2.y));
+}
+
+bool operator<(const Point& point1, const Point& point2) {
+  if (Equal(point1.x, point2.x)) {
+    return Less(point1.y, point2.y);
+  }
+  return Less(point1.x, point2.x);
 }
 
 bool operator!=(const Point& point1, const Point& point2) {
@@ -172,6 +179,21 @@ class Polygon : public Shape {
     return vertices;
   }
 
+  std::vector<Point> getDiagonals() const {
+    std::vector<Point> diagonals;
+    int n = vertices.size();
+    for (int i = 0; i < n; ++i) {
+      for (int j = i + 2; j < n; ++j) {
+        Point cur_diag = vertices[i] - vertices[j];
+        if (cur_diag.x < 0) {
+          cur_diag = cur_diag * (-1);
+        }
+        diagonals.push_back(cur_diag);
+      }
+    }
+    return diagonals;
+  }
+
   bool isConvex() {
     bool clockwise = false;
     bool counterclockwise = false;
@@ -265,7 +287,7 @@ class Ellipse : public Shape {
     b = sqrt(a * a - c * c);
   }
 
-  std::pair<Point, Point> focuses() {
+  std::pair<Point, Point> focuses() const {
     return {focus1, focus2};
   }
 
@@ -273,8 +295,12 @@ class Ellipse : public Shape {
     return (focus1 + focus2) / 2;
   }
 
-  double c() {
+  double c() const {
     return Length((focus1 - focus2) / 2);
+  }
+
+  double get_a() const {
+    return a;
   }
 
   double eccentricity() {
@@ -511,4 +537,40 @@ bool operator==(const Shape& first, const Shape& second) {
 
 bool operator!=(const Shape& first, const Shape& second) {
   return !(first == second);
+}
+
+bool isSimilarTo(const Shape& first, const Shape& second) {
+  const Polygon* polygon1 = dynamic_cast<const Polygon*>(&first);
+  const Polygon* polygon2 = dynamic_cast<const Polygon*>(&second);
+  if (polygon1 != nullptr && polygon2 != nullptr) {
+    if (polygon1->verticesCount() != polygon2->verticesCount()) {
+      return false;
+    }
+    std::vector<Point> diagonals1 = polygon1->getDiagonals();
+    std::vector<Point> diagonals2 = polygon2->getDiagonals();
+    std::sort(diagonals1.begin(), diagonals1.end());
+    std::sort(diagonals2.begin(), diagonals2.end());
+    for (int i = 0; i < int(diagonals1.size()); ++i) {
+      if (diagonals1[i] != diagonals2[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+  const Ellipse* ellipse1 = dynamic_cast<const Ellipse*>(&first);
+  const Ellipse* ellipse2 = dynamic_cast<const Ellipse*>(&second);
+  if (ellipse1 != nullptr && ellipse2 != nullptr) {
+    Point focus11 = ellipse1->focuses().first;
+    Point focus21 = ellipse1->focuses().second;
+    Point focus12 = ellipse2->focuses().first;
+    Point focus22 = ellipse2->focuses().second;
+    if (!Equal(Length(focus11 - focus21), Length(focus12 - focus22))) {
+      return false;
+    }
+    if (!Equal(ellipse1->eccentricity(), ellipse2->eccentricity())) {
+      return false;
+    }
+    return true;
+  }
+  return false;
 }

@@ -124,11 +124,11 @@ int main() {
   // std::cout << a.getVertices()[3] << '\n';
   // std::cout << a.getVertices()[4] << '\n';
 
-  Ellipse a({1, 0}, {-1, 0}, 4);
+  // Ellipse a({1, 0}, {-1, 0}, 4);
   
-  a.scale({1, 0}, 5);
+  // a.scale({1, 0}, 5);
 
-  std::cout << a.focuses().first << '\n';  
-  std::cout << a.focuses().second << '\n';  
+  // std::cout << a.focuses().first << '\n';  
+  // std::cout << a.focuses().second << '\n';  
 
 }
