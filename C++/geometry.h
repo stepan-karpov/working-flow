@@ -478,6 +478,8 @@ class Ellipse : public Shape {
     focus2 = focus2 - center;
     focus2 = focus2 * coefficient;
     focus2 = focus2 + center;
+    a = a * coefficient;
+    b = b * coefficient;
   }
 
   bool isSimilarTo(const Shape& another) final {
