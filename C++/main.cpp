@@ -114,15 +114,30 @@ int main() {
   // std::cout << (*a[4] == *a[7]) << '\n';
 
 
-  // Polygon a(Point(1, 1), Point(1, 3), Point(3, 3), Point(2, 2), Point(3, 1));
+  Polygon a(Point(1, 1), Point(1, 3), Point(3, 3), Point(2, 2), Point(3, 1));
+  Polygon b(Point(0.5, 0.866025), Point(-0.5, 2.59808), Point(1.23205, 3.59808), Point(0.866025, 2.23205), Point(2.23205, 1.86603));
+  Polygon c(Point(0.25, 0.866025), Point(-0.5, 2.59808), Point(1.23205, 3.59808), Point(0.866025, 2.23205), Point(2.23205, 1.86603));
+  // Polygon d(Point(1, 1), Point(1, 3), Point(3, 3), Point(2, 2), Point(3, 1));
 
-  // a.scale({1, 0}, 2);
+  a.rotate({1, 0}, 30);
+  a.scale({0.866025, 2.23205}, 2);
 
-  // std::cout << a.getVertices()[0] << '\n';
-  // std::cout << a.getVertices()[1] << '\n';
-  // std::cout << a.getVertices()[2] << '\n';
-  // std::cout << a.getVertices()[3] << '\n';
-  // std::cout << a.getVertices()[4] << '\n';
+  std::cout << a.getVertices()[0] << '\n';
+  std::cout << a.getVertices()[1] << '\n';
+  std::cout << a.getVertices()[2] << '\n';
+  std::cout << a.getVertices()[3] << '\n';
+  std::cout << a.getVertices()[4] << '\n';
+
+  std::cout << b.getVertices()[0] << '\n';
+  std::cout << b.getVertices()[1] << '\n';
+  std::cout << b.getVertices()[2] << '\n';
+  std::cout << b.getVertices()[3] << '\n';
+  std::cout << b.getVertices()[4] << '\n';
+
+  std::cout << isCongruentTo(a, b) << '\n';
+  std::cout << isCongruentTo(a, c) << '\n';
+  std::cout << isSimilarTo(a, b) << '\n';
+  std::cout << isSimilarTo(a, c) << '\n';
 
   // Ellipse a({1, 0}, {-1, 0}, 4);
   

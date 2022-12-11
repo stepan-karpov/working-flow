@@ -303,7 +303,7 @@ class Ellipse : public Shape {
     return a;
   }
 
-  double eccentricity() {
+  double eccentricity() const {
     return c() / a;
   }
 
@@ -539,7 +539,7 @@ bool operator!=(const Shape& first, const Shape& second) {
   return !(first == second);
 }
 
-bool isSimilarTo(const Shape& first, const Shape& second) {
+bool isCongruentTo(const Shape& first, const Shape& second) {
   const Polygon* polygon1 = dynamic_cast<const Polygon*>(&first);
   const Polygon* polygon2 = dynamic_cast<const Polygon*>(&second);
   if (polygon1 != nullptr && polygon2 != nullptr) {
@@ -571,6 +571,87 @@ bool isSimilarTo(const Shape& first, const Shape& second) {
       return false;
     }
     return true;
+  }
+  return false;
+}
+
+
+bool isSimilarTo(const Shape& first, const Shape& second) {
+  const Polygon* polygon1 = dynamic_cast<const Polygon*>(&first);
+  const Polygon* polygon2 = dynamic_cast<const Polygon*>(&second);
+  if (polygon1 != nullptr && polygon2 != nullptr) {
+    if (polygon1->verticesCount() != polygon2->verticesCount()) {
+      return false;
+    }
+    std::vector<Point> diagonals1 = polygon1->getDiagonals();
+    std::vector<Point> diagonals2 = polygon2->getDiagonals();
+    int n = diagonals1.size();
+    for (int i = 0; i < n; ++i) {
+      for (int j = i; j < n; ++j) {
+        // std::cout << atan2(diagonals2[j].y, diagonals2[j].x) << "d" << '\n';
+        // std::cout << atan2(diagonals1[i].y, diagonals1[i].x) << "d" << '\n';
+        double rotation_angle = atan2(diagonals2[j].y, diagonals2[j].x);
+        rotation_angle -= atan2(diagonals1[i].y, diagonals1[i].x);
+        // std::cout << rotation_angle << '\n';
+        double coeff = Length(diagonals1[i]) / Length(diagonals2[j]);
+        bool is_ok = true;
+        for (int k = 0; k < n; ++k) {
+          Point cur_diagonal = diagonals1[k];
+          cur_diagonal = Rotate(cur_diagonal, rotation_angle);
+          cur_diagonal = cur_diagonal / coeff;
+          if (cur_diagonal != diagonals2[k]) {
+            is_ok = false;
+            break;
+          }
+        }
+        if (is_ok) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  const Ellipse* ellipse1 = dynamic_cast<const Ellipse*>(&first);
+  const Ellipse* ellipse2 = dynamic_cast<const Ellipse*>(&second);
+  if (ellipse1 != nullptr && ellipse2 != nullptr) {
+    if (!Equal(ellipse1->eccentricity(), ellipse2->eccentricity())) {
+      return false;
+    }
+    return true;
+  }
+  return false;
+}
+
+bool containsPoint(const Shape& figure, const Point& point) {
+  const Polygon* polygon = dynamic_cast<const Polygon*>(&figure);
+  if (polygon != nullptr) {
+    int intersections = 0;
+    Line line(point, 0.1); // random line
+    int n = polygon->verticesCount();
+    std::vector<Point> vertices = polygon->getVertices();
+    for (int i = 0; i < n; ++i) {
+      Point cur_point = vertices[i];
+      Point next_point = vertices[(i + 1) % n];
+      Line side(cur_point, next_point);
+      Point intersection = LineIntersection(side, line);
+      if (Less(std::min(cur_point.x, next_point.x), intersection.x) &&
+          Less(intersection.x, std::max(cur_point.x, next_point.x))) {
+            ++intersections;
+      }
+    }
+    if (intersections % 2 == 1) {
+      return true;
+    }
+    return false;
+  }
+  const Ellipse* ellipse = dynamic_cast<const Ellipse*>(&figure);
+  if (ellipse != nullptr) {
+    double dist = Length(point - ellipse->focuses().first);
+    dist += Length(point - ellipse->focuses().second);
+    if (Less(dist, ellipse->get_a())) {
+      return true;
+    }
+    return false;
   }
   return false;
 }
