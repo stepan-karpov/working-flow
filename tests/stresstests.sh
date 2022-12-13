@@ -6,7 +6,7 @@ g++ -std=c++17 incorrect_program.cpp -o incorrect_program.cppWithExt
 
 > log.txt
 
-for (( counter=0; counter<=300; counter++ )); do
+for (( counter=0;  counter<=3000; counter++ )); do
   ./create_test.cppWithExt > test.txt
   ./correct_program.cppWithExt < test.txt > right_answer.txt
   ./incorrect_program.cppWithExt < test.txt > incorrect_answer.txt

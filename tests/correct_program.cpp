@@ -1,297 +1,158 @@
-#include <iostream>
-#include <vector>
+#include <bits/stdc++.h>
+using namespace std;
 
-void Init() {
-  std::ios_base::sync_with_stdio(false);
-  std::cin.tie(nullptr);
-  std::cout.tie(nullptr);
+const int kSz = 1e3;
+const int kInf = 1e9 + 2;
+const int kTwo = 2;
+const int kO = 1;
+const int kZ = 0;
+
+void Unsync() {
+  cin.tie(nullptr);
+  cout.tie(nullptr);
+  ios::sync_with_stdio(false);
 }
 
-struct DescartesTree {
-  struct Node {
-    int value = -1;
-    int priority = -1;
-    long long sum = 0;
-    int size = 1;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value), priority(rand() % 10000), sum(value) {}
-    Node(int value, int priority)
-        : value(value), priority(priority), sum(value) {}
-  };
+struct SegT {
+  long long ts[3][kSz];
+  long long arr[kSz];
+  long long now;
+  unordered_map<long long, long long> map;
 
-  Node* root = nullptr;
-  static const int kNoValue = -1e9;
+  SegT() {
+    memset(ts, 0, sizeof(ts));
+    memset(arr, 0, sizeof(arr));
+    now = (kO << kO);
+  }
 
-  void Recalc(Node* root) {
-    if (root == nullptr) {
+  long long DoIth(long long v, long long l, long long r, long long k) {
+    if (r - l == kO) {
+      return l;
+    }
+    if (ts[kZ][ts[kO][v]] < k) {
+      return DoIth(ts[kTwo][v], (l + r) / kTwo, r, k - ts[kZ][ts[kO][v]]);
+    }
+    return DoIth(ts[kO][v], l, (l + r) / kTwo, k);
+  }
+
+  long long Ith(long long r, long long k) {
+    long long one = 1;
+    return DoIth(one, kZ, r, k);
+  }
+
+  void DoUp(long long v, long long l, long long r, long long idx,
+            long long val) {
+    if (r - l == kO) {
+      long long sq = sqrt(arr[v]);
+      arr[v] += val * (kTwo * sq + val);
+      if (arr[v] == kZ) {
+        ts[kZ][v] = kZ;
+      } else {
+        ts[kZ][v] = kO;
+      }
+      map[l] = sqrt(arr[v]);
       return;
     }
-    root->sum = root->value;
-    root->size = 1;
-    if (root->left != nullptr) {
-      root->sum += root->left->sum;
-      root->size += root->left->size;
+    if (ts[kO][v] == kZ) {
+      ts[kO][v] = now;
+      now += kO;
+      ts[kTwo][v] = now;
+      now += kO;
     }
-    if (root->right != nullptr) {
-      root->sum += root->right->sum;
-      root->size += root->right->size;
+    if (idx >= (l + r) / kTwo) {
+      DoUp(ts[kTwo][v], (l + r) / kTwo, r, idx, val);
+    } else {
+      DoUp(ts[kO][v], l, (l + r) / kTwo, idx, val);
+    }
+    ts[kZ][v] = ts[kZ][ts[kO][v]] + ts[kZ][ts[kTwo][v]];
+    arr[v] = arr[ts[kO][v]] + arr[ts[kTwo][v]];
+  }
+
+  void Up(long long r, long long idx, long long val) {
+    long long one = 1;
+    DoUp(one, kZ, r, idx, val);
+  }
+
+  pair<long long, long long> Get(long long idx) {
+    pair<long long, long long> p(map[idx] / kTwo, map[idx] % kTwo);
+    return p;
+  }
+
+  void ErRight(long long i) {
+    long long r = Ith(kInf, i + kO);
+    Up(kInf, Ith(kInf, i), map[r]);
+    Up(kInf, r, -map[r]);
+  }
+
+  void ErLeft(long long i) {
+    long long idx = Ith(kInf, i);
+    long long l = Ith(kInf, i - kO);
+    long long r = Ith(kInf, i + kO);
+    Up(kInf, l, Get(idx).first);
+    Up(kInf, r, (Get(idx).first + Get(idx).second));
+    long long fir = map[idx];
+    Up(kInf, idx, -fir);
+    long long sec = map[r];
+    Up(kInf, r, -sec);
+    Up(kInf, r - (fir / kTwo) - (fir % kTwo), sec);
+  }
+
+  void ErMid(long long i) {
+    long long idx = Ith(kInf, i);
+    long long l = Ith(kInf, i - kO);
+    Up(kInf, l, map[idx]);
+    Up(kInf, idx, -map[idx]);
+  }
+
+  void Er(long long i) {
+    if (i <= kO) {
+      ErRight(i);
+    } else {
+      if (i < ts[kZ][kO]) {
+        ErLeft(i);
+      } else {
+        ErMid(i);
+      }
     }
   }
 
-  auto Split(Node* root, int key) -> std::pair<Node*, Node*> {
-    if (root == nullptr) {
-      return {nullptr, nullptr};
-    }
-    if (root->value < key) {
-      auto[left, right] = Split(root->right, key);  // NOLINT
-      root->right = left;
-      Recalc(root);
-      return {root, right};
-    }
-    auto[left, right] = Split(root->left, key);  // NOLINT
-    root->left = right;
-    Recalc(root);
-    return {left, root};
+  void De(long long k) {
+    long long idx = Ith(kInf, k);
+    Up(kInf, idx + Get(idx).first, Get(idx).second + Get(idx).first);
+    Up(kInf, idx, -Get(idx).second - Get(idx).first);
   }
-
-  auto Merge(Node* left, Node* right) -> Node* {
-    if (left == nullptr) {
-      return right;
-    }
-    if (right == nullptr) {
-      return left;
-    }
-    if (left->priority > right->priority) {
-      left->right = Merge(left->right, right);
-      Recalc(left);
-      return left;
-    }
-    right->left = Merge(left, right->left);
-    Recalc(right);
-    return right;
-  }
-
-  int GetMin(Node* root) {
-    if (root == nullptr) {
-      return kNoValue;
-    }
-    if (root != nullptr && root->left == nullptr) {
-      return root->value;
-    }
-    return GetMin(root->left);
-  }
-
-  int GetMax(Node* root) {
-    if (root == nullptr) {
-      return kNoValue;
-    }
-    if (root != nullptr && root->right == nullptr) {
-      return root->value;
-    }
-    return GetMax(root->right);
-  }
-
-  void Add(int value) {
-    if (Contains(value)) {
-      return;
-    }
-    Node* to_add = new Node(value);
-    auto[left, right] = Split(root, value);  // NOLINT
-    root = Merge(left, Merge(to_add, right));
-  }
-
-  // returns first value in a tree which is:
-  // >= value if reverse_order = false
-  // <= value if reverse_order = true
-  int LowerBound(int value, bool reverse_order = false) {
-    if (!reverse_order) {
-      auto[left, right] = Split(root, value);  // NOLINT
-      int ans = GetMin(right);
-      root = Merge(left, right);
-      return ans;
-    }
-    auto[left, right] = Split(root, value + 1);  // NOLINT
-    int ans = GetMax(left);
-    root = Merge(left, right);
-    return ans;
-  }
-
-  // returns first value in a tree which is:
-  // > value if reverse_order = false
-  // < value if reverse_order = true
-  int UpperBound(int value, bool reverse_order = false) {
-    if (!reverse_order) {
-      auto[left, right] = Split(root, value + 1);  // NOLINT
-      int ans = GetMin(right);
-      root = Merge(left, right);
-      return ans;
-    }
-    auto[left, right] = Split(root, value);  // NOLINT
-    int ans = GetMax(left);
-    root = Merge(left, right);
-    return ans;
-  }
-
-  void Remove(int value) {
-    auto[left, temp_right] = Split(root, value);         // NOLINT
-    auto[middle, right] = Split(temp_right, value + 1);  // NOLINT
-    root = Merge(left, right);
-    delete middle;
-  }
-
-  int KthStatistics(Node* root, int k) {
-    if (root == nullptr) {
-      return kNoValue;
-    }
-    if (k == 1 && root->left == nullptr) {
-      return root->value;
-    }
-    int size_left = (root->left == nullptr ? 0 : root->left->size);
-    if (k <= size_left) {
-      return KthStatistics(root->left, k);
-    }
-    if (k == size_left + 1) {
-      return root->value;
-    }
-    return KthStatistics(root->right, k - size_left - 1);
-  }
-
-  int KthStatistics(int k) {
-    int size = 0;
-    if (root != nullptr) {
-      size = root->size;
-    }
-    if (!(0 < k && k <= size)) {
-      return kNoValue;
-    }
-    return KthStatistics(root, k);
-  }
-
-  long long GetSum(int l, int r) {
-    auto[less_l, more_eq_l] = Split(root, l);     // NOLINT
-    auto[l_r, more_r] = Split(more_eq_l, r + 1);  // NOLINT
-    long long ans = 0;
-    if (l_r != nullptr) {
-      ans = l_r->sum;
-    }
-    root = Merge(less_l, l_r);
-    root = Merge(root, more_r);
-    return ans;
-  }
-
-  bool Contains(Node* root, int value) {
-    if (root == nullptr) {
-      return false;
-    }
-    if (root->value == value) {
-      return true;
-    }
-    if (root->value > value) {
-      return Contains(root->left, value);
-    }
-    return Contains(root->right, value);
-  }
-
-  bool Contains(int value) { return Contains(root, value); }
-
-  void ClearTree(Node* root) {
-    if (root == nullptr) {
-      return;
-    }
-    ClearTree(root->left);
-    ClearTree(root->right);
-    delete root;
-  }
-
-  int Size() {
-    if (root == nullptr) {
-      return 0;
-    }
-    return root->size;
-  }
-
-  // returns a[i] (in 0-numeration)
-  int GetKth(Node* root, int index) {
-    if (root == nullptr) {
-      return kNoValue;
-    }
-    if (root->left == nullptr && index == 0) {
-      return root->value;
-    }
-    int size_left = (root->left == 0 ? 0 : root->left->size);
-    if (index < size_left) {
-      return GetKth(root->left, index);
-    }
-    if (index == size_left) {
-      return root->value;
-    }
-    return GetKth(root->right, index - size_left - 1);
-  }
-
-  // returns a[i] (in 0-numeration)
-  int Get(int index) {
-    if (!(0 <= index && index < this->Size())) {
-      return kNoValue;
-    }
-    return GetKth(root, index);
-  }
-
-  ~DescartesTree() { ClearTree(root); }
 };
 
-int main() {
-  Init();
-
-  DescartesTree a;
-
-  std::string cmd;
-  while (std::cin >> cmd) {
-    if (cmd == "insert") {
-      int v;
-      std::cin >> v;
-      a.Add(v);
-    } else if (cmd == "delete") {
-      int v;
-      std::cin >> v;
-      a.Remove(v);
-    } else if (cmd == "exists") {
-      int v;
-      std::cin >> v;
-      if (a.Contains(v)) {
-        std::cout << "true\n";
-      } else {
-        std::cout << "false\n";
-      }
-    } else if (cmd == "next") {
-      int v;
-      std::cin >> v;
-      int ans = a.LowerBound(v + 1);
-      if (ans == DescartesTree::kNoValue) {
-        std::cout << "none\n";
-      } else {
-        std::cout << ans << '\n';
-      }
-    } else if (cmd == "prev") {
-      int v;
-      std::cin >> v;
-      int ans = a.LowerBound(v - 1, true);
-      if (ans == DescartesTree::kNoValue) {
-        std::cout << "none\n";
-      } else {
-        std::cout << ans << '\n';
-      }
-    } else if (cmd == "kth") {
-      int k;
-      std::cin >> k;
-      int ans = a.Get(k);
-      if (ans == DescartesTree::kNoValue) {
-        std::cout << "none\n";
-      } else {
-        std::cout << ans << '\n';
-      }
-    }
+void Solve() {
+  long long n, nup;
+  cin >> n >> nup;
+  vector<long long> vec(n);
+  SegT st;
+  long long reduced = kZ;
+  for (long long i = kZ; i < n; ++i) {
+    cin >> vec[i];
   }
+  for (long long i = kZ; i < n; ++i) {
+    long long a = vec[i];
+    st.Up(kInf, reduced, a);
+    reduced += a;
+  }
+  cout << st.arr[kO] << "\n";
+  long long q;
+  cin >> q;
+  for (long long i = kZ; i < q; ++i) {
+    long long t, k;
+    cin >> t >> k;
+    if (t == kO) {
+      st.Er(k);
+    } else {
+      st.De(k);
+    }
+    cout << st.arr[kO] << "\n";
+  }
+}
 
-  return 0;
+int main() {
+  Unsync();
+  Solve();
 }

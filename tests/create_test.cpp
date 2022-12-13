@@ -24,32 +24,30 @@ std::string CreateString(int size) {
 int main() {
   std::mt19937 mt(time(nullptr)); 
 
-  int tests = 5;
-  int range = 50;
+  int nums = 5;
+  int range = 10;
+  std::cout << nums << " " << 0 << '\n';
+
+  for (int i = 0; i < nums; ++i) {
+    std::cout << random(2, range) << ' ';
+  }
+  std::cout << '\n';
+
+  int size = nums;
+  int tests = 10;
   std::cout << tests << '\n';
 
-  int size = 0;
-  std::vector<std::string> added;
-  
   for (int i = 0; i < tests; ++i) {
     int border = 0;
-    if (size > 3) {
-      border = 5;
-    }
-    int t = random(0, border);
-    if (t == 0) {
-      std::cout << "insert " << random(0, range) << '\n';
-      ++size;
-    } else if (t == 1) {
-      std::cout << "delete " << random(0, range) << '\n';
-    } else if (t == 2) {
-      std::cout << "exists " << random(0, range) << '\n';
-    } else if (t == 3) {
-      std::cout << "next " << random(0, range) << '\n';
-    } else if (t == 4) {
-      std::cout << "prev " << random(0, range) << '\n';
-    } else if (t == 5) {
-      std::cout << "kth " << random(0, size - 1) << '\n';
+    // if (size >= 3) {
+    //   border = 1;
+    // }
+    int cmd = random(0, border);
+    if (cmd == 0) {
+      std::cout << "2 " << random(1, size) << '\n';
+    } else {
+      std::cout << "1 " << random(1, size) << '\n';
+      --size;
     }
   }
   
