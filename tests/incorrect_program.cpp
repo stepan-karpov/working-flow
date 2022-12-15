@@ -8,7 +8,7 @@ void Init() {
 }
 
 class DescartesTreeByImplicitKey {
- private:
+ public:
   struct Node {
     int value;
     int priority;
@@ -17,8 +17,11 @@ class DescartesTreeByImplicitKey {
     int max_value = -1e9;
     Node* left = nullptr;
     Node* right = nullptr;
-    Node(int value) :
-         value(value), priority(rand() % 1000), min_value(value), max_value(value) {}
+    Node(int value)
+        : value(value),
+          priority(rand() % 1000),
+          min_value(value),
+          max_value(value) {}
   };
 
   Node* root = nullptr;
@@ -69,17 +72,18 @@ class DescartesTreeByImplicitKey {
     }
     int size_left = (root->left == nullptr ? 0 : root->left->size);
     if (index < size_left) {
-      auto[left, right] = Split(root->left, index);
+      auto[left, right] = Split(root->left, index);  // NOLINT
       root->left = right;
       Recalc(root);
       return {left, root};
-    } else if (index == size_left) {
+    }
+    if (index == size_left) {
       Node* left = root->left;
       root->left = nullptr;
       Recalc(root);
       return {left, root};
     }
-    auto[left, right] = Split(root->right, index - size_left - 1);
+    auto[left, right] = Split(root->right, index - size_left - 1);  // NOLINT
     root->right = left;
     Recalc(root);
     return {root, right};
@@ -121,15 +125,12 @@ class DescartesTreeByImplicitKey {
     }
     int ans1 = CountLessOrEqualThanX(root->left, x);
     int ans2 = CountLessOrEqualThanX(root->right, x);
-    return ans1 + ans2 + (root->value <= x);
+    return ans1 + ans2 + int(root->value <= x);
   }
 
  public:
-
   // returns Size() of array
-  int Size() {
-    return (root == nullptr ? 0 : root->size);
-  }
+  int Size() { return (root == nullptr ? 0 : root->size); }
 
   // simple push_back
   void PushBack(int value) {
@@ -138,7 +139,7 @@ class DescartesTreeByImplicitKey {
   }
 
   // returns a[i] (in 0-numeration)
-  int Get(int index) {
+  long long Get(int index) {
     if (!(0 <= index && index < this->Size())) {
       return kNoValue;
     }
@@ -170,7 +171,7 @@ class DescartesTreeByImplicitKey {
   void Set(int index, int value) {
     if (!(0 <= index && index < this->Size())) {
       // assert("Segmentation fault");
-      std::cout << "seg fault\n"; 
+      std::cout << "seg fault\n";
       return;
     }
     Set(root, index, value);
@@ -178,16 +179,16 @@ class DescartesTreeByImplicitKey {
 
   // swaps [l1, r1] with [l2, r2]
   void SwapSegments(int l1, int r1, int l2, int r2) {
-    auto[less_l1, more_eq_l1] = Split(root, l1);
-    auto[l1_r1, more_r1] = Split(more_eq_l1, r1 - l1 + 1);
-    auto[r1_l2, more_eq_l2] = Split(more_r1, l2 - r1 - 1);
-    auto[l2_r2, more_r2] = Split(more_eq_l2, r2 - l2 + 1);
+    auto[less_l1, more_eq_l1] = Split(root, l1);            // NOLINT
+    auto[l1_r1, more_r1] = Split(more_eq_l1, r1 - l1 + 1);  // NOLINT
+    auto[r1_l2, more_eq_l2] = Split(more_r1, l2 - r1 - 1);  // NOLINT
+    auto[l2_r2, more_r2] = Split(more_eq_l2, r2 - l2 + 1);  // NOLINT
     root = Merge(less_l1, l2_r2);
     root = Merge(root, r1_l2);
     root = Merge(root, l1_r1);
     root = Merge(root, more_r2);
   }
-  
+
   // pastes element "value" after index
   // in tree
   // index should be among [-1, a.size() - 1]
@@ -196,7 +197,7 @@ class DescartesTreeByImplicitKey {
       std::cout << "seg fault\n";
       return;
     }
-    auto[left, right] = Split(root, index + 1);
+    auto[left, right] = Split(root, index + 1);  // NOLINT
     Node* to_add = new Node(value);
     root = Merge(left, Merge(to_add, right));
   }
@@ -208,18 +209,19 @@ class DescartesTreeByImplicitKey {
       return;
     }
     if (index == 0) {
-      auto[left, right] = Split(root, index + 1); // NOLINT
+      auto[left, right] = Split(root, index + 1);  // NOLINT
       delete left;
       root = right;
-      return;      
-    } else if (index == this->Size() - 1) {
-      auto[left, right] = Split(root, index); // NOLINT
+      return;
+    }
+    if (index == this->Size() - 1) {
+      auto[left, right] = Split(root, index);  // NOLINT
       root = left;
       delete right;
       return;
     }
-    auto[left, right] = Split(root, index); // NOLINT
-    auto[to_delete, new_right] = Split(right, 1); // NOLINT
+    auto[left, right] = Split(root, index);        // NOLINT
+    auto[to_delete, new_right] = Split(right, 1);  // NOLINT
     delete to_delete;
     root = Merge(left, new_right);
   }
@@ -227,8 +229,8 @@ class DescartesTreeByImplicitKey {
   // return number of elements that are <= x
   // search is across all element is segment[l, r]
   int LessEqualXOnSegment(int l, int r, int x) {
-    auto[less_l, more_eq_l] = Split(root, l);
-    auto[l_r, more_r] = Split(more_eq_l, r - l + 1);
+    auto[less_l, more_eq_l] = Split(root, l);         // NOLINT
+    auto[l_r, more_r] = Split(more_eq_l, r - l + 1);  // NOLINT
     int ans = CountLessOrEqualThanX(l_r, x);
     root = Merge(less_l, l_r);
     root = Merge(root, more_r);
@@ -240,45 +242,37 @@ class DescartesTreeByImplicitKey {
 
 int main() {
   Init();
-  int n, p;
+  long long n, p, answer = 0, q = 0;
   std::cin >> n >> p;
-
   DescartesTreeByImplicitKey a;
-
-  long long answer = 0;
-
   for (int i = 0; i < n; ++i) {
     int x;
     std::cin >> x;
     a.PushBack(x);
     answer += x * x;
   }
-
-  int q;
   std::cin >> q;
-
   for (int i = 0; i < q; ++i) {
     std::cout << answer << '\n';
     std::string cmd;
     std::cin >> cmd;
+    long long to_fire;
+    std::cin >> to_fire;
+    --to_fire;
     if (cmd == "1") {
-      int to_fire;
-      std::cin >> to_fire;
-      --to_fire;
-      int cur_length = a.Get(to_fire);
+      long long cur_length = a.Get(to_fire);
       if (to_fire == 0) {
         answer -= cur_length * cur_length;
-        answer -= a.Get(1) * a.Get(1); 
+        answer -= a.Get(1) * a.Get(1);
         a.Set(1, a.Get(1) + cur_length);
-        answer += a.Get(1) * a.Get(1); 
+        answer += a.Get(1) * a.Get(1);
       } else if (to_fire == a.Size() - 1) {
         answer -= cur_length * cur_length;
-        answer -= a.Get(a.Size() - 2) * a.Get(a.Size() - 2); 
+        answer -= a.Get(a.Size() - 2) * a.Get(a.Size() - 2);
         a.Set(a.Size() - 2, a.Get(a.Size() - 2) + cur_length);
-        answer += a.Get(a.Size() - 2) * a.Get(a.Size() - 2); 
+        answer += a.Get(a.Size() - 2) * a.Get(a.Size() - 2);
       } else {
-        int p1 = cur_length / 2;
-        int p2 = cur_length - p1;
+        long long p1 = cur_length / 2, p2 = cur_length - p1;
         answer -= cur_length * cur_length;
         answer -= a.Get(to_fire - 1) * a.Get(to_fire - 1);
         answer -= a.Get(to_fire + 1) * a.Get(to_fire + 1);
@@ -288,19 +282,11 @@ int main() {
         answer += a.Get(to_fire + 1) * a.Get(to_fire + 1);
       }
       a.DeleteElement(to_fire);
-      // for (int i = 0; i < a.Size(); ++i) {
-      //   std::cout << a.Get(i) << ' ';
-      // }
-      // std::cout << '\n';
     } else if (cmd == "2") {
-      int to_fire;
-      std::cin >> to_fire;
-      --to_fire;
-      int cur_length = a.Get(to_fire);
-      int p1 = cur_length / 2;
-      int p2 = cur_length - p1;
-      answer -= cur_length * cur_length;
-
+      long long cur_length = a.Get(to_fire);
+      long long p1 = cur_length / 2, p2 = cur_length - p1,
+                delta = cur_length * cur_length;
+      answer -= delta;
       a.Set(to_fire, p1);
       a.AddAfter(to_fire, p2);
       if (a.Get(to_fire + 1) == 0) {
@@ -309,15 +295,9 @@ int main() {
       if (a.Get(to_fire) == 0) {
         a.DeleteElement(to_fire);
       }
-      answer += p1 * p1;
-      answer += p2 * p2;
-      // for (int i = 0; i < a.Size(); ++i) {
-      //   std::cout << a.Get(i) << ' ';
-      // }
-      // std::cout << '\n';
+      answer += p1 * p1 + p2 * p2;
     }
   }
   std::cout << answer << '\n';
-
   return 0;
 }
