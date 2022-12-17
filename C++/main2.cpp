@@ -1,14 +1,21 @@
 #include <iostream>
+#include <vector>
+#include "string.h"
 
-typedef const int* ptr_to_const_int;
-
-void foo(int** const ptr) {
-  std::cout << "f";
+void Init() {
+  std::ios_base::sync_with_stdio(false);
+  std::cin.tie(nullptr);
+  std::cout.tie(nullptr);
 }
 
 int main() {
-    int ** v = new int * [10];
-    foo(v);
+  String temp1("abc");
+  String temp2("def");
 
-    return 0;
+  // (temp1 += temp2) += temp2;
+  temp1 += temp2 += temp2;
+
+  std::cout << temp1 << '\n';
+  
+  return 0;
 }
