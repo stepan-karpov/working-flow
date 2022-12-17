@@ -63,19 +63,15 @@ class String {
 
   
   String& operator=(const String& new_string) {
-    if (&new_string == this) return *this;
-    if (capacity_ >= new_string.size_) {
-      std::copy(new_string.array_, new_string.array_ + size_, array_);
-      size_ = new_string.size_;
-      return *this;
-    } 
-    delete[] array_;
-    size_ = new_string.size_;
-    capacity_ = new_string.size_;
-    array_ = new char[size_ + 1];
-    std::copy(new_string.array_, new_string.array_ + size_, array_);
-    array_[size_] = '\0';
+    String copy = new_string;
+    swap(copy);
     return *this;
+  }
+
+  void swap(String& to_swap) {
+    std::swap(array_, to_swap.array_);
+    std::swap(size_, to_swap.size_);
+    std::swap(capacity_, to_swap.capacity_);
   }
 
   String& operator+=(const String& to_add) {
@@ -145,19 +141,25 @@ class String {
     return ans;
   }
 
+
+
   size_t find(String& substring) const {
     if (substring.size() > size_) return length();
     for (int i = 0; i <= size_ - substring.size(); ++i) {
-      bool ok = true;
-      for (int j = i; j < i + substring.size(); ++j) {
-        if (array_[j] != substring[j - i]) {
-           ok = false;
-           break;
-        }
+      if (word_starts(i, substring, *this)) {
+        return i;
       }
-      if (ok) return i;
     }
     return length();
+  }
+
+  bool word_starts(int position, const String& substring, const String& string) const {
+    for (int i = position; i < position + substring.size(); ++i) {
+      if (string[i] != substring[i - position]) {
+        return false;
+      }
+    }
+    return true;
   }
 
   size_t find(const char* substring) const {
@@ -165,17 +167,12 @@ class String {
     return find(t);
   }
 
-  int rfind(String& substring) const {
+  size_t rfind(String& substring) const {
     if (substring.size() > size_) return length();
     for (int i = size_ - substring.size(); i >= 0; --i) {
-      bool ok = true;
-      for (int j = i; j < i + substring.size(); ++j) {
-        if (array_[j] != substring[j - i]) {
-           ok = false;
-           break;
-        }
+      if (word_starts(i, substring, *this)) {
+        return i;
       }
-      if (ok) return i;
     }
     return length();
   }
@@ -206,8 +203,7 @@ String operator+(String add1, const String& add2) {
 
 bool operator<(const String& str1, const String& str2) {
   for (int i = 0; i < std::min(str1.size_, str2.size_); ++i) {
-    if (str1[i] == str2[i]) continue;
-    return (str1[i] < str2[i] ? true : false);
+    if (str1[i] < str2[i]) return false;
   }
   return str1.size_ < str2.size_;
 }
@@ -241,21 +237,20 @@ bool operator!=(const String& str1, const String& str2) {
 }
 
 std::ostream& operator<<(std::ostream& os, const String& cur_string) {
-  for (int i = 0; i < int(cur_string.size()); ++i) {
-    os << cur_string[i];
-  }
+  os << cur_string.data();
   return os;
 }
 
 std::istream& operator>>(std::istream& is, String& cur_string) {
   String temp(0, '\0');
   char c;
-  while (true) {
-    c = is.get();
+  c = is.get();
+  while (!std::isspace(c)) {
     if (c == '\n' || c == EOF) {
       break;
     }
     temp.push_back(c);
+    c = is.get();
   }
   cur_string = temp;
   return is;
