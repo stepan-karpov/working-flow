@@ -2,56 +2,49 @@
 #include <vector>
 #include <cstring>
 
+class String;
+bool operator==(const String&, const String&);
+
 class String {
  private:
   char* array_ = nullptr;
-  int size_ = 0;
-  int capacity_ = 0;
+  size_t size_ = 0;
+  size_t capacity_ = 0;
 
  public:
-  // Constructors and destructors
-
-  String(int init_size, char to_fill): 
-         array_(new char[init_size + 1]), size_(init_size), capacity_(init_size) {
+  String(int init_size, char to_fill)
+      : array_(new char[init_size + 1]),
+        size_(init_size),
+        capacity_(init_size) {
     std::fill(array_, array_ + init_size, to_fill);
     array_[init_size] = '\0';
   }
 
-  String (char new_string) {
-    String temp(0, '\0');
-    temp.push_back(new_string);
-    *this = temp;
+  String (char new_string)
+      : array_(new char[2]), size_(1), capacity_(1) {
+    array_[0] = new_string;
+    array_[1] = '\0';
   }
 
-  String(const char* c_style_string) {
-    size_ = 0;
-    while (c_style_string[size_] != '\0') {
-      ++size_;
-    }
-    capacity_ = size_;
+  String(const char* c_style_string)
+      : size_(std::strlen(c_style_string)),
+        capacity_(size_) {
     array_ = new char[size_ + 1];
     std::copy(c_style_string, c_style_string + size_, array_);
     array_[size_] = '\0';
   }
 
-  String(const String& initializer_string) :
-         array_(new char[initializer_string.size_ + 1]), size_(initializer_string.size_), 
-         capacity_(initializer_string.size_) {
+  String(const String& initializer_string)
+      : array_(new char[initializer_string.size_ + 1]), size_(initializer_string.size_), 
+        capacity_(initializer_string.size_) {
     std::copy(initializer_string.array_, initializer_string.array_ + size_ + 1, array_);
   }
 
-  String() {
-    String empty = String(0, 'a');
-    *this = empty;
-  }
+  String() = default;
 
   ~String() {
     delete[] array_;
   }
-
-  // Operator's redefinitions
-
-  friend bool operator<(const String&, const String&);
 
   char& operator[](int index) {
     return array_[index];
@@ -61,8 +54,10 @@ class String {
     return array_[index];
   }
 
-  
   String& operator=(const String& new_string) {
+    if (*this == new_string) {
+      return *this;
+    }
     String copy = new_string;
     swap(copy);
     return *this;
@@ -75,30 +70,28 @@ class String {
   }
 
   String& operator+=(const String& to_add) {
-    int new_size = size_ + to_add.size_;
+    size_t new_size = size_ + to_add.size_;
     if (capacity_ >= new_size) {
       std::copy(to_add.array_, to_add.array_ + to_add.size_, array_ + size_);
       array_[new_size] = '\0';
       size_ = new_size;
       return *this;
     }
-    char* temp = new char[new_size + 1];
-    std::copy(array_, array_ + size_, temp);
-    std::copy(to_add.array_, to_add.array_ + to_add.size_, temp + size_);
-    temp[new_size] = '\0';
+    char* new_array = new char[new_size + 1];
+    std::copy(array_, array_ + size_, new_array);
+    std::copy(to_add.array_, to_add.array_ + to_add.size_, new_array + size_);
+    new_array[new_size] = '\0';
     delete[] array_;
-    array_ = temp;
+    array_ = new_array;
     size_ = new_size;
     capacity_ = new_size;
     return *this;
   }
 
   String& operator+=(char to_add) {
-    this->push_back(to_add);
+    push_back(to_add);
     return *this;
   }
-
-  // Some control functions
 
   void push_back(char to_push) {
     if (size_ == capacity_) {
@@ -133,28 +126,24 @@ class String {
     array_[size_] = '\n';
   }
 
-  // Some substr functions
-
   String substr(int start, int length) const {
     String ans(length, '\0');
     std::copy(array_ + start, array_ + start + length, ans.array_);
     return ans;
   }
 
-
-
   size_t find(String& substring) const {
     if (substring.size() > size_) return length();
-    for (int i = 0; i <= size_ - substring.size(); ++i) {
-      if (word_starts(i, substring, *this)) {
+    for (size_t i = 0; i <= size_ - substring.size(); ++i) {
+      if (is_word_starts_in_position(i, substring, *this)) {
         return i;
       }
     }
     return length();
   }
 
-  bool word_starts(int position, const String& substring, const String& string) const {
-    for (int i = position; i < position + substring.size(); ++i) {
+  bool is_word_starts_in_position(int position, const String& substring, const String& string) const {
+    for (size_t i = position; i < position + substring.size(); ++i) {
       if (string[i] != substring[i - position]) {
         return false;
       }
@@ -169,89 +158,88 @@ class String {
 
   size_t rfind(String& substring) const {
     if (substring.size() > size_) return length();
+    // for (int i = 0; i < size_ - substring.size(); ++i) {
     for (int i = size_ - substring.size(); i >= 0; --i) {
-      if (word_starts(i, substring, *this)) {
+      if (is_word_starts_in_position(i, substring, *this)) {
         return i;
       }
     }
     return length();
   }
 
-  int rfind(const char* substring) const {
+  size_t rfind(const char* substring) const {
     String t = substring;
     return rfind(t);
   }
 
-  // Some info-functions
-
-  int length() const { return size_; }
-  int size() const { return size_; }
-  int capacity() const { return capacity_; }
+  size_t length() const { return size_; }
+  size_t size() const { return size_; }
+  size_t capacity() const { return capacity_; }
   char& front() { return array_[0]; }
   char front() const { return array_[0]; }
   char& back() { return array_[size_ - 1]; }
-  char back() const { return (size_ == 0 ? array_[0] : array_[size_ - 1]); }
+  char back() const { return (array_[size_ - 1]); }
   char* data() const { return array_; }
   bool empty() const { return (size_ == 0); }
 
 };
 
-String operator+(String add1, const String& add2) {
-  add1 += add2;
-  return add1;
+String operator+(String to_add1, const String& add2) {
+  to_add1 += add2;
+  return to_add1;
 }
 
-bool operator<(const String& str1, const String& str2) {
-  for (int i = 0; i < std::min(str1.size_, str2.size_); ++i) {
-    if (str1[i] < str2[i]) return false;
+bool operator<(const String& string1, const String& string2) {
+  for (size_t i = 0; i < std::min(string1.size(), string2.size()); ++i) {
+    if (string1[i] < string2[i]) return false;
   }
-  return str1.size_ < str2.size_;
+  return string1.size() < string2.size();
 }
 
-bool operator>=(const String& str1, const String& str2) {
-  return !(str1 < str2);
+bool operator>=(const String& string1, const String& string2) {
+  return !(string1 < string2);
 }
 
-bool operator>(const String& str1, const String& str2) {
-  return str2 < str1;
+bool operator>(const String& string1, const String& string2) {
+  return string2 < string1;
 }
 
-bool operator<=(const String& str1, const String& str2) {
-  return !(str1 > str2);
+bool operator<=(const String& string1, const String& string2) {
+  return !(string1 > string2);
 }
 
-bool operator==(const String& str1, const String& str2) {
-  if (str1.size() != str2.size()) return false;
-  for (int i = 0; i < int(str1.size()); ++i) {
-    if (str1[i] != str2[i]) return false;
+bool operator==(const String& string1, const String& string2) {
+  if (string1.size() != string2.size()) return false;
+  for (int i = 0; i < int(string1.size()); ++i) {
+    if (string1[i] != string2[i]) return false;
   }
   return true;
 }
 
-bool operator!=(const String& str1, const String& str2) {
-  if (str1.size() != str2.size()) return true;
-  for (int i = 0; i < int(str1.size()); ++i) {
-    if (str1[i] != str2[i]) return true;
+bool operator!=(const String& string1, const String& string2) {
+  if (string1.size() != string2.size()) return true;
+  for (int i = 0; i < int(string1.size()); ++i) {
+    if (string1[i] != string2[i]) return true;
   }
   return false;
 }
 
-std::ostream& operator<<(std::ostream& os, const String& cur_string) {
-  os << cur_string.data();
-  return os;
+std::ostream& operator<<(std::ostream& output, const String& cur_string) {
+  output << cur_string.data();
+  return output;
 }
 
-std::istream& operator>>(std::istream& is, String& cur_string) {
-  String temp(0, '\0');
+std::istream& operator>>(std::istream& input, String& cur_string) {
+  String temp_output(0, '\0');
   char c;
-  c = is.get();
+  c = input.get();
   while (!std::isspace(c)) {
     if (c == '\n' || c == EOF) {
       break;
     }
-    temp.push_back(c);
-    c = is.get();
+    temp_output.push_back(c);
+    c = input.get();
   }
-  cur_string = temp;
-  return is;
+  cur_string = temp_output;
+  return input;
 }
