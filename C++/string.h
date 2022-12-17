@@ -17,6 +17,12 @@ class String {
     array_[init_size] = '\0';
   }
 
+  String (char new_string) {
+    String temp(0, '\0');
+    temp.push_back(new_string);
+    *this = temp;
+  }
+
   String(const char* c_style_string) {
     size_ = 0;
     while (c_style_string[size_] != '\0') {
@@ -92,8 +98,7 @@ class String {
   }
 
   String& operator+=(char to_add) {
-    String tmp(1, to_add);
-    *this += tmp;
+    this->push_back(to_add);
     return *this;
   }
 
@@ -115,7 +120,6 @@ class String {
   }
 
   void pop_back() {
-    if (size_ == 0) return;
     array_[size_--] = '\0';
   }
 
@@ -188,7 +192,7 @@ class String {
   int capacity() const { return capacity_; }
   char& front() { return array_[0]; }
   char front() const { return array_[0]; }
-  char& back() { return (size_ == 0 ? array_[0] : array_[size_ - 1]); }
+  char& back() { return array_[size_ - 1]; }
   char back() const { return (size_ == 0 ? array_[0] : array_[size_ - 1]); }
   char* data() const { return array_; }
   bool empty() const { return (size_ == 0); }
@@ -198,18 +202,6 @@ class String {
 String operator+(String add1, const String& add2) {
   add1 += add2;
   return add1;
-}
-
-String operator+(String add1, char to_add) {
-  String temp(1, to_add);
-  add1 += temp;
-  return add1;
-}
-
-String operator+(char to_add, const String& add1) {
-  String temp(1, to_add);
-  temp += add1;
-  return temp;
 }
 
 bool operator<(const String& str1, const String& str2) {
