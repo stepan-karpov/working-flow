@@ -159,14 +159,6 @@ class BigInteger {
       return *this;
     }
 
-    // I've spent a lot of time thinking
-    // how to implement this operation without
-    // copying and finally I've decided that there will be a case
-    // where copying is unavoidable
-    // for example:
-    // BigInteger a1 = -1
-    // a1 += 1000
-    // there's no way to avoid copying
     BigInteger temp = addition; // this copying is unavoidable
     temp.FindDifference(*this);
     *this = temp;
@@ -356,7 +348,6 @@ class BigInteger {
     return output.str();
   }
   
-  // some comparisons
   // some comparisons
 
   friend bool operator<(const BigInteger& value1, const BigInteger& value2);
@@ -754,7 +745,5 @@ Rational operator-(Rational value1, const Rational& value2) {
 
 1) Representing Rational object as Decimal in function asDecimal
 always rounds up floating 0.***k5 to 0.***(k + 1)
-
-
 
 */

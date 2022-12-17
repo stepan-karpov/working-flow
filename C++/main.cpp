@@ -1,149 +1,78 @@
 #include <iostream>
-#include <sstream>
-#include <fstream>
-#include <string>
 #include <vector>
-#include <algorithm>
-#include <stdexcept>
-#include <typeinfo>
-#include "geometry.h"
 
+void Init() {
+  std::ios_base::sync_with_stdio(false);
+  std::cin.tie(nullptr);
+  std::cout.tie(nullptr);
+}
 
-int main() {
-  // Point a1 = {1, 1};
-  // Point a2 = {1, 3};
-  // Point a3 = {3, 3};
-  // Point a4 = {2, 2};
-  // Point a5 = {3, 1};
-  // Polygon t(a1, a2, a3, a4, a5);
+void Input(int* ptrs[], const int max_size, const int sizes[]) {
+  for (int i = 0; i < max_size - 1; ++i) {
+    ptrs[i] = new int[sizes[i]];
+    for (int j = 0; j < sizes[i]; ++j) {
+      std::cin >> ptrs[i][j];
+    }
+  }
+}
 
+int MaxValue(const int max_size, const int sizes[]) {
+  int ans = -1e9;
+  for (int i = 0; i < max_size - 1; ++i) {
+    ans = std::max(ans, sizes[i]);
+  }
+  return ans;
+}
 
-  // Point a1 = {1, 1};
-  // Point a2 = {1, 2};
-  // Point a3 = {2, 2};
-  // Point a4 = {2, 1};
-  // Polygon t(a1, a2, a3, a4);
-
-  // std::cout << t.isConvex() << '\n';
-
-  // to test Ellips with some 
-  // non-trivial rotations!!!
-
-  // double c = 0.7071;
-
-  // Ellipse a({c, c}, {-c, -c}, 4);
-  // Line d1 = a.directrices().first;
-  // Line d2 = a.directrices().second;
-
-  // std::cout << d1.A << '\n';
-  // std::cout << d1.B << '\n';
-  // std::cout << d1.C << '\n';
-  // std::cout << d2.A << '\n';
-  // std::cout << d2.B << '\n';
-  // std::cout << d2.C << '\n';
-
-  // Circle a({2, 2}, 5);
-
-  // std::cout << a.radius() << '\n';
-
-  // Point a = {4, 2};
-
-  // a = Rotate(a, 30);
-
-  // std::cout << a.x << '\n';
-  // std::cout << a.y << '\n';
-
-  // double a = 2;
-  // std::cout << atan2(a, 1) << '\n';
-
-  // Rectangle a({0, 0}, {5, 3}, 1.6666666);
-
-  // std::cout << a.getVertices()[0] << '\n';
-  // std::cout << a.getVertices()[1] << '\n';
-  // std::cout << a.getVertices()[2] << '\n';
-  // std::cout << a.getVertices()[3] << '\n';
-  // std::cout << a.diagonals().first.A << " " << a.diagonals().first.B << " " << a.diagonals().first.C << '\n';
-  // std::cout << a.diagonals().second.A << " " << a.diagonals().second.B << " " << a.diagonals().second.C << '\n';
-  // Rectangle a({2, 2}, {5, 6}, 2);
-
-  // std::cout << a.getVertices()[0].x << " " << a.getVertices()[0].y << '\n';
-  // std::cout << a.getVertices()[1].x << " " << a.getVertices()[1].y << '\n';
-  // std::cout << a.getVertices()[2].x << " " << a.getVertices()[2].y << '\n';
-  // std::cout << a.getVertices()[3].x << " " << a.getVertices()[3].y << '\n';
-  // std::cout << a.center().x << " " << a.center().y << '\n';
-
-  // Square a({3, 2}, {7, 6});
-
-  // std::cout << a.getVertices()[0] << '\n';
-  // std::cout << a.getVertices()[1] << '\n';
-  // std::cout << a.getVertices()[2] << '\n';
-  // std::cout << a.getVertices()[3] << '\n';
-  // std::cout << a.center() << '\n';
-  // std::cout << a.inscribedCircle().center() << '\n';
-  // std::cout << a.inscribedCircle().radius() << '\n';
-
-  // Triangle t1({0, 0}, {3, 0}, {3, 4});
-  // std::cout << t1.centroid() << '\n';
-  // std::cout << t1.orthocenter() << '\n';
-  // std::cout << t1.inscribedCircleCenter() << '\n';
-  // std::cout << t1.circumscribedCircleCenter() << '\n';
-  // std::cout << t1.circumscribedCircle().center() << '\n';
-  // std::cout << t1.circumscribedCircle().radius() << '\n';
-  // std::cout << t1.inscribedCircle().center() << '\n';
-  // std::cout << t1.inscribedCircle().radius() << '\n';
-
-  // std::vector<Shape*> a;
+long long Backtrack(const int max_size, int** const ptrs, const int sizes[], int nums[], int depth) {
+  if (depth == max_size - 1) {
+    long long cur_mult = 1;
+    for (int i = 0; i < max_size - 1; ++i) {
+      cur_mult *= ptrs[i][nums[i]];
+    }
+    return cur_mult;
+  }
   
-  // a.push_back(new Polygon(Point(1, 1), Point(1, 3), Point(3, 3), Point(2, 2), Point(3, 1)));
-  // a.push_back(new Ellipse({1, 0}, {-1, 0}, 4));
-  // a.push_back(new Circle({1, 1}, 1));
-  // a.push_back(new Rectangle({2, -2}, {5, -4}, 1.5));
-  // a.push_back(new Square({-2, -2}, {-3, -3}));
-  // a.push_back(new Triangle({-2, 2}, {-4, 2}, {-3, 3.732050808}));
-  // a.push_back(new Polygon(Point(1, 1), Point(1, 3), Point(3, 3), Point(2, 2), Point(3, 1)));
-  // a.push_back(new Polygon(Point(-2, -2), Point(-2, -3), Point(-3, -3), Point(-3, -2)));
+  long long ans = 0;
+  for (int i = 0; i < sizes[depth]; ++i) {
+    nums[depth] = i;
+    bool is_ok = true;
+    for (int j = 0; j < depth; ++j) {
+      if (nums[j] == nums[depth]) {
+        is_ok = false;
+        break;
+      }
+    }
+    if (!is_ok) continue;
+    ans += Backtrack(max_size, ptrs, sizes, nums, depth + 1);
+  }
+  return ans;
+}
 
-  // // for (int i = 0; i < int(a.size()); ++i) {
-  // //   std::cout << a[i]->area() << '\n';
-  // // }
+void ClearMemory(int* ptrs[], int nums[], int argc, int sizes[]) {
+  for (int i = 0; i < argc - 1; ++i) {
+    delete[] ptrs[i];
+  }
+  delete[] ptrs;
+  delete[] nums;
+  delete[] sizes;
+}
 
-  // std::cout << (*a[0] == *a[3]) << '\n';
-  // std::cout << (*a[1] == *a[2]) << '\n';
-  // std::cout << (*a[1] == *a[3]) << '\n';
-  // std::cout << (*a[0] == *a[6]) << '\n';
-  // std::cout << (*a[4] == *a[7]) << '\n';
+int main(int argc, char* argv[]) {
+  Init();
 
+  int* sizes = new int[argc - 1];
+  for (int i = 1; i < argc; ++i) {
+    sizes[i - 1] = atoi(argv[i]); 
+  }
 
-  Polygon a(Point(1, 1), Point(1, 3), Point(3, 3), Point(2, 2), Point(3, 1));
-  Polygon b(Point(0.5, 0.866025), Point(-0.5, 2.59808), Point(1.23205, 3.59808), Point(0.866025, 2.23205), Point(2.23205, 1.86603));
-  Polygon c(Point(0.25, 0.866025), Point(-0.5, 2.59808), Point(1.23205, 3.59808), Point(0.866025, 2.23205), Point(2.23205, 1.86603));
-  // Polygon d(Point(1, 1), Point(1, 3), Point(3, 3), Point(2, 2), Point(3, 1));
+  int** ptrs = new int*[argc - 1];
+  Input(ptrs, argc, sizes);
 
-  a.rotate({1, 0}, 30);
-  a.scale({0.866025, 2.23205}, 2);
+  int* nums = new int[MaxValue(argc, sizes)];
+  long long ans = Backtrack(argc, ptrs, sizes, nums, 0);
+  std::cout << ans << '\n';
 
-  std::cout << a.getVertices()[0] << '\n';
-  std::cout << a.getVertices()[1] << '\n';
-  std::cout << a.getVertices()[2] << '\n';
-  std::cout << a.getVertices()[3] << '\n';
-  std::cout << a.getVertices()[4] << '\n';
-
-  std::cout << b.getVertices()[0] << '\n';
-  std::cout << b.getVertices()[1] << '\n';
-  std::cout << b.getVertices()[2] << '\n';
-  std::cout << b.getVertices()[3] << '\n';
-  std::cout << b.getVertices()[4] << '\n';
-
-  std::cout << isCongruentTo(a, b) << '\n';
-  std::cout << isCongruentTo(a, c) << '\n';
-  std::cout << isSimilarTo(a, b) << '\n';
-  std::cout << isSimilarTo(a, c) << '\n';
-
-  // Ellipse a({1, 0}, {-1, 0}, 4);
-  
-  // a.scale({1, 0}, 5);
-
-  // std::cout << a.focuses().first << '\n';  
-  // std::cout << a.focuses().second << '\n';  
-
+  ClearMemory(ptrs, nums, argc, sizes);
+  return 0;
 }

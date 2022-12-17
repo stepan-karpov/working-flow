@@ -201,6 +201,29 @@ class DescartesTreeByImplicitKey {
     root = Merge(left, Merge(to_add, right));
   }
 
+  // deletes a[index] from array
+  void DeleteElement(int index) {
+    if (!(-1 <= index && index < this->Size())) {
+      std::cout << "seg fault\n";
+      return;
+    }
+    if (index == 0) {
+      auto[left, right] = Split(root, index + 1); // NOLINT
+      delete left;
+      root = right;
+      return;      
+    } else if (index == this->Size() - 1) {
+      auto[left, right] = Split(root, index); // NOLINT
+      root = left;
+      delete right;
+      return;
+    }
+    auto[left, right] = Split(root, index); // NOLINT
+    auto[to_delete, new_right] = Split(right, 1); // NOLINT
+    delete to_delete;
+    root = Merge(left, new_right);
+  }
+
   // return number of elements that are <= x
   // search is across all element is segment[l, r]
   int LessEqualXOnSegment(int l, int r, int x) {
@@ -214,6 +237,7 @@ class DescartesTreeByImplicitKey {
 
   ~DescartesTreeByImplicitKey() { ClearTree(root); }
 };
+
 
 int main() {
   Init();
