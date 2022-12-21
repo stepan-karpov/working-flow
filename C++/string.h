@@ -132,10 +132,8 @@ void String::shrink_to_fit() {
 void String::resize(size_t new_capacity) {
   char* new_array = new char[new_capacity + 1];
   capacity_ = new_capacity;
-  if (array_ != nullptr) {
-    std::copy(array_, array_ + size_, new_array);
-    delete[] array_;
-  }
+  std::copy(array_, array_ + size_, new_array);
+  delete[] array_;
   array_ = new_array;
   array_[size_] = '\0';
 }

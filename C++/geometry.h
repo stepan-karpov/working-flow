@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <math.h>
 #include <vector>
@@ -20,8 +21,7 @@ bool LessOrEqual(const double& v1, const double& v2) {
 
 struct Point {
   double x, y;
-  Point(double x, double y) :
-        x(x), y(y) {}
+  Point(double x, double y) : x(x), y(y) {}
 };
 
 bool operator==(const Point& point1, const Point& point2) {
@@ -87,34 +87,22 @@ std::ostream& operator<<(std::ostream& os, const Point& point) {
 
 class Line {
  private:
- public: // to delete after debug
   double A, B, C;
 
  public:
-  Line(const Point& point1, const Point& point2) :
-       A(point1.y - point2.y), B(point2.x - point1.x), C(-A * point1.x - B * point1.y) {}
+  Line(const Point& point1, const Point& point2)
+    : A(point1.y - point2.y),
+      B(point2.x - point1.x), C(-A * point1.x - B * point1.y) {}
 
-  Line(const double& k, const double& b) :
-       A(-k), B(1), C(-b) {};
+  Line(const double& k, const double& b) : A(-k), B(1), C(-b) {};
+  Line(const Point& point, const double& k) : A(-k), B(1), C(-A * point.x - B * point.y) {}
 
-  Line(const Point& point, const double& k) :
-       A(-k), B(1), C(-A * point.x - B * point.y) {}
+  Point NormalVector() const { return {A, B}; }
 
-  friend bool operator==(const Line&, const Line&);
-
-  double Distance(const Point& point) {
-    double a = A * point.x + B * point.y + C;
-    return abs(a) / sqrt(A * A + B * B);
-  }
-
-  Point NormalVector() const {
-    return {A, B};
-  }
-
+  double Distance(const Point& point) { return abs(A * point.x + B * point.y + C) / sqrt(A * A + B * B); }
   double coeff_A() const { return A; }
   double coeff_B() const { return B; }
   double coeff_C() const { return C; }
-
 };
 
 
@@ -123,25 +111,23 @@ class Line {
 Point LineIntersection(const Line& line1, const Line& line2) {
   // A_1 * x + B_1 * y = -C_1
   // A_2 * x + B_2 * y = -C_2
-  double delta = line1.A * line2.B - line2.A * line1.B;
-  double delta_x = -line1.C * line2.B + line2.C * line1.B;
-  double delta_y = -line1.A * line2.C + line2.A * line1.C;
+  double delta = line1.coeff_A() * line2.coeff_B() - line2.coeff_A() * line1.coeff_B();
+  double delta_x = -line1.coeff_C() * line2.coeff_B() + line2.coeff_C() * line1.coeff_B();
+  double delta_y = -line1.coeff_A() * line2.coeff_C() + line2.coeff_A() * line1.coeff_C();
   return {delta_x / delta, delta_y / delta};
 }
 
 bool operator==(const Line& line1, const Line& line2) {
-  if (!Equal(line1.A * line2.B, line1.B * line2.A)) {
+  if (!Equal(line1.coeff_A() * line2.coeff_B(), line1.coeff_B() * line2.coeff_A())) {
     return false;
   }
-  if (!Equal(line1.B * line2.C, line1.C * line2.B)) {
+  if (!Equal(line1.coeff_B() * line2.coeff_C(), line1.coeff_C() * line2.coeff_B())) {
     return false;
   }
   return true;
 }
 
-bool operator!=(const Line& line1, const Line& line2) {
-  return !(line1 == line2);
-}
+bool operator!=(const Line& line1, const Line& line2) { return !(line1 == line2); }
 
 class Shape {
  public:
@@ -155,7 +141,6 @@ class Shape {
   virtual bool isSimilarTo(const Shape& another) = 0;
   virtual bool isCongruentTo(const Shape& another) = 0;
   virtual bool containsPoint(const Point& point) = 0;
-  // virtual bool operator!=(const Shape& another) const = 0;
 };
 
 class Polygon : public Shape {
@@ -172,20 +157,11 @@ class Polygon : public Shape {
   }
 
   template<typename... Points>
-  Polygon(const Points... points) {
-    builder(points...);
-  }
+  Polygon(const Points... points) { builder(points...); }
+  Polygon(std::vector<Point> points) : vertices(points) {}
 
-  Polygon(std::vector<Point> points) :
-          vertices(points) {}
-
-  int verticesCount() const {
-    return vertices.size();
-  }
-
-  std::vector<Point> getVertices() const {
-    return vertices;
-  }
+  int verticesCount() const { return vertices.size(); }
+  std::vector<Point> getVertices() const { return vertices; }
 
   std::vector<Point> getDiagonals() const {
     std::vector<Point> diagonals;
@@ -221,6 +197,7 @@ class Polygon : public Shape {
     }
     return true;
   }
+
   double perimeter() const final {
     double ans = 0;
     int n = vertices.size();
@@ -405,25 +382,11 @@ class Ellipse : public Shape {
     b = sqrt(a * a - c * c);
   }
 
-  std::pair<Point, Point> focuses() const {
-    return {focus1, focus2};
-  }
-
-  Point center() {
-    return (focus1 + focus2) / 2;
-  }
-
-  double c() const {
-    return Length((focus1 - focus2) / 2);
-  }
-
-  double get_a() const {
-    return a;
-  }
-
-  double eccentricity() const {
-    return c() / a;
-  }
+  std::pair<Point, Point> focuses() const { return {focus1, focus2}; }
+  Point center() { return (focus1 + focus2) / 2; }
+  double c() const { return Length((focus1 - focus2) / 2); }
+  double get_a() const { return a; }
+  double eccentricity() const { return c() / a; }
 
   std::pair<Line, Line> directrices() {
     Point d = (focus2 - focus1) / 2;
@@ -434,13 +397,8 @@ class Ellipse : public Shape {
     return {Line(center() + d, center() + d + normal), Line(center() - d, center() - d + normal)};
   }
 
-  double perimeter() const final {
-    return PI * (3 * (a + b) - sqrt((3 * a + b) * (a + 3 * b)));
-  }
-  
-  double area() const final {
-    return PI * a * b;
-  }
+  double perimeter() const final { return PI * (3 * (a + b) - sqrt((3 * a + b) * (a + 3 * b))); }
+  double area() const final { return PI * a * b; }
 
   // rotates Ellipse on angle DEGREES
   void rotate(const Point& center, double angle) final {
@@ -531,120 +489,103 @@ class Ellipse : public Shape {
 
 class Circle : public Ellipse {
  public:
-  Circle(const Point& center, double radius) :
-    Ellipse(center, center, radius * 2) {}
+  Circle(const Point& center, double radius) : Ellipse(center, center, radius * 2) {}
 
-  double radius() {
-    return a;
-  }
+  double radius() { return a; }
 };
 
 class Rectangle : public Polygon {
  public:
   Rectangle() = default;
-  Rectangle(const Point& point1, const Point& point2, double tan) {
-    if (tan < 1) {
-      tan = 1 / tan;
-    }
-    Point d = point2 - point1;
-    d = Rotate(d, atan2(tan, 1));
-    d = d * cos(atan2(tan, 1 ));
-    vertices = Polygon(point1, point1 + d, point2, point2 - d).getVertices();
-  }
-
-  Point center() {
-    Point ans = vertices[0] + vertices[1] + vertices[2] + vertices[3];
-    return ans / 4;
-  }
-
-  std::pair<Line, Line> diagonals() {
-    return {Line(vertices[0], vertices[2]), Line(vertices[1], vertices[3])};
-  }
+  Rectangle(const Point& point1, const Point& point2, double tan);
+  Point center() { return (vertices[0] + vertices[1] + vertices[2] + vertices[3]) / 4; }
+  std::pair<Line, Line> diagonals()
+    { return {Line(vertices[0], vertices[2]), Line(vertices[1], vertices[3])}; }
 };
+
+Rectangle::Rectangle(const Point& point1, const Point& point2, double tan) {
+  if (tan < 1) {
+    tan = 1 / tan;
+  }
+  Point d = point2 - point1;
+  d = Rotate(d, atan2(tan, 1));
+  d = d * cos(atan2(tan, 1 ));
+  vertices = Polygon(point1, point1 + d, point2, point2 - d).getVertices();
+}
 
 class Square : public Rectangle {
  public:
-  Square(const Point& point1, const Point& point2) {
-    vertices = Rectangle(point1, point2, 1).getVertices();
-  }
-
-  Circle circumscribedCircle() {
-    return Circle(center(), Length(vertices[0] - center()));
-  }
-
-  Circle inscribedCircle() {
-    return Circle(center(), Length(vertices[0] - vertices[1]) / 2);
-  }
+  Square(const Point& point1, const Point& point2) { vertices = Rectangle(point1, point2, 1).getVertices(); }
+  Circle circumscribedCircle() { return Circle(center(), Length(vertices[0] - center())); }
+  Circle inscribedCircle() { return Circle(center(), Length(vertices[0] - vertices[1]) / 2); }
 };
 
 class Triangle : public Polygon {
  public:
-
-  Triangle(const Point& v1, const Point& v2, const Point& v3) {
-    vertices = Polygon(v1, v2, v3).getVertices();
-  };
-
-  Point centroid() {
-    return (vertices[0] + vertices[1] + vertices[2]) / 3;
-  }
-
-  Point orthocenter() {
-    Point v1 = vertices[1] - vertices[0];
-    Point normal1 = {-v1.y, v1.x};
-    Line h1(vertices[2], vertices[2] + normal1);
-    Point v2 = vertices[2] - vertices[1];
-    Point normal2 = {-v2.y, v2.x};
-    Line h2(vertices[0], vertices[0] + normal2);
-    return LineIntersection(h1, h2);
-  }
-
-  Point inscribedCircleCenter() {
-    Point v1 = vertices[0] - vertices[1];
-    Point v2 = vertices[2] - vertices[1];
-    v1 = v1 / Length(v1);
-    v2 = v2 / Length(v2);
-    Line b1(vertices[1], vertices[1] + v1 + v2);
-    Point v3 = vertices[1] - vertices[2];
-    Point v4 = vertices[0] - vertices[2];
-    v3 = v3 / Length(v3);
-    v4 = v4 / Length(v4);
-    Line b2(vertices[2], vertices[2] + v3 + v4);
-    return LineIntersection(b1, b2);
-  }
-
-  Point circumscribedCircleCenter() {
-    Point m1 = (vertices[0] + vertices[1]) / 2;
-    Point normal1 = {(vertices[0] - vertices[1]).y, (vertices[1] - vertices[0]).x};
-    Line h1(m1, m1 + normal1);
-    Point m2 = (vertices[1] + vertices[2]) / 2;
-    Point normal2 = {(vertices[1] - vertices[2]).y, (vertices[2] - vertices[1]).x};
-    Line h2(m2, m2 + normal2);
-    return LineIntersection(h1, h2);
-  }
-
-  Circle circumscribedCircle() {
-    Point cur_circle = circumscribedCircleCenter();
-    return Circle(cur_circle, Length(cur_circle - vertices[0]));
-  }
-
-  Circle inscribedCircle() {
-    Point cur_circle = inscribedCircleCenter();
-    Line side(vertices[0], vertices[1]);
-    return Circle(cur_circle, side.Distance(cur_circle));
-  }
-
-  Line EulerLine() {
-    return Line(circumscribedCircleCenter(), orthocenter());
-  }
-
-  Circle ninePointsCircle() {
-    Triangle temp = Triangle(
-      (vertices[0] + vertices[1]) / 2,
-      (vertices[1] + vertices[2]) / 2,
-      (vertices[0] + vertices[2]) / 2);
-    return temp.circumscribedCircle();
-  }
+  Triangle(const Point& v1, const Point& v2, const Point& v3)
+    { vertices = Polygon(v1, v2, v3).getVertices(); }
+  Point centroid() { return (vertices[0] + vertices[1] + vertices[2]) / 3; }
+  Point orthocenter();
+  Point inscribedCircleCenter();
+  Point circumscribedCircleCenter();
+  Circle circumscribedCircle();
+  Circle inscribedCircle();
+  Line EulerLine() { return Line(circumscribedCircleCenter(), orthocenter()); }
+  Circle ninePointsCircle();
 };
+
+Point Triangle::orthocenter() {
+  Point v1 = vertices[1] - vertices[0];
+  Point normal1 = {-v1.y, v1.x};
+  Line h1(vertices[2], vertices[2] + normal1);
+  Point v2 = vertices[2] - vertices[1];
+  Point normal2 = {-v2.y, v2.x};
+  Line h2(vertices[0], vertices[0] + normal2);
+  return LineIntersection(h1, h2);
+}
+
+Point Triangle::inscribedCircleCenter() {
+  Point v1 = vertices[0] - vertices[1];
+  Point v2 = vertices[2] - vertices[1];
+  v1 = v1 / Length(v1);
+  v2 = v2 / Length(v2);
+  Line b1(vertices[1], vertices[1] + v1 + v2);
+  Point v3 = vertices[1] - vertices[2];
+  Point v4 = vertices[0] - vertices[2];
+  v3 = v3 / Length(v3);
+  v4 = v4 / Length(v4);
+  Line b2(vertices[2], vertices[2] + v3 + v4);
+  return LineIntersection(b1, b2);
+}
+
+Point Triangle::circumscribedCircleCenter() {
+  Point m1 = (vertices[0] + vertices[1]) / 2;
+  Point normal1 = {(vertices[0] - vertices[1]).y, (vertices[1] - vertices[0]).x};
+  Line h1(m1, m1 + normal1);
+  Point m2 = (vertices[1] + vertices[2]) / 2;
+  Point normal2 = {(vertices[1] - vertices[2]).y, (vertices[2] - vertices[1]).x};
+  Line h2(m2, m2 + normal2);
+  return LineIntersection(h1, h2);
+}
+
+Circle Triangle::circumscribedCircle() {
+  Point cur_circle = circumscribedCircleCenter();
+  return Circle(cur_circle, Length(cur_circle - vertices[0]));
+}
+
+Circle Triangle::inscribedCircle() {
+  Point cur_circle = inscribedCircleCenter();
+  Line side(vertices[0], vertices[1]);
+  return Circle(cur_circle, side.Distance(cur_circle));
+}
+
+Circle Triangle::ninePointsCircle() {
+  Triangle temp = Triangle(
+    (vertices[0] + vertices[1]) / 2,
+    (vertices[1] + vertices[2]) / 2,
+    (vertices[0] + vertices[2]) / 2);
+  return temp.circumscribedCircle();
+}
 
 bool operator==(const Shape& first, const Shape& second) {
   const Polygon* polygon1 = dynamic_cast<const Polygon*>(&first);
