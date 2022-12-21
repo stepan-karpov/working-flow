@@ -11,38 +11,12 @@ class String {
   size_t capacity_;
 
  public:
-  String(size_t init_size, char to_fill)
-      : array_(new char[init_size + 1]),
-        size_(init_size),
-        capacity_(init_size) {
-    std::fill(array_, array_ + init_size, to_fill);
-    array_[init_size] = '\0';
-  }
-
-  String (char new_string)
-      : array_(new char[2]), size_(1), capacity_(1) {
-    array_[0] = new_string;
-    array_[1] = '\0';
-  }
-
-  String(const char* c_style_string)
-      : size_(std::strlen(c_style_string)),
-        capacity_(size_) {
-    array_ = new char[size_ + 1];
-    std::copy(c_style_string, c_style_string + size_, array_);
-    array_[size_] = '\0';
-  }
-
-  String(const String& initializer_string)
-      : array_(new char[initializer_string.size_ + 1]), 
-        size_(initializer_string.size_), 
-        capacity_(initializer_string.size_) {
-    std::copy(initializer_string.array_,
-              initializer_string.array_ + size_ + 1, array_);
-  }
-
+  String(size_t init_size, char to_fill);
+  String (char new_string);
+  String(const char* c_style_string);
+  String(const String& initializer_string);
   String() : array_(new char[1]), size_(0), capacity_(0) { array_[0] = '\0'; };
-  
+  String(size_t blank_size) : array_(new char[blank_size]), size_(0), capacity_(0) {};
   ~String() { delete[] array_; }
 
   char& operator[](int index) { return array_[index]; }
@@ -51,8 +25,6 @@ class String {
   String& operator=(const String& new_string);
   String& operator+=(const String& to_add);
   void swap(String&);
-
-  char* relocate_memory(char* old_array, size_t new_size, size_t old_size);
 
   String& operator+=(char to_add);
 
@@ -64,7 +36,7 @@ class String {
 
   String substr(size_t start, size_t length) const;
 
-  bool is_word(int, const String&, const String&) const;
+  bool is_substring(int, const String&) const;
   size_t find(const String& substring) const;
   size_t rfind(const String& substring) const;
 
@@ -78,13 +50,42 @@ class String {
   char* data() { return array_; }
   const char* data() const { return array_; }
   bool empty() const { return (size_ == 0); }
-
 };
+
+String::String(const String& initializer_string)
+    : array_(new char[initializer_string.size_ + 1]), 
+      size_(initializer_string.size_), 
+      capacity_(initializer_string.size_) {
+  std::copy(initializer_string.array_,
+            initializer_string.array_ + size_ + 1, array_);
+}
+
+String::String(const char* c_style_string)
+    : size_(std::strlen(c_style_string)),
+      capacity_(size_) {
+  array_ = new char[size_ + 1];
+  std::copy(c_style_string, c_style_string + size_, array_);
+  array_[size_] = '\0';
+}
+
+String::String (char new_string)
+    : array_(new char[2]), size_(1), capacity_(1) {
+  array_[0] = new_string;
+  array_[1] = '\0';
+}
+
+String::String(size_t init_size, char to_fill)
+    : array_(new char[init_size + 1]),
+      size_(init_size),
+      capacity_(init_size) {
+  std::fill(array_, array_ + init_size, to_fill);
+  array_[init_size] = '\0';
+}
 
 size_t String::rfind(const String& substring) const {
   if (substring.size() > size_) return length();
   for (int i = size_ - substring.size(); i >= 0; --i) {
-    if (is_word(i, substring, *this)) {
+    if (is_substring(i, substring)) {
       return i;
     }
   }
@@ -94,18 +95,11 @@ size_t String::rfind(const String& substring) const {
 size_t String::find(const String& substring) const {
   if (substring.size() > size_) return length();
   for (size_t i = 0; i <= size_ - substring.size(); ++i) {
-    if (is_word(i, substring, *this)) {
+    if (is_substring(i, substring)) {
       return i;
     }
   }
   return length();
-}
-
-char* String::relocate_memory(char* old_array, size_t new_size, size_t old_size) {
-  char* new_link = new char[new_size];
-  std::copy(old_array, old_array + old_size, new_link);
-  delete[] old_array;
-  return new_link;
 }
 
 void String::clear() {
@@ -114,15 +108,18 @@ void String::clear() {
 }
 
 String String::substr(size_t start, size_t length) const {
-  String ans(length, '0');
+  String ans(length + 1);
   std::copy(array_ + start, array_ + start + length, ans.array_);
+  ans[length] = '\0';
+  ans.size_ = length;
+  ans.capacity_ = length;
   return ans;
 }
 
-bool String::is_word(int position,
-             const String& substring, const String& string) const {
+bool String::is_substring(int position,
+             const String& substring) const {
   for (size_t i = position; i < position + substring.size(); ++i) {
-    if (string[i] != substring[i - position]) {
+    if (array_[i] != substring[i - position]) {
       return false;
     }
   }
@@ -130,15 +127,13 @@ bool String::is_word(int position,
 }
 
 void String::shrink_to_fit() {
-  capacity_ = size_;
-  array_ = relocate_memory(array_, capacity_ + 1, size_);
+  resize(size_);
   array_[size_] = '\0';
 }
 
 void String::resize(size_t new_capacity) {
   char* new_array = new char[new_capacity + 1];
   capacity_ = new_capacity;
-  size_ = new_capacity;
   if (array_ != nullptr) {
     std::copy(array_, array_ + size_, new_array);
     delete[] array_;
@@ -149,14 +144,10 @@ void String::resize(size_t new_capacity) {
 
 void String::push_back(char to_push) {
   if (size_ == capacity_) {
-    array_ = relocate_memory(array_, capacity_ * 2 + 1, size_);
-    capacity_ *= 2;
-    array_[size_++] = to_push;
-    array_[size_] = '\0';
-  } else {
-    array_[size_++] = to_push;
-    array_[size_] = '\0';
+    resize(capacity_ * 2);
   }
+  array_[size_++] = to_push;
+  array_[size_] = '\0';
 }
 
 String& String::operator+=(char to_add) {
@@ -172,14 +163,10 @@ String& String::operator+=(const String& to_add) {
     size_ = new_size;
     return *this;
   }
-  char* new_array = new char[new_size + 1];
-  std::copy(array_, array_ + size_, new_array);
-  std::copy(to_add.array_, to_add.array_ + to_add.size_, new_array + size_);
-  new_array[new_size] = '\0';
-  delete[] array_;
-  array_ = new_array;
+  resize(new_size);
+  std::copy(to_add.array_, to_add.array_ + to_add.size_, array_ + size_);
   size_ = new_size;
-  capacity_ = new_size;
+  array_[size_] = '\0';
   return *this;
 }
 
@@ -196,17 +183,14 @@ String operator+(String current_string, const String& to_add) {
 
 bool operator<(const String& first, const String& second) {
   for (size_t i = 0; i < std::min(first.size(), second.size()); ++i) {
-    if (first[i] < second[i]) return false;
+    if (first[i] < second[i]) { return true; }
   }
   return first.size() < second.size();
 }
 
-bool operator>=(const String& first, const String& second)
-               { return !(first < second); }
-bool operator>(const String& first, const String& second)
-              { return second < first; }
-bool operator<=(const String& first, const String& second)
-               { return !(first > second); }
+bool operator>=(const String& first, const String& second) { return !(first < second); }
+bool operator>(const String& first, const String& second) { return second < first; }
+bool operator<=(const String& first, const String& second) { return !(first > second); }
 
 bool operator==(const String& first, const String& second) {
   if (first.size() != second.size()) return false;

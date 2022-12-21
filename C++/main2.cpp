@@ -9,13 +9,16 @@ void Init() {
 }
 
 int main() {
-  String temp1("abc");
-  String temp2("def");
+  String temp1("b");
+  String temp2("ba");
+  std::string tmp1 = "b";
+  std::string tmp2 = "ba";
 
-  // (temp1 += temp2) += temp2;
-  temp1 += temp2 += temp2;
+  bool t = temp1 < temp2;
+  bool t2 = tmp1 < tmp2;
 
-  std::cout << temp1 << '\n';
+  std::cout << t << '\n';
+  std::cout << t2 << '\n';
   
   return 0;
 }
