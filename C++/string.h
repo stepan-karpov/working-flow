@@ -12,11 +12,11 @@ class String {
 
  public:
   String(size_t init_size, char to_fill);
-  String (char new_string);
+  String(char new_string);
   String(const char* c_style_string);
   String(const String& initializer_string);
   String() : array_(new char[1]), size_(0), capacity_(0) { array_[0] = '\0'; };
-  String(size_t blank_size) : array_(new char[blank_size]), size_(0), capacity_(0) {};
+  String(size_t blank_size) : array_(new char[blank_size]), size_(blank_size - 1), capacity_(blank_size - 1) {};
   ~String() { delete[] array_; }
 
   char& operator[](int index) { return array_[index]; }
@@ -61,14 +61,14 @@ String::String(const String& initializer_string)
 }
 
 String::String(const char* c_style_string)
-    : size_(std::strlen(c_style_string)),
+    : array_(new char[std::strlen(c_style_string) + 1]),
+      size_(std::strlen(c_style_string)),
       capacity_(size_) {
-  array_ = new char[size_ + 1];
   std::copy(c_style_string, c_style_string + size_, array_);
   array_[size_] = '\0';
 }
 
-String::String (char new_string)
+String::String(char new_string)
     : array_(new char[2]), size_(1), capacity_(1) {
   array_[0] = new_string;
   array_[1] = '\0';
@@ -111,8 +111,6 @@ String String::substr(size_t start, size_t length) const {
   String ans(length + 1);
   std::copy(array_ + start, array_ + start + length, ans.array_);
   ans[length] = '\0';
-  ans.size_ = length;
-  ans.capacity_ = length;
   return ans;
 }
 
@@ -159,14 +157,12 @@ String& String::operator+=(const String& to_add) {
   size_t new_size = size_ + to_add.size_;
   if (capacity_ >= new_size) {
     std::copy(to_add.array_, to_add.array_ + to_add.size_, array_ + size_);
-    array_[new_size] = '\0';
-    size_ = new_size;
-    return *this;
+  } else {
+    resize(new_size);
+    std::copy(to_add.array_, to_add.array_ + to_add.size_, array_ + size_);
   }
-  resize(new_size);
-  std::copy(to_add.array_, to_add.array_ + to_add.size_, array_ + size_);
+  array_[new_size] = '\0';
   size_ = new_size;
-  array_[size_] = '\0';
   return *this;
 }
 
@@ -201,11 +197,7 @@ bool operator==(const String& first, const String& second) {
 }
 
 bool operator!=(const String& first, const String& second) {
-  if (first.size() != second.size()) return true;
-  for (size_t i = 0; i < first.size(); ++i) {
-    if (first[i] != second[i]) return true;
-  }
-  return false;
+  return !(first == second);
 }
 
 std::ostream& operator<<(std::ostream& output, const String& to_output) {
@@ -214,7 +206,7 @@ std::ostream& operator<<(std::ostream& output, const String& to_output) {
 }
 
 std::istream& operator>>(std::istream& input, String& to_input) {
-  String answer(0, '\0');
+  String answer(size_t(1));
   char c;
   c = input.get();
   while (!std::isspace(c) && c != EOF) {

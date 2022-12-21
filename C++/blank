@@ -4,3 +4,5 @@
 
 
 (x1 xor x5 xor x8 xor x9)∧not(x4 xor x5 xor x6 xor x7)∧not(x1 xor x2 xor x6 xor x10)∧not(x3 xor x4 xor x9 xor x10)∧not(x2 xor x3 xor x7 xor x8)
+
+5. В resize не нужно вроде бы ифать nullptr, если у вас всегда корректная строка - нужно
