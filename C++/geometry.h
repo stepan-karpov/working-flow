@@ -155,220 +155,232 @@ class Polygon : public Shape {
     vertices.push_back(head);
     builder(tail...);
   }
-
   template<typename... Points>
   Polygon(const Points... points) { builder(points...); }
   Polygon(std::vector<Point> points) : vertices(points) {}
 
   int verticesCount() const { return vertices.size(); }
   std::vector<Point> getVertices() const { return vertices; }
+  std::vector<Point> getDiagonals() const;
 
-  std::vector<Point> getDiagonals() const {
-    std::vector<Point> diagonals;
-    int n = vertices.size();
-    for (int i = 0; i < n; ++i) {
-      for (int j = i + 2; j < n; ++j) {
-        Point cur_diag = vertices[i] - vertices[j];
-        if (cur_diag.x < 0) {
-          cur_diag = cur_diag * (-1);
-        }
-        diagonals.push_back(cur_diag);
-      }
-    }
-    return diagonals;
-  }
-
-  bool isConvex() {
-    bool clockwise = false;
-    bool counterclockwise = false;
-    int n = verticesCount();
-    for (int i = 0; i < n; ++i) {
-      Point prev_point = vertices[(i - 1 + n) % n];
-      Point cur_point = vertices[i];
-      Point next_point = vertices[(i + 1) % n];
-      if (CrossProduct(prev_point - cur_point, next_point - cur_point) > 0) {
-        clockwise = true;
-      } else {
-        counterclockwise = true;
-      }
-      if (clockwise && counterclockwise) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  double perimeter() const final {
-    double ans = 0;
-    int n = vertices.size();
-    for (int i = 0; i < n; ++i) {
-      Point cur_point = vertices[i];
-      Point next_point = vertices[(i + 1) % n];
-      ans += Length(next_point - cur_point);
-    }
-    return ans;
-  }
-
-  double area() const final {
-    double ans = 0;
-    int n = vertices.size();
-    for (int i = 1; i < n; ++i) {
-      Point vector1 = vertices[i] - vertices[0];
-      Point vector2 = vertices[(i + 1) % n] - vertices[0];
-      ans += CrossProduct(vector1, vector2) / 2;
-    }
-    return abs(ans);
-  }
-
+  bool isConvex();
+  double perimeter() const final;
+  double area() const final;
   // rotates Polygon on angle DEGREES counterclockwise
-  void rotate(const Point& center, double angle) final {
-    for (int i = 0; i < int(vertices.size()); ++i) {
-      Point vector = vertices[i] - center;
-      vector = Rotate(vector, angle / 180 * PI);
-      vertices[i] = vector + center;
-    }
-  }
-
+  void rotate(const Point& center, double angle) final;
   // reflects Polygon relatively to the point center
-  void reflect(const Point& center) final {
-    for (int i = 0; i < int(vertices.size()); ++i) {
-      vertices[i] = center + center - vertices[i];
-    }
-  }
-
-  void reflect(const Line& axis) final {
-    for (int i = 0; i < int(vertices.size()); ++i) {
-      double x = vertices[i].x;
-      double y = vertices[i].y;
-      const double A = axis.coeff_A();
-      const double B = axis.coeff_B();
-      const double C = axis.coeff_C();
-      double cur_distance = A * x + B * y + C;
-      cur_distance = -cur_distance / (A * A + B * B);
-      cur_distance *= 2;
-      vertices[i] = vertices[i] + axis.NormalVector() * cur_distance;
-    }
-  }
-
-  void scale(const Point& center, double coefficient) final {
-    for (int i = 0; i < int(vertices.size()); ++i) {
-      Point vector = vertices[i] - center;
-      vector = vector * coefficient;
-      vertices[i] = vector + center;
-    }
-  }
-
-  bool CheckAccordance(std::vector<Point>& points1, std::vector<Point>& points2) {
-    int n = points1.size();
-    for (int i = 0; i < n; ++i) {
-      for (int j = i; j < n; ++j) {
-        double rotation_angle = atan2(points2[j].y, points2[j].x);
-        rotation_angle -= atan2(points1[i].y, points1[i].x);
-        double coeff = Length(points1[i]) / Length(points2[j]);
-        bool is_ok = true;
-        int pointer1 = (i + 1) % n;
-        int pointer2 = (j + 1) % n;
-        while (pointer1 != i) {
-          Point cur_vector = points1[pointer1];
-          Point accordance = points2[pointer2];
-          cur_vector = Rotate(cur_vector, rotation_angle);
-          cur_vector = cur_vector / coeff;
-          if (cur_vector != accordance) {
-            is_ok = false;
-            break;
-          }
-          pointer1 = (pointer1 + 1) % n;
-          pointer2 = (pointer2 + 1) % n;
-        }
-        if (is_ok) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  bool isSimilarTo(const Shape& another) final {
-    const Polygon* polygon1 = dynamic_cast<const Polygon*>(this);
-    const Polygon* polygon2 = dynamic_cast<const Polygon*>(&another);
-    if (polygon2 == nullptr) {
-      return false;
-    }
-    if (polygon1->verticesCount() != polygon2->verticesCount()) {
-      return false;
-    }
-    std::vector<Point> diagonals1 = polygon1->getVertices();
-    std::vector<Point> diagonals2 = polygon2->getVertices();
-    if (CheckAccordance(diagonals1, diagonals2)) {
-      return true;
-    }
-    std::reverse(diagonals2.begin(), diagonals2.end());
-    if (CheckAccordance(diagonals1, diagonals2)) {
-      return true;
-    }    
-    return false;
-  }
-
-  std::vector<double> GetLengths(std::vector<Point> points) {
-    std::vector<double> answer;
-    for (int i = 0; i < int(points.size()); ++i) {
-      for (int j = i + 1; j < int(points.size()); ++j) {
-        answer.push_back(Length(points[i] - points[j]));
-      }
-    }
-    return answer;
-  }
-
-  bool isCongruentTo(const Shape& another) final {
-    const Polygon* polygon1 = dynamic_cast<const Polygon*>(this);
-    const Polygon* polygon2 = dynamic_cast<const Polygon*>(&another);
-    if (polygon2 == nullptr) {
-      return false;
-    }
-    if (polygon1->verticesCount() != polygon2->verticesCount()) {
-      return false;
-    }
-    std::vector<double> key_points1 = GetLengths(polygon1->getVertices());
-    std::vector<double> key_points2 = GetLengths(polygon2->getVertices());
-    std::sort(key_points1.begin(), key_points1.end());
-    std::sort(key_points2.begin(), key_points2.end());
-    bool is_ok = true;
-    for (int i = 0; i < int(key_points1.size()); ++i) {
-      if (!Equal(key_points1[i], key_points2[i])) {
-        is_ok = false;
-        break;
-      }
-    }
-    return is_ok;
-  }
-
-  bool containsPoint(const Point& point) final {
-    const Polygon* polygon = dynamic_cast<const Polygon*>(this);
-    if (polygon != nullptr) {
-      int intersections = 0;
-      Line line(point, 0.2); // random line
-      int n = polygon->verticesCount();
-      std::vector<Point> vertices = polygon->getVertices();
-      for (int i = 0; i < n; ++i) {
-        Point cur_point = vertices[i];
-        Point next_point = vertices[(i + 1) % n];
-        Line side(cur_point, next_point);
-        Point intersection = LineIntersection(side, line);
-        if (LessOrEqual(std::min(cur_point.x, next_point.x), intersection.x) &&
-            LessOrEqual(intersection.x, std::max(cur_point.x, next_point.x)) &&
-            Less(intersection.x, point.x)) {
-              ++intersections;
-        }
-      }
-      if (intersections % 2 == 1) {
-        return true;
-      }
-      return false;
-    }
-    return false;
-  }
+  void reflect(const Point& center) final;
+  void reflect(const Line& axis) final;
+  void scale(const Point& center, double coefficient) final;
+  bool CheckAccordance(std::vector<Point>& points1, std::vector<Point>& points2);
+  bool isSimilarTo(const Shape& another) final;
+  std::vector<double> GetLengths(std::vector<Point> points);
+  bool isCongruentTo(const Shape& another) final;
+  bool containsPoint(const Point& point) final;
 };
 
+std::vector<Point> Polygon::getDiagonals() const {
+  std::vector<Point> diagonals;
+  int n = vertices.size();
+  for (int i = 0; i < n; ++i) {
+    for (int j = i + 2; j < n; ++j) {
+      Point cur_diag = vertices[i] - vertices[j];
+      if (cur_diag.x < 0) {
+        cur_diag = cur_diag * (-1);
+      }
+      diagonals.push_back(cur_diag);
+    }
+  }
+  return diagonals;
+}
+
+bool Polygon::isConvex() {
+  bool clockwise = false;
+  bool counterclockwise = false;
+  int n = verticesCount();
+  for (int i = 0; i < n; ++i) {
+    Point prev_point = vertices[(i - 1 + n) % n];
+    Point cur_point = vertices[i];
+    Point next_point = vertices[(i + 1) % n];
+    if (CrossProduct(prev_point - cur_point, next_point - cur_point) > 0) {
+      clockwise = true;
+    } else {
+      counterclockwise = true;
+    }
+    if (clockwise && counterclockwise) {
+      return false;
+    }
+  }
+  return true;
+}
+
+double Polygon::perimeter() const {
+  double ans = 0;
+  int n = vertices.size();
+  for (int i = 0; i < n; ++i) {
+    Point cur_point = vertices[i];
+    Point next_point = vertices[(i + 1) % n];
+    ans += Length(next_point - cur_point);
+  }
+  return ans;
+}
+
+double Polygon::area() const {
+  double ans = 0;
+  int n = vertices.size();
+  for (int i = 1; i < n; ++i) {
+    Point vector1 = vertices[i] - vertices[0];
+    Point vector2 = vertices[(i + 1) % n] - vertices[0];
+    ans += CrossProduct(vector1, vector2) / 2;
+  }
+  return abs(ans);
+}
+
+void Polygon::rotate(const Point& center, double angle) {
+  for (int i = 0; i < int(vertices.size()); ++i) {
+    Point vector = vertices[i] - center;
+    vector = Rotate(vector, angle / 180 * PI);
+    vertices[i] = vector + center;
+  }
+}
+
+void Polygon::reflect(const Point& center) {
+  for (int i = 0; i < int(vertices.size()); ++i) {
+    vertices[i] = center + center - vertices[i];
+  }
+}
+
+void Polygon::reflect(const Line& axis) {
+  for (int i = 0; i < int(vertices.size()); ++i) {
+    double x = vertices[i].x;
+    double y = vertices[i].y;
+    const double A = axis.coeff_A();
+    const double B = axis.coeff_B();
+    const double C = axis.coeff_C();
+    double cur_distance = A * x + B * y + C;
+    cur_distance = -cur_distance / (A * A + B * B);
+    cur_distance *= 2;
+    vertices[i] = vertices[i] + axis.NormalVector() * cur_distance;
+  }
+}
+
+void Polygon::scale(const Point& center, double coefficient) {
+  for (int i = 0; i < int(vertices.size()); ++i) {
+    Point vector = vertices[i] - center;
+    vector = vector * coefficient;
+    vertices[i] = vector + center;
+  }
+}
+
+bool Polygon::CheckAccordance(std::vector<Point>& points1, std::vector<Point>& points2) {
+  int n = points1.size();
+  for (int i = 0; i < n; ++i) {
+    for (int j = i; j < n; ++j) {
+      double rotation_angle = atan2(points2[j].y, points2[j].x);
+      rotation_angle -= atan2(points1[i].y, points1[i].x);
+      double coeff = Length(points1[i]) / Length(points2[j]);
+      bool is_ok = true;
+      int pointer1 = (i + 1) % n;
+      int pointer2 = (j + 1) % n;
+      while (pointer1 != i) {
+        Point cur_vector = points1[pointer1];
+        Point accordance = points2[pointer2];
+        cur_vector = Rotate(cur_vector, rotation_angle);
+        cur_vector = cur_vector / coeff;
+        if (cur_vector != accordance) {
+          is_ok = false;
+          break;
+        }
+        pointer1 = (pointer1 + 1) % n;
+        pointer2 = (pointer2 + 1) % n;
+      }
+      if (is_ok) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+bool Polygon::isSimilarTo(const Shape& another) {
+  const Polygon* polygon1 = dynamic_cast<const Polygon*>(this);
+  const Polygon* polygon2 = dynamic_cast<const Polygon*>(&another);
+  if (polygon2 == nullptr) {
+    return false;
+  }
+  if (polygon1->verticesCount() != polygon2->verticesCount()) {
+    return false;
+  }
+  std::vector<Point> diagonals1 = polygon1->getVertices();
+  std::vector<Point> diagonals2 = polygon2->getVertices();
+  if (CheckAccordance(diagonals1, diagonals2)) {
+    return true;
+  }
+  std::reverse(diagonals2.begin(), diagonals2.end());
+  if (CheckAccordance(diagonals1, diagonals2)) {
+    return true;
+  }    
+  return false;
+}
+
+std::vector<double> Polygon::GetLengths(std::vector<Point> points) {
+  std::vector<double> answer;
+  for (int i = 0; i < int(points.size()); ++i) {
+    for (int j = i + 1; j < int(points.size()); ++j) {
+      answer.push_back(Length(points[i] - points[j]));
+    }
+  }
+  return answer;
+}
+
+bool Polygon::isCongruentTo(const Shape& another) {
+  const Polygon* polygon1 = dynamic_cast<const Polygon*>(this);
+  const Polygon* polygon2 = dynamic_cast<const Polygon*>(&another);
+  if (polygon2 == nullptr) {
+    return false;
+  }
+  if (polygon1->verticesCount() != polygon2->verticesCount()) {
+    return false;
+  }
+  std::vector<double> key_points1 = GetLengths(polygon1->getVertices());
+  std::vector<double> key_points2 = GetLengths(polygon2->getVertices());
+  std::sort(key_points1.begin(), key_points1.end());
+  std::sort(key_points2.begin(), key_points2.end());
+  bool is_ok = true;
+  for (int i = 0; i < int(key_points1.size()); ++i) {
+    if (!Equal(key_points1[i], key_points2[i])) {
+      is_ok = false;
+      break;
+    }
+  }
+  return is_ok;
+}
+
+bool Polygon::containsPoint(const Point& point) {
+  const Polygon* polygon = dynamic_cast<const Polygon*>(this);
+  if (polygon != nullptr) {
+    int intersections = 0;
+    Line line(point, 0.2); // random line
+    int n = polygon->verticesCount();
+    std::vector<Point> vertices = polygon->getVertices();
+    for (int i = 0; i < n; ++i) {
+      Point cur_point = vertices[i];
+      Point next_point = vertices[(i + 1) % n];
+      Line side(cur_point, next_point);
+      Point intersection = LineIntersection(side, line);
+      if (LessOrEqual(std::min(cur_point.x, next_point.x), intersection.x) &&
+          LessOrEqual(intersection.x, std::max(cur_point.x, next_point.x)) &&
+          Less(intersection.x, point.x)) {
+            ++intersections;
+      }
+    }
+    if (intersections % 2 == 1) {
+      return true;
+    }
+    return false;
+  }
+  return false;
+}
 
 class Ellipse : public Shape {
  protected:
@@ -376,11 +388,7 @@ class Ellipse : public Shape {
   double a, b;
 
  public:
-  Ellipse(const Point& focus1, const Point& focus2, double dist) :
-    focus1(focus1), focus2(focus2), a(dist / 2) {
-    double c = Length((focus1 - focus2) / 2);
-    b = sqrt(a * a - c * c);
-  }
+  Ellipse(const Point& focus1, const Point& focus2, double dist);
 
   std::pair<Point, Point> focuses() const { return {focus1, focus2}; }
   Point center() { return (focus1 + focus2) / 2; }
@@ -388,62 +396,96 @@ class Ellipse : public Shape {
   double get_a() const { return a; }
   double eccentricity() const { return c() / a; }
 
-  std::pair<Line, Line> directrices() {
-    Point d = (focus2 - focus1) / 2;
-    d = d / c();
-    d = d * a;
-    d = d / eccentricity();
-    Point normal = {(focus1 - focus2).y, (focus2 - focus1).x};
-    return {Line(center() + d, center() + d + normal), Line(center() - d, center() - d + normal)};
-  }
-
+  std::pair<Line, Line> directrices();
   double perimeter() const final { return PI * (3 * (a + b) - sqrt((3 * a + b) * (a + 3 * b))); }
   double area() const final { return PI * a * b; }
 
   // rotates Ellipse on angle DEGREES
-  void rotate(const Point& center, double angle) final {
-    focus1 = focus1 - center;
-    focus1 = Rotate(focus1, angle / 180 * PI);
-    focus1 = focus1 + center;
-    focus2 = focus2 - center;
-    focus2 = Rotate(focus2, angle / 180 * PI);
-    focus2 = focus2 + center;
-  }
+  void rotate(const Point& center, double angle) final;
+  void reflect(const Point& center) final;
+  void reflect(const Line& axis) final;
+  void scale(const Point& center, double coefficient) final;
+  bool isSimilarTo(const Shape& another) final;
+  bool isCongruentTo(const Shape& another) final;
+  bool containsPoint(const Point& point) final;
+  friend bool operator==(const Shape&, const Shape&);
+};
 
-  void reflect(const Point& center) final {
-    focus1 = center + center - focus1;
-    focus2 = center + center - focus2;
-  }
+Ellipse::Ellipse(const Point& focus1, const Point& focus2, double dist)
+  : focus1(focus1), focus2(focus2), a(dist / 2) {
+  double c = Length((focus1 - focus2) / 2);
+  b = sqrt(a * a - c * c);
+}
 
-  void reflect(const Line& axis) final {
-    const double A = axis.coeff_A();
-    const double B = axis.coeff_B();
-    const double C = axis.coeff_C();
-    double cur_distance = A * focus1.x + B * focus1.y + C;
-    cur_distance = -cur_distance / (A * A + B * B);
-    cur_distance *= 2;
-    focus1 = focus1 + axis.NormalVector() * cur_distance;
-    cur_distance = A * focus2.x + B * focus2.y + C;
-    cur_distance = -cur_distance / (A * A + B * B);
-    cur_distance *= 2;
-    focus2 = focus2 + axis.NormalVector() * cur_distance;
-  }
+std::pair<Line, Line> Ellipse::directrices() {
+  Point d = (focus2 - focus1) / 2;
+  d = d / c();
+  d = d * a;
+  d = d / eccentricity();
+  Point normal = {(focus1 - focus2).y, (focus2 - focus1).x};
+  return {Line(center() + d, center() + d + normal), Line(center() - d, center() - d + normal)};
+}
 
-  void scale(const Point& center, double coefficient) final {
-    focus1 = focus1 - center;
-    focus1 = focus1 * coefficient;
-    focus1 = focus1 + center;
-    focus2 = focus2 - center;
-    focus2 = focus2 * coefficient;
-    focus2 = focus2 + center;
-    a = a * coefficient;
-    b = b * coefficient;
-  }
+void Ellipse::rotate(const Point& center, double angle) {
+  focus1 = focus1 - center;
+  focus1 = Rotate(focus1, angle / 180 * PI);
+  focus1 = focus1 + center;
+  focus2 = focus2 - center;
+  focus2 = Rotate(focus2, angle / 180 * PI);
+  focus2 = focus2 + center;
+}
 
-  bool isSimilarTo(const Shape& another) final {
-    const Ellipse* ellipse1 = dynamic_cast<const Ellipse*>(this);
-    const Ellipse* ellipse2 = dynamic_cast<const Ellipse*>(&another);
-    if (ellipse2 == nullptr) {
+void Ellipse::reflect(const Point& center) {
+  focus1 = center + center - focus1;
+  focus2 = center + center - focus2;
+}
+
+void Ellipse::reflect(const Line& axis) {
+  const double A = axis.coeff_A();
+  const double B = axis.coeff_B();
+  const double C = axis.coeff_C();
+  double cur_distance = A * focus1.x + B * focus1.y + C;
+  cur_distance = -cur_distance / (A * A + B * B);
+  cur_distance *= 2;
+  focus1 = focus1 + axis.NormalVector() * cur_distance;
+  cur_distance = A * focus2.x + B * focus2.y + C;
+  cur_distance = -cur_distance / (A * A + B * B);
+  cur_distance *= 2;
+  focus2 = focus2 + axis.NormalVector() * cur_distance;
+}
+
+void Ellipse::scale(const Point& center, double coefficient) {
+  focus1 = focus1 - center;
+  focus1 = focus1 * coefficient;
+  focus1 = focus1 + center;
+  focus2 = focus2 - center;
+  focus2 = focus2 * coefficient;
+  focus2 = focus2 + center;
+  a = a * coefficient;
+  b = b * coefficient;
+}
+
+bool Ellipse::isSimilarTo(const Shape& another) {
+  const Ellipse* ellipse1 = dynamic_cast<const Ellipse*>(this);
+  const Ellipse* ellipse2 = dynamic_cast<const Ellipse*>(&another);
+  if (ellipse2 == nullptr) {
+    return false;
+  }
+  if (!Equal(ellipse1->eccentricity(), ellipse2->eccentricity())) {
+    return false;
+  }
+  return true;
+}
+
+bool Ellipse::isCongruentTo(const Shape& another) {
+  const Ellipse* ellipse1 = dynamic_cast<const Ellipse*>(this);
+  const Ellipse* ellipse2 = dynamic_cast<const Ellipse*>(&another);
+  if (ellipse1 != nullptr && ellipse2 != nullptr) {
+    Point focus11 = ellipse1->focuses().first;
+    Point focus21 = ellipse1->focuses().second;
+    Point focus12 = ellipse2->focuses().first;
+    Point focus22 = ellipse2->focuses().second;
+    if (!Equal(Length(focus11 - focus21), Length(focus12 - focus22))) {
       return false;
     }
     if (!Equal(ellipse1->eccentricity(), ellipse2->eccentricity())) {
@@ -451,41 +493,21 @@ class Ellipse : public Shape {
     }
     return true;
   }
+  return false;
+}
 
-  bool isCongruentTo(const Shape& another) final {
-    const Ellipse* ellipse1 = dynamic_cast<const Ellipse*>(this);
-    const Ellipse* ellipse2 = dynamic_cast<const Ellipse*>(&another);
-    if (ellipse1 != nullptr && ellipse2 != nullptr) {
-      Point focus11 = ellipse1->focuses().first;
-      Point focus21 = ellipse1->focuses().second;
-      Point focus12 = ellipse2->focuses().first;
-      Point focus22 = ellipse2->focuses().second;
-      if (!Equal(Length(focus11 - focus21), Length(focus12 - focus22))) {
-        return false;
-      }
-      if (!Equal(ellipse1->eccentricity(), ellipse2->eccentricity())) {
-        return false;
-      }
+bool Ellipse::containsPoint(const Point& point) {
+  const Ellipse* ellipse = dynamic_cast<const Ellipse*>(this);
+  if (ellipse != nullptr) {
+    double dist = Length(point - ellipse->focuses().first);
+    dist += Length(point - ellipse->focuses().second);
+    if (Less(dist, ellipse->get_a())) {
       return true;
     }
     return false;
   }
-
-  bool containsPoint(const Point& point) final {
-    const Ellipse* ellipse = dynamic_cast<const Ellipse*>(this);
-    if (ellipse != nullptr) {
-      double dist = Length(point - ellipse->focuses().first);
-      dist += Length(point - ellipse->focuses().second);
-      if (Less(dist, ellipse->get_a())) {
-        return true;
-      }
-      return false;
-    }
-    return false;
-  }
-
-  friend bool operator==(const Shape&, const Shape&);
-};
+  return false;
+}
 
 class Circle : public Ellipse {
  public:
