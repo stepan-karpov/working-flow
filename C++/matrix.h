@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <array>
 #include <cassert> // to assert division by zero
 #include <sstream>
 
@@ -469,7 +470,6 @@ std::ostream& operator<<(std::ostream& output, const BigInteger& value) {
   return output;
 }
 
-
 std::istream& operator>>(std::istream& input, BigInteger& value) {
   std::string s;
   input >> s;
@@ -588,6 +588,9 @@ class Rational {
     if (numerator_ < 0) {
       numerator_ = -numerator_;
     }
+    if (numerator_ == 0) {
+      sign_ = 1;
+    }
     this->ReduceFraction();
     return *this;
   }
@@ -705,6 +708,12 @@ bool operator>(const Rational& value1, const Rational& value2) {
 }
 
 bool operator==(const Rational& value1, const Rational& value2) {
+  // if (value1.numerator_ == 0) {
+  //   value1.sign_ = 1;
+  // }
+  // if (value2.numerator_ == 0) {
+  //   value2.sign_ = 1;
+  // }
   if (value1.sign_ != value2.sign_) {
     return false;
   }
@@ -746,24 +755,217 @@ Rational operator-(Rational value1, const Rational& value2) {
 using std::vector;
 
 template<size_t M, size_t N, typename Field = Rational>
+class Matrix;
+
+template<size_t M, size_t N, typename Field>
 class Matrix {
  private:
-  vector<vector<int>> matrix_;
+  std::array<std::array<Field, N>, M> matrix_;
 
  public:
- Matrix();
-  // Matrix() {
-  //   matrix_.resize(M);
-  //   for (int i = 0; i < M; ++i) {
-  //     matrix_[i].resize(N, 4);
-  //   }
-  // }
+  Matrix() {}
+  Matrix(std::array<std::array<Field, N>, M> a) : matrix_(a) {}
+  Matrix(vector<vector<Field>>& a);
+  Matrix(const Matrix<M, N, Field>& initial_matrix);
 
-  int getValue(int i, int j) {
-    return matrix_[i][j];
-  }
+  std::array<Field, M>& operator[](size_t index) { return matrix_[index]; }
+  std::array<Field, M> operator[](size_t index) const { return matrix_[index]; }
+
+  Matrix<M, N, Field>& operator+=(const Matrix<M, N, Field>& to_add);
+  Matrix<M, N, Field>& operator*=(Field to_multiply);
+  std::array<Field, N> getRow(size_t index) { return matrix_[index]; };
+  std::array<Field, M> getColumn(size_t index);
+
+  // return number of swaps
+  size_t triangulate();
 };
-
-Matrix::Matrix() {
-  matrix_.resize(M, vector<int>(N, 0));
+template<size_t M, size_t N, typename Field>
+Matrix<M, N, Field>::Matrix(const Matrix<M, N, Field>& initial_matrix) {
+  for (int i = 0; i < M; ++i) {
+    for (int j = 0; j < N; ++j) {
+      matrix_[i][j] = initial_matrix[i][j];
+    }
+  }
 }
+
+template<size_t M, size_t N, typename Field>
+Matrix<M, N, Field>::Matrix(vector<vector<Field>>& a) {
+  for (int i = 0; i < M; ++i) {
+    for (int j = 0; j < N; ++j) {
+      matrix_[i][j] = a[i][j];
+    }
+  }
+}
+
+template<size_t M, size_t N, typename Field>
+std::array<Field, M> Matrix<M, N, Field>::getColumn(size_t index) {
+  std::array<Field, M> ans;
+  for (size_t i = 0; i < M; ++i) {
+    ans[i] = matrix_[i][index];
+  }
+  return ans;
+}
+
+template<size_t M, size_t N, typename Field>
+Matrix<M, N, Field>& Matrix<M, N, Field>::operator*=(Field to_multiply) {
+  for (size_t i = 0; i < M; ++i) {
+    for (size_t j = 0; j < N; ++j) {
+      matrix_[i][j] *= to_multiply;
+    }
+  }
+  return *this;
+}
+
+template<size_t M, size_t N, size_t K, typename Field>
+Matrix<M, K, Field> operator*(const Matrix<M, N, Field>& matrix1,
+                              const Matrix<N, K, Field>& matrix2) {
+  Matrix<M, K, Field> ans;
+  for (size_t i = 0; i < M; ++i) {
+    for (size_t j = 0; j < K; ++j) {
+      for (size_t k = 0; k < N; ++k) {
+        ans[i][j] += matrix1[i][k] * matrix2[k][j];
+      }
+    }
+  }
+  return ans;
+}
+
+template<size_t M, size_t N, typename Field>
+Matrix<M, N, Field>& Matrix<M, N, Field>::operator+=(const Matrix<M, N, Field>& to_add) {
+  for (size_t i = 0; i < M; ++i) {
+    for (size_t j = 0; j < N; ++j) {
+      matrix_[i][j] += to_add.matrix_[i][j];
+    }
+  }
+  return *this;
+}
+
+template<size_t M, size_t N, typename Field>
+Matrix<M, N, Field> operator+(Matrix<M, N, Field> matrix1, const Matrix<M, N, Field>& matrix2) {
+  matrix1 += matrix2;
+  return matrix1;
+}
+
+template<size_t M, size_t N, typename Field>
+std::ostream& operator<<(std::ostream& output, const Matrix<M, N, Field>& matrix) {
+  for (size_t i = 0; i < M; ++i) {
+    for (size_t j = 0; j < N; ++j) {
+      output << matrix[i][j] << ' ';
+    }
+    output << '\n';
+  }
+  return output;
+}
+
+template<size_t M, size_t N>
+std::ostream& operator<<(std::ostream& output, const Matrix<M, N, Rational>& matrix) {
+  for (size_t i = 0; i < M; ++i) {
+    for (size_t j = 0; j < N; ++j) {
+      output << matrix[i][j].asDecimal(4) << ' ';
+    }
+    output << '\n';
+  }
+  return output;
+}
+
+template<size_t N, typename Field>
+Field trace(const Matrix<N, N, Field>& matrix) {
+  Field ans = 0;
+  for (size_t i = 0; i < N; ++i) {
+    ans += matrix[i][i];
+  }
+  return ans;
+}
+
+template<size_t M, size_t N, typename Field>
+Matrix<N, M, Field> transposed(const Matrix<M, N, Field>& matrix) {
+  Matrix<N, M, Field> ans;
+  for (size_t i = 0; i < M; ++i) {
+    for (size_t j = 0; j < N; ++j) {
+      ans[j][i] = matrix[i][j];
+    }
+  }
+  return ans;
+}
+
+template<size_t M, size_t N, typename Field>
+size_t Matrix<M, N, Field>::triangulate() {
+  size_t swaps = 0;
+  size_t to_change = 0;
+  for (size_t cur_col = 0; cur_col < N; ++cur_col) {
+    int pivot = -1;
+    for (size_t k = to_change; k < M; ++k) {
+      Field temp = matrix_[k][cur_col];
+      bool t = (temp != 0);
+      if (t) {
+        if (pivot == -1 || matrix_[k][cur_col] > matrix_[pivot][cur_col]) {
+          pivot = int(k);
+        }
+      }
+    }
+    if (pivot == -1) { continue; }
+    std::swap(matrix_[to_change], matrix_[pivot]);
+    if (to_change != pivot) {
+      ++swaps;
+    }
+
+    for (size_t cur_row = to_change + 1; cur_row < M; ++cur_row) {
+      Rational cur_delta = -(matrix_[cur_row][cur_col] / matrix_[to_change][cur_col]);
+      for (size_t k = 0; k < N; ++k) {
+        matrix_[cur_row][k] += matrix_[to_change][k] * cur_delta;
+      }
+    }
+    ++to_change;
+  }
+  size_t to_swap = 0;
+
+  for (size_t cur_col = 0; cur_col < N; ++cur_col) {
+    bool contains_not_null = false;
+    for (size_t cur_row = 0; cur_row < M; ++cur_row) {
+      if (matrix_[cur_row][cur_col] != 0) {
+        contains_not_null = true;
+        break;
+      }
+    }
+    if (!contains_not_null) {
+      for (size_t cur_row = 0; cur_row < M; ++cur_row) {
+        std::swap(matrix_[cur_row][to_swap], matrix_[cur_row][cur_col]);
+        ++swaps;
+      }
+      ++to_swap;
+    }
+  }
+  return swaps;
+}
+
+template<size_t M, size_t N, typename Field>
+size_t rank(const Matrix<M, N, Field>& matrix) {
+  Matrix<M, N, Field> temp_matrix = matrix;
+  temp_matrix.triangulate();
+  size_t ans = 0;
+  size_t cur_col = 0;
+  for (size_t cur_row = 0; cur_row < M; ++cur_row) {
+    while (cur_col < N && temp_matrix[cur_row][cur_col] == 0) {
+      ++cur_col;
+    }
+    if (cur_col < N && temp_matrix[cur_row][cur_col] != 0) {
+      ++ans;
+    }
+  }
+  return ans;
+}
+
+template<size_t N, typename Field>
+Field det(const Matrix<N, N, Field>& matrix) {
+  Matrix<N, N, Field> temp_matrix = matrix;
+  size_t swaps = temp_matrix.triangulate();
+  Field ans = 1;
+  for (size_t i = 0; i < N; ++i) {
+    ans *= temp_matrix[i][i];
+  }
+  if (swaps % 2 == 1) {
+    ans = -ans;
+  }
+  return ans;
+}
+
