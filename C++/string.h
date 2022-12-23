@@ -6,21 +6,21 @@
 
 class String {
  private:
-  char* array_;
   size_t size_;
   size_t capacity_;
+  char* array_;
 
  public:
   String(size_t init_size, char to_fill);
   String(char new_string);
   String(const char* c_style_string);
   String(const String& initializer_string);
-  String() : array_(new char[1]), size_(0), capacity_(0) { array_[0] = '\0'; };
-  String(size_t blank_size) : array_(new char[blank_size]), size_(blank_size - 1), capacity_(blank_size - 1) {};
+  String() : size_(0), capacity_(0), array_(new char[1]) { array_[0] = '\0'; };
+  String(size_t blank_size);
   ~String() { delete[] array_; }
 
   char& operator[](int index) { return array_[index]; }
-  char operator[](int index) const { return array_[index]; }
+  const char& operator[](int index) const { return array_[index]; }
 
   String& operator=(const String& new_string);
   String& operator+=(const String& to_add);
@@ -36,7 +36,7 @@ class String {
 
   String substr(size_t start, size_t length) const;
 
-  bool is_substring(int, const String&) const;
+  bool is_substring(size_t, const String&) const;
   size_t find(const String& substring) const;
   size_t rfind(const String& substring) const;
 
@@ -52,32 +52,37 @@ class String {
   bool empty() const { return (size_ == 0); }
 };
 
+String::String(size_t blank_size)
+    : size_(blank_size - 1),
+      capacity_(blank_size - 1),
+      array_(new char[blank_size]) {}
+
 String::String(const String& initializer_string)
-    : array_(new char[initializer_string.size_ + 1]), 
-      size_(initializer_string.size_), 
-      capacity_(initializer_string.size_) {
+    : size_(initializer_string.size_), 
+      capacity_(initializer_string.size_),
+      array_(new char[initializer_string.size_ + 1]) {
   std::copy(initializer_string.array_,
             initializer_string.array_ + size_ + 1, array_);
 }
 
 String::String(const char* c_style_string)
-    : array_(new char[std::strlen(c_style_string) + 1]),
-      size_(std::strlen(c_style_string)),
-      capacity_(size_) {
+    : size_(std::strlen(c_style_string)),
+      capacity_(size_),
+      array_(new char[size_ + 1]) { 
   std::copy(c_style_string, c_style_string + size_, array_);
   array_[size_] = '\0';
 }
 
 String::String(char new_string)
-    : array_(new char[2]), size_(1), capacity_(1) {
+    : size_(1), capacity_(1), array_(new char[2]) {
   array_[0] = new_string;
   array_[1] = '\0';
 }
 
 String::String(size_t init_size, char to_fill)
-    : array_(new char[init_size + 1]),
-      size_(init_size),
-      capacity_(init_size) {
+    : size_(init_size),
+      capacity_(init_size),
+      array_(new char[init_size + 1]) {
   std::fill(array_, array_ + init_size, to_fill);
   array_[init_size] = '\0';
 }
@@ -114,8 +119,7 @@ String String::substr(size_t start, size_t length) const {
   return ans;
 }
 
-bool String::is_substring(int position,
-             const String& substring) const {
+bool String::is_substring(size_t position, const String& substring) const {
   for (size_t i = position; i < position + substring.size(); ++i) {
     if (array_[i] != substring[i - position]) {
       return false;
@@ -153,12 +157,10 @@ String& String::operator+=(char to_add) {
 
 String& String::operator+=(const String& to_add) {
   size_t new_size = size_ + to_add.size_;
-  if (capacity_ >= new_size) {
-    std::copy(to_add.array_, to_add.array_ + to_add.size_, array_ + size_);
-  } else {
+  if (capacity_ < new_size) {
     resize(new_size);
-    std::copy(to_add.array_, to_add.array_ + to_add.size_, array_ + size_);
   }
+  std::copy(to_add.array_, to_add.array_ + to_add.size_, array_ + size_);
   array_[new_size] = '\0';
   size_ = new_size;
   return *this;
@@ -183,7 +185,9 @@ bool operator<(const String& first, const String& second) {
 }
 
 bool operator>=(const String& first, const String& second) { return !(first < second); }
+
 bool operator>(const String& first, const String& second) { return second < first; }
+
 bool operator<=(const String& first, const String& second) { return !(first > second); }
 
 bool operator==(const String& first, const String& second) {
@@ -204,14 +208,13 @@ std::ostream& operator<<(std::ostream& output, const String& to_output) {
 }
 
 std::istream& operator>>(std::istream& input, String& to_input) {
-  String answer(size_t(1));
+  to_input.clear();
   char c;
   c = input.get();
   while (!std::isspace(c) && c != EOF) {
-    answer.push_back(c);
+    to_input.push_back(c);
     c = input.get();
   }
-  to_input = answer;
   return input;
 }
 

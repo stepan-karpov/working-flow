@@ -398,6 +398,7 @@ BigInteger operator+(BigInteger value1, const BigInteger& value2) {
   value1 += value2;
   return value1;
 }
+
 BigInteger operator-(BigInteger value1, const BigInteger& value2) {
   value1 -= value2;
   return value1;
@@ -757,6 +758,216 @@ using std::vector;
 template<size_t M, size_t N, typename Field = Rational>
 class Matrix;
 
+template<size_t N>
+class Residue {
+ private:
+  size_t value_;
+  bool is_prime_ = false;
+
+  static bool checkPrime(size_t num) {
+    for (size_t i = 2; i < sqrt(num) + 1; ++i) {
+      if (num % i == 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+ public:
+  Residue(int value);
+  Residue() : value_(0), is_prime_(checkPrime(N)) {}
+
+  const size_t Value() const { return value_; }
+  size_t& Value() { return value_; }
+
+  Residue<N>& operator+=(const Residue<N>& to_add);
+  Residue<N>& operator-=(const Residue<N>& to_add);
+  Residue<N>& operator*=(const Residue<N>& to_add);
+  Residue<N>& operator/=(const Residue<N>& to_add);
+  
+  Residue<N>& operator++();
+  Residue<N> operator++(int);
+  Residue<N>& operator--();
+  Residue<N> operator--(int);
+  
+  explicit operator int() const {
+    return value_;
+  }
+};
+
+
+template<size_t N>
+Residue<N>& Residue<N>::operator++() {
+  *this += 1;
+  return *this;
+}
+
+template<size_t N>
+Residue<N> Residue<N>::operator++(int) {
+  Residue copy = *this;
+  ++*this;
+  return copy;
+}
+
+template<size_t N>
+Residue<N>& Residue<N>::operator--() {
+  *this -= 1;
+  return *this;
+}
+
+template<size_t N>
+Residue<N> Residue<N>::operator--(int) {
+  Residue copy = *this;
+  --*this;
+  return copy;
+}
+
+template<size_t N>
+Residue<N> operator-(const Residue<N>& value) {
+  return N - value.Value();
+}
+
+template<size_t N>
+Residue<N>& Residue<N>::operator+=(const Residue<N>& to_add) {
+  value_ += to_add.value_;
+  value_ %= N;
+  return *this;
+}
+
+template<size_t N>
+Residue<N>& Residue<N>::operator*=(const Residue<N>& to_add) {
+  value_ *= to_add.value_;
+  value_ %= N;
+  return *this;
+}
+
+template<size_t N>
+Residue<N>& Residue<N>::operator/=(const Residue<N>& divider) {
+  assert(is_prime_ && "division not in the field!!!");
+  assert(divider.value_ != 0 && "division by zero!!!");
+  size_t x = divider.value_;
+  size_t n = N - 2;
+  size_t res = 1;
+  while (n != 0) {
+    if (n & 1) {
+      res = res * x % N;
+    }
+    x = x * x % N;
+    n >>= 1;
+  }
+  value_ = res * value_ % N;
+  return *this;
+}
+
+template<size_t N>
+Residue<N>& Residue<N>::operator-=(const Residue<N>& to_add) {
+  value_ += (-to_add).value;
+  value_ %= N;
+  return *this;
+}
+
+template<size_t N>
+Residue<N> operator+(Residue<N> value1, const Residue<N>& value2) {
+  value1 += value2;
+  return value1;
+}
+
+template<size_t N>
+Residue<N> operator/(Residue<N> value1, const Residue<N>& value2) {
+  value1 /= value2;
+  return value1;
+}
+
+template<size_t N>
+Residue<N> operator-(Residue<N> value1, const Residue<N>& value2) {
+  value1 -= value2;
+  return value1;
+}
+
+template<size_t N>
+Residue<N> operator*(Residue<N> value1, const Residue<N>& value2) {
+  value1 *= value2;
+  return value1;
+}
+
+template<size_t N>
+std::ostream& operator<<(std::ostream& output, const Residue<N>& to_output) {
+  output << to_output.Value();
+  return output;
+}
+
+// template<size_t N>
+// std::istream& operator>>(std::istream& input, Residue<N>& to_input) {
+//   input >> to_input.value;
+//   return input;
+// }
+
+template<size_t N>
+Residue<N>::Residue(int to_init) : is_prime_(checkPrime(N)) {
+  if (to_init > 0) {
+    value_ = to_init % N;
+  } else {
+    to_init = (-to_init) % N;
+    value_ = N - to_init;
+  }
+}
+
+template<size_t N>
+bool operator<(const Residue<N>& value1, const Residue<N>& value2) { 
+  return value1.Value() < value2.Value();
+}
+
+template<size_t N>
+bool operator<(const Residue<N>& value1, int value2) { 
+  return value1.Value() < value2;
+}
+
+template<size_t N>
+bool operator>(const Residue<N>& value1, const Residue<N>& value2) { 
+  return value2 < value1;
+}
+
+template<size_t N>
+bool operator==(const Residue<N>& value1, const Residue<N>& value2) {
+  return value2.Value() == value1.Value();
+}
+
+template<size_t N>
+bool operator==(const Residue<N>& value1, int value2) {
+  return value1.Value() == value2;
+}
+
+template<size_t N>
+bool operator!=(const Residue<N>& value1, const Residue<N>& value2) {
+  return !(value1 == value2);
+}
+
+template<size_t N>
+bool operator!=(const Residue<N>& value1, int value2) {
+  return !(value1 == value2);
+}
+
+template<size_t N>
+bool operator<=(const Residue<N>& value1, const Residue<N>& value2) {
+  return !(value1 > value2);
+}
+
+template<size_t N>
+bool operator<=(const Residue<N>& value1, int value2) {
+  return !(value1 > value2);
+}
+
+template<size_t N>
+bool operator>=(const Residue<N>& value1, const Residue<N>& value2) {
+  return !(value1 < value2);
+}
+
+template<size_t N>
+bool operator>=(const Residue<N>& value1, int value2) {
+  return !(value1 < value2);
+}
+
+
 template<size_t M, size_t N, typename Field>
 class Matrix {
  private:
@@ -765,11 +976,11 @@ class Matrix {
  public:
   Matrix() {}
   Matrix(std::array<std::array<Field, N>, M> a) : matrix_(a) {}
-  Matrix(vector<vector<Field>>& a);
+  Matrix(const std::initializer_list<std::initializer_list<Field>>& a);
   Matrix(const Matrix<M, N, Field>& initial_matrix);
 
-  std::array<Field, M>& operator[](size_t index) { return matrix_[index]; }
-  std::array<Field, M> operator[](size_t index) const { return matrix_[index]; }
+  std::array<Field, N>& operator[](size_t index) { return matrix_[index]; }
+  std::array<Field, N> operator[](size_t index) const { return matrix_[index]; }
 
   Matrix<M, N, Field>& operator+=(const Matrix<M, N, Field>& to_add);
   Matrix<M, N, Field>& operator*=(Field to_multiply);
@@ -789,11 +1000,15 @@ Matrix<M, N, Field>::Matrix(const Matrix<M, N, Field>& initial_matrix) {
 }
 
 template<size_t M, size_t N, typename Field>
-Matrix<M, N, Field>::Matrix(vector<vector<Field>>& a) {
-  for (int i = 0; i < M; ++i) {
-    for (int j = 0; j < N; ++j) {
-      matrix_[i][j] = a[i][j];
+Matrix<M, N, Field>::Matrix(const std::initializer_list<std::initializer_list<Field>>& a) {
+  size_t i = 0, j = 0;
+  for (auto& row: a) {
+    for (auto& obj: row) {
+      matrix_[i][j] = Field(obj);
+      ++j;
     }
+    ++i;
+    j = 0;
   }
 }
 
@@ -910,7 +1125,7 @@ size_t Matrix<M, N, Field>::triangulate() {
     }
 
     for (size_t cur_row = to_change + 1; cur_row < M; ++cur_row) {
-      Rational cur_delta = -(matrix_[cur_row][cur_col] / matrix_[to_change][cur_col]);
+      Field cur_delta = -(matrix_[cur_row][cur_col] / matrix_[to_change][cur_col]);
       for (size_t k = 0; k < N; ++k) {
         matrix_[cur_row][k] += matrix_[to_change][k] * cur_delta;
       }

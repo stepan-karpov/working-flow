@@ -66,25 +66,69 @@ int main() {
   // std::cout << '\n';
 
 
-  vector<vector<Rational>> a1 = {
-    {1,  1,  124546,   245 },
-    {0,  1,  5,   5 },
-    {0,  0,  1,   1},
-    {0,  0,  10,  11}
+  // vector<vector<Rational>> a1 = {
+  //   {1,  1,  124546,   245 },
+  //   {0,  1,  5,   5 },
+  //   {0,  0,  1,   1},
+  //   {0,  0,  10,  11}
+  // };
+
+  // Matrix<4, 4, Rational> m(a1);
+  // // Matrix<4, 4, Rational> m1 = m;
+
+  // std::cout << m << '\n';
+
+
+  // Rational cur_det = det<4, Rational>(m);
+  // std::cout << cur_det.asDecimal(5) << '\n';
+  
+  // std::cout << m.triangulate() << '\n';
+  // std::cout << m;
+  // Residue<7> a(3);
+  // Residue<7> b(4);
+  // a /= b;
+
+  // int t = static_cast<int>(a);
+
+  // std::cout << a << '\n';
+  // std::cout << t << '\n';
+  // std::cout << -a << '\n';
+
+  // vector<vector<Residue<5>>> a1 = {
+  //   {1, 1},
+  //   {2, 3},
+  // };
+
+  // vector<vector<Residue<5>>> a2 = {
+  //   {1, 1},
+  //   {2, 2},
+  // };
+
+  // Matrix<2, 2, Residue<5>> m1(a1);
+  // Matrix<2, 2, Residue<5>> m2(a2);
+
+  // // std::cout << m1 * m2 << '\n';
+
+  // std::cout << det(m1) << '\n';
+  // Residue<5> t = 3;
+
+  // bool check = (t != 3);
+
+  // std::cout << check << '\n';
+
+  Matrix<3, 4, Residue<6>> A = {
+    {1, 2, 3, 4},
+    {5, 6, 7, 8},
+    {1, 4, 2, 7}
   };
 
-  Matrix<4, 4, Rational> m(a1);
-  // Matrix<4, 4, Rational> m1 = m;
-
-  std::cout << m << '\n';
-
-
-  Rational cur_det = det<4, Rational>(m);
-  std::cout << cur_det.asDecimal(5) << '\n';
-  
-  std::cout << m.triangulate() << '\n';
-  std::cout << m;
-
-
+  Matrix<4, 1, Residue<6>> B = {
+    {1},
+    {5},
+    {4},
+    {6}
+  };
+  Matrix<3, 1, Residue<6>> C = A * B;
+  std::cout << C << '\n';
   return 0;
 }
