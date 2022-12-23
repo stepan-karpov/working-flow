@@ -10,103 +10,111 @@
 
 inline bool equals(double x, double y) { return x - y < 1e-6 && x - y > -1e-6; }
 
-// void testMatrix() {
-//   {
-//     Residue<99527> r1(350);
-//     Residue<99527> r2(524);
-//     assert(r1 * r2 == Residue<99527>(83873));
-//     assert(r1 / r2 == Residue<99527>(17095));
-//   }
+void testMatrix() {
+  // {
+  //   Residue<99527> r1(350);
+  //   Residue<99527> r2(524);
+  //   assert(r1 * r2 == Residue<99527>(83873));
+  //   assert(r1 / r2 == Residue<99527>(17095));
+  // }
 
-//   {
-//     const Matrix<2, 3, Residue<6>> a = {{1, 2, 3}, {0, 2, 4}};
-//     const Matrix<3, 2, Residue<6>> b = {{2, 0}, {1, 3}, {0, 4}};
-//     const Matrix<2, 2, Residue<6>> ab = a * b;
-//     assert(ab[0][0] == Residue<6>(4));
-//     assert(ab[0][1] == Residue<6>(0));
-//     assert(ab[1][0] == Residue<6>(2));
-//     assert(ab[1][1] == Residue<6>(4));
-//   }
+  // {
+  //   const Matrix<2, 3, Residue<6>> a = {{1, 2, 3}, {0, 2, 4}};
+  //   const Matrix<3, 2, Residue<6>> b = {{2, 0}, {1, 3}, {0, 4}};
+  //   const Matrix<2, 2, Residue<6>> ab = a * b;
+  //   Residue<6> temp(0);
+  //   assert(ab[0][0] == Residue<6>(4));
+  //   assert(ab[0][1] == Residue<6>(0));
+  //   assert(ab[1][0] == Residue<6>(2));
+  //   assert(ab[1][1] == Residue<6>(4));
+  // }
 
-//   using std::vector;
+  // using std::vector;
 
-//   const Matrix<4, 5, Residue<17>> am = {{8, -4, -5, 5, 9},
-//                                         {1, -3, -5, 0, -7},
-//                                         {7, -5, 1, 4, 1},
-//                                         {3, -1, 3, 2, 5}};
-//   const Matrix<5, 4, Residue<17>> bm = {{4, 0, 3, 2},
-//                                         {1, -7, 4, 5},
-//                                         {7, 1, 5, 3},
-//                                         {-5, -3, -3, -1},
-//                                         {1, -5, 2, 3}};
-//   // const Matrix<4,5,Residue<17>> am = a;
-//   // const Matrix<5,4,Residue<17>> bm = b;
+  // const Matrix<4, 5, Residue<17>> am = {{8, -4, -5, 5, 9},
+  //                                       {1, -3, -5, 0, -7},
+  //                                       {7, -5, 1, 4, 1},
+  //                                       {3, -1, 3, 2, 5}};
+  // const Matrix<5, 4, Residue<17>> bm = {{4, 0, 3, 2},
+  //                                       {1, -7, 4, 5},
+  //                                       {7, 1, 5, 3},
+  //                                       {-5, -3, -3, -1},
+  //                                       {1, -5, 2, 3}};
+  // // const Matrix<4, 5, Residue<17>> am = a;
+  // // const Matrix<5, 4, Residue<17>> bm = b;
 
-//   assert(am.rank() == 4);
-//   assert(bm.rank() == 3);
-//   const SquareMatrix<4, Residue<17>> ab = {{-23, -37, -14, 3},
-//                                            {-41, 51, -48, -49},
-//                                            {11, 19, -4, -9},
-//                                            {27, -21, 24, 23}};
+  // assert(am.rank() == 4);
+  // assert(bm.rank() == 3);
+  // const Matrix<4, 4, Residue<17>> ab = {{-23, -37, -14, 3},
+  //                                          {-41, 51, -48, -49},
+  //                                          {11, 19, -4, -9},
+  //                                          {27, -21, 24, 23}};
 
-//   const auto abm = am * bm;
-//   assert((abm == SquareMatrix<4, Residue<17>>(ab)));
+  // const Matrix<4, 4, Residue<17>> abm = am * bm;
+  // assert((abm == Matrix<4, 4, Residue<17>>(ab)));
 
-//   const auto aminusb = am - bm.transposed();
-//   const Matrix<4, 5, Residue<17>> diff = {{4, -5, -12, 10, 8},
-//                                           {1, 4, -6, 3, -2},
-//                                           {4, -9, -4, 7, -1},
-//                                           {1, -6, 0, 3, 2}};
-//   assert(aminusb == diff);
+  // const auto aminusb = am - bm.transposed();
+  // const Matrix<4, 5, Residue<17>> diff = {{4, -5, -12, 10, 8},
+  //                                         {1, 4, -6, 3, -2},
+  //                                         {4, -9, -4, 7, -1},
+  //                                         {1, -6, 0, 3, 2}};
+  // assert(aminusb == diff);
 
-//   auto newMatrix = Residue<17>(2) * aminusb * bm;
-//   newMatrix[2][2] = Residue<17>(1);
+  // auto newMatrix = Residue<17>(2) * aminusb * bm;
+  // newMatrix[2][2] = Residue<17>(1);
 
-//   assert(newMatrix.det() == Residue<17>(14420160));
+  // assert(newMatrix.det() == Residue<17>(14420160));
 
-//   assert(newMatrix.trace() == Residue<17>(-345));
+  // assert(newMatrix.trace() == Residue<17>(-345));
 
-//   Matrix<4, 4, Residue<17>> finiteUnity;
-//   for (int i = 0; i < 4; ++i) {
-//     for (int j = 0; j < 4; ++j) {
-//       finiteUnity[i][j] = Residue<17>(static_cast<long long>(i == j));
-//     }
-//   }
-//   assert(newMatrix.inverted() * newMatrix == finiteUnity);
+  // Matrix<4, 4, Residue<17>> finiteUnity;
+  // for (int i = 0; i < 4; ++i) {
+  //   for (int j = 0; j < 4; ++j) {
+  //     finiteUnity[i][j] = Residue<17>(static_cast<long long>(i == j));
+  //   }
+  // }
+  // assert(newMatrix.inverted() * newMatrix == finiteUnity);
 
-//   std::cerr << "Tests over the finite field passed!\n";
+  // std::cerr << "Tests over the finite field passed!\n";
 
-//   {
-//     SquareMatrix<2> m = {{0, 1}, {1, 0}};
-//     assert(m.det() == Rational(-1));
-//   }
+  // {
+  //   Matrix<2, 2, Rational> m = {{0, 1}, {1, 0}};
+  //   assert(m.det() == Rational(-1));
+  // }
 
-//   std::ifstream in("matr.txt");
-//   SquareMatrix<20> bigMatrix;
-//   for (int i = 0; i < 20; ++i) {
-//     for (int j = 0; j < 20; ++j) {
-//       in >> bigMatrix[i][j];
-//     }
-//   }
+  std::ifstream in("matr.txt");
+  Matrix<20, 20, Rational> bigMatrix;
+  for (int i = 0; i < 20; ++i) {
+    for (int j = 0; j < 20; ++j) {
+      double temp;
+      in >> temp;
+      bigMatrix[i][j] = temp;
+    }
+  }
 
-//   vector<vector<double>> bigInvertedMatrix(20, vector<double>(20));
-//   for (int i = 0; i < 20; ++i) {
-//     for (int j = 0; j < 20; ++j) {
-//       in >> bigInvertedMatrix[i][j];
-//     }
-//   }
+  vector<vector<double>> bigInvertedMatrix(20, vector<double>(20));
+  for (int i = 0; i < 20; ++i) {
+    for (int j = 0; j < 20; ++j) {
+      in >> bigInvertedMatrix[i][j];
+    }
+  }
 
-//   auto anotherMatrix = bigMatrix;
-//   // bigMatrix.inverted();
-//   bigMatrix.invert();
-//   std::cerr << "Big matrix inverted!\n";
-//   for (int i = 0; i < 20; ++i) {
-//     auto row = bigMatrix.getRow(i);
-//     auto anotherRow = bigInvertedMatrix[i];
-//     for (int j = 0; j < 20; ++j) {
-//       assert(equals(static_cast<double>(row[j]), anotherRow[j]));
-//     }
-//   }
+  auto anotherMatrix = bigMatrix;
+  std::cout << "start\n\n";
+  // bigMatrix.inverted();
+  bigMatrix.invert();
+  std::cout << "end\n\n";
+  // std::cerr << "Big matrix inverted!\n";
+
+  // std::cout << bigMatrix << '\n';
+
+  for (int i = 0; i < 20; ++i) {
+    auto row = bigMatrix.getRow(i);
+    auto anotherRow = bigInvertedMatrix[i];
+    for (int j = 0; j < 20; ++j) {
+      assert(equals(static_cast<double>(row[j]), anotherRow[j]));
+    }
+  }
 //   std::cerr << "Inverted matrix is correct!\n";
 //   bigMatrix *= anotherMatrix;
 //   std::cerr << "Matrix multiplied by its inverted matrix!\n";
@@ -130,7 +138,7 @@ inline bool equals(double x, double y) { return x - y < 1e-6 && x - y > -1e-6; }
 
 //   auto transposedMatrix = anotherMatrix.transposed();
 //   assert((anotherMatrix *= transposedMatrix).det() == 1);
-// }
+}
 
 int main() {
   // static_assert(is_prime<11027>);
@@ -140,25 +148,24 @@ int main() {
   // static_assert(!is_prime<4>);
   // static_assert(is_prime<5>);
   // static_assert(is_prime<97>);
-  Residue<5> b = 4;
+  // Residue<5> b = 4;
   // assert((b / Residue<5>(4)).Value() == 1);
 
-  Matrix<3, 4, Residue<6>> A = {{1, 2, 3, 4}, {5, 6, 7, 8}, {1, 4, 2, 7}};
+  // Matrix<3, 4, Residue<6>> A = {{1, 2, 3, 4}, {5, 6, 7, 8}, {1, 4, 2, 7}};
 
-  Matrix<4, 1, Residue<6>> B = {{
-                                    1,
-                                },
-                                {
-                                    5,
-                                },
-                                {
-                                    4,
-                                },
-                                {
-                                    6,
-                                }};
-  Matrix<3, 1, Residue<6>> C = A * B;
-  // std::cout << C << '\n';
+  // Matrix<4, 1, Residue<6>> B = {{
+  //                                   1,
+  //                               },
+  //                               {
+  //                                   5,
+  //                               },
+  //                               {
+  //                                   4,
+  //                               },
+  //                               {
+  //                                   6,
+  //                               }};
+  // Matrix<3, 1, Residue<6>> C = A * B;
   // assert(C[0][0] == Residue<6>(5));
 
   // Matrix<3, 4> Ar = {{1, 2, 3, 4}, {5, 6, 7, 8}, {1, 4, 2, 7}};
@@ -177,7 +184,7 @@ int main() {
   //                    }};
   // assert((Ar * Br)[0][0] == Rational(47));
 
-  // SquareMatrix<1> A1 = {{1}};
+  // Matrix<1, 1, Rational> A1 = {{1}};
   // A1[0][0] = 1000;
   // assert(A1[0][0] == Rational(1000));
 
@@ -191,9 +198,9 @@ int main() {
   // Matrix<3, 3, Rational> Mr = {{1, 2, 3}, {5, 6, 7}, {1, 4, 2}};
   // assert(Mr.det() == 20);
 
-  // assert(Mr.inverted()[2][2] == Rational(-2) / Rational(10));
+  // // assert(Mr.inverted()[2][2] == Rational(-2) / Rational(10));
 
   // assert(Mr.transposed()[2][1] == Rational(7));
 
-  // testMatrix();
+  testMatrix();
 }

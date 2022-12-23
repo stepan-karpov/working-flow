@@ -116,19 +116,17 @@ int main() {
 
   // std::cout << check << '\n';
 
-  Matrix<3, 4, Residue<6>> A = {
-    {1, 2, 3, 4},
-    {5, 6, 7, 8},
-    {1, 4, 2, 7}
+  Matrix<3, 3, Rational> A = {
+    {1, 2, 3},
+    {5, 6, 7},
+    {1, 4, 2}
   };
 
-  Matrix<4, 1, Residue<6>> B = {
-    {1},
-    {5},
-    {4},
-    {6}
-  };
-  Matrix<3, 1, Residue<6>> C = A * B;
-  std::cout << C << '\n';
-  return 0;
+  std::cout << A << '\n';
+  A.invert();
+  std::cout << A << '\n';
+  Matrix<3, 3, Rational> B = A.inverted();
+
+  std::cout << B << '\n';
+
 }

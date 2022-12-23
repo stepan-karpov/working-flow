@@ -861,7 +861,7 @@ Residue<N>& Residue<N>::operator/=(const Residue<N>& divider) {
 
 template<size_t N>
 Residue<N>& Residue<N>::operator-=(const Residue<N>& to_add) {
-  value_ += (-to_add).value;
+  value_ += (-to_add).value_;
   value_ %= N;
   return *this;
 }
@@ -904,7 +904,7 @@ std::ostream& operator<<(std::ostream& output, const Residue<N>& to_output) {
 
 template<size_t N>
 Residue<N>::Residue(int to_init) : is_prime_(checkPrime(N)) {
-  if (to_init > 0) {
+  if (to_init >= 0) {
     value_ = to_init % N;
   } else {
     to_init = (-to_init) % N;
@@ -981,14 +981,24 @@ class Matrix {
 
   std::array<Field, N>& operator[](size_t index) { return matrix_[index]; }
   std::array<Field, N> operator[](size_t index) const { return matrix_[index]; }
+  Matrix<M, N, Field>& operator*=(const Field& scalar);
 
   Matrix<M, N, Field>& operator+=(const Matrix<M, N, Field>& to_add);
-  Matrix<M, N, Field>& operator*=(Field to_multiply);
   std::array<Field, N> getRow(size_t index) { return matrix_[index]; };
   std::array<Field, M> getColumn(size_t index);
-
+  size_t rank() const;
+  Field trace();
+  Field det() const;
+  Matrix<N, M, Field> transposed() const;
   // return number of swaps
   size_t triangulate();
+
+  Matrix<M, N, Field> inverted();
+  void invert();
+  void annihilate(size_t init, size_t to_annihilate, size_t column);
+  void leadToOne(size_t row, size_t column);
+  int findNotNullElement(size_t column, size_t start_with); // int, not size_t!! (-1 also possible)
+  int findMinElement(size_t column, size_t start_with); // int, not size_t!! (-1 also possible)
 };
 template<size_t M, size_t N, typename Field>
 Matrix<M, N, Field>::Matrix(const Matrix<M, N, Field>& initial_matrix) {
@@ -1019,16 +1029,6 @@ std::array<Field, M> Matrix<M, N, Field>::getColumn(size_t index) {
     ans[i] = matrix_[i][index];
   }
   return ans;
-}
-
-template<size_t M, size_t N, typename Field>
-Matrix<M, N, Field>& Matrix<M, N, Field>::operator*=(Field to_multiply) {
-  for (size_t i = 0; i < M; ++i) {
-    for (size_t j = 0; j < N; ++j) {
-      matrix_[i][j] *= to_multiply;
-    }
-  }
-  return *this;
 }
 
 template<size_t M, size_t N, size_t K, typename Field>
@@ -1083,21 +1083,22 @@ std::ostream& operator<<(std::ostream& output, const Matrix<M, N, Rational>& mat
   return output;
 }
 
-template<size_t N, typename Field>
-Field trace(const Matrix<N, N, Field>& matrix) {
+template<size_t M, size_t N, typename Field>
+Field Matrix<M, N, Field>::trace() {
+  static_assert(N == M && "can't find a trace in not squared matrix");
   Field ans = 0;
   for (size_t i = 0; i < N; ++i) {
-    ans += matrix[i][i];
+    ans += matrix_[i][i];
   }
   return ans;
 }
 
 template<size_t M, size_t N, typename Field>
-Matrix<N, M, Field> transposed(const Matrix<M, N, Field>& matrix) {
+Matrix<N, M, Field> Matrix<M, N, Field>::transposed() const {
   Matrix<N, M, Field> ans;
   for (size_t i = 0; i < M; ++i) {
     for (size_t j = 0; j < N; ++j) {
-      ans[j][i] = matrix[i][j];
+      ans[j][i] = matrix_[i][j];
     }
   }
   return ans;
@@ -1154,8 +1155,8 @@ size_t Matrix<M, N, Field>::triangulate() {
 }
 
 template<size_t M, size_t N, typename Field>
-size_t rank(const Matrix<M, N, Field>& matrix) {
-  Matrix<M, N, Field> temp_matrix = matrix;
+size_t Matrix<M, N, Field>::rank() const {
+  Matrix<M, N, Field> temp_matrix = *this;
   temp_matrix.triangulate();
   size_t ans = 0;
   size_t cur_col = 0;
@@ -1170,9 +1171,10 @@ size_t rank(const Matrix<M, N, Field>& matrix) {
   return ans;
 }
 
-template<size_t N, typename Field>
-Field det(const Matrix<N, N, Field>& matrix) {
-  Matrix<N, N, Field> temp_matrix = matrix;
+template<size_t M, size_t N, typename Field>
+Field Matrix<M, N, Field>::det() const {
+  static_assert(M == N && "can't find determinant in not squared matrix");
+  Matrix<N, N, Field> temp_matrix = *this;
   size_t swaps = temp_matrix.triangulate();
   Field ans = 1;
   for (size_t i = 0; i < N; ++i) {
@@ -1184,3 +1186,126 @@ Field det(const Matrix<N, N, Field>& matrix) {
   return ans;
 }
 
+template<size_t M, size_t N, typename Field>
+bool operator==(const Matrix<M, N, Field> matrix1, const Matrix<M, N, Field> matrix2) {
+  for (size_t i = 0; i < M; ++i) {
+    for (size_t j = 0; j < N; ++j) {
+      if (matrix1[i][j] != matrix2[i][j]) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+template<size_t M, size_t N, typename Field>
+Matrix<M, N, Field> operator-(const Matrix<M, N, Field>& matrix1, const Matrix<M, N, Field>& matrix2) {
+  Matrix<M, N, Field> ans;
+  for (size_t i = 0; i < M; ++i) {
+    for (size_t j = 0; j < N; ++j) {
+      ans[i][j] = matrix1[i][j] - matrix2[i][j];
+    }
+  }
+  return ans;
+}
+
+template<size_t M, size_t N, typename Field>
+Matrix<M, N, Field>& Matrix<M, N, Field>::operator*=(const Field& scalar) {
+  for (size_t i = 0; i < M; ++i) {
+    for (size_t j = 0; j < N; ++j) {
+      matrix_[i][j] *= scalar;
+    }
+  }
+  return *this;
+}
+
+template<size_t M, size_t N, typename Field>
+Matrix<M, N, Field> operator*(const Field& scalar, const Matrix<M, N, Field>& matrix) {
+  Matrix<M, N, Field> answer = matrix;
+  answer *= scalar;
+  return answer; 
+}
+
+template<size_t M, size_t N, typename Field>
+int Matrix<M, N, Field>::findNotNullElement(size_t column, size_t start_with) {
+  for (size_t i = start_with; i < M; ++i) {
+    if (matrix_[i][column] != 0) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+template<size_t M, size_t N, typename Field>
+int Matrix<M, N, Field>::findMinElement(size_t column, size_t start_with) {
+  size_t answer = start_with;
+  for (size_t i = start_with; i < M; ++i) {
+    if (matrix_[i][column] < matrix_[i][start_with]) {
+      answer = start_with;
+    }
+  }
+  return answer;
+}
+
+template<size_t M, size_t N, typename Field>
+void Matrix<M, N, Field>::annihilate(size_t init, size_t to_annihilate, size_t column) {
+  Field to_multiply = -(matrix_[to_annihilate][column] / matrix_[init][column]);
+  for (size_t i = 0; i < N; ++i) {
+    matrix_[to_annihilate][i] += matrix_[init][i] * to_multiply;
+  }
+}
+
+template<size_t M, size_t N, typename Field>
+void Matrix<M, N, Field>::leadToOne(size_t row, size_t column) {
+  Field to_multiply = Field(1) / matrix_[row][column];
+  if (to_multiply == 1) { return; }
+  for (size_t i = 0; i < N; ++i) {
+    matrix_[row][i] *= to_multiply;
+  }
+}
+
+template<size_t M, size_t N, typename Field>
+void Matrix<M, N, Field>::invert() {
+  static_assert(N == M && "can't invert not squared matrix");
+  // static_assert(det() != 0 && "can't invert matrix with zero determinant");
+  
+  // assuming that N = M
+
+  Matrix<N, 2 * N, Field> extended_matrix;
+  for (size_t i = 0; i < N; ++i) {
+    for (size_t j = 0; j < N; ++j) {
+      extended_matrix[i][j] = matrix_[i][j];
+    }
+  }
+
+  for (int i = 0; i < N; ++i) {
+    extended_matrix[i][i + N] = 1;
+  }
+
+  for (size_t cur_col = 0; cur_col < N; ++cur_col) {
+    size_t to_swap = findMinElement(cur_col, cur_col);
+    std::swap(matrix_[cur_col], matrix_[to_swap]);
+    
+    for (size_t cur_row = 0; cur_row < N; ++cur_row) {
+      if (cur_col == cur_row) { continue; }
+      extended_matrix.annihilate(cur_col, cur_row, cur_col);
+    }
+    std::cout << "col " << cur_col << "is done ->1 rest\n";
+    // extended_matrix.leadToOne(cur_col, cur_col);
+    std::cout << "col " << cur_col << "is done\n";
+  }
+
+  for (size_t i = 0; i < N; ++i) {
+    for (size_t j = 0; j < N; ++j) {
+      matrix_[i][j] = extended_matrix[i][j + N];
+    }
+  }
+
+}
+
+template<size_t M, size_t N, typename Field>
+Matrix<M, N, Field> Matrix<M, N, Field>::inverted() {
+  Matrix answer = *this;
+  answer.invert();
+  return answer;
+}
