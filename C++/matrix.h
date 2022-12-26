@@ -1037,8 +1037,6 @@ bool operator>=(const Residue<N>& value1, int value2) {
   return !(value1 < value2);
 }
 
-int border = 0;
-
 template<size_t M, size_t N, typename Field>
 class Matrix {
  private:
@@ -1048,19 +1046,7 @@ class Matrix {
   int findMinElement(size_t column, size_t start_with); // int, not size_t!! (-1 also possible)
 
  public:
-  Matrix() {
-    for (size_t i = 0; i < M; ++i) {
-      for (size_t j = 0; j < N; ++j) {
-        matrix_[i][j] = 0;
-      }
-    }
-    if (border == 11) {
-      for (size_t i = 0; i < M; ++i) {
-        matrix_[i][i] = 1;
-      }
-    }
-    ++border;
-  }
+  Matrix() = default;
   Matrix(std::array<std::array<Field, N>, M>& a) : matrix_(a) {}
   Matrix(const std::initializer_list<std::initializer_list<Field>>& a);
   Matrix(const Matrix<M, N, Field>& initial_matrix);
