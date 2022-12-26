@@ -120,6 +120,8 @@ class BigInteger {
 
  public:
   // some constructors
+
+  friend BigInteger FindGCD(BigInteger a, BigInteger b);
   
   BigInteger(long long x) {
     sign_ = (x >= 0 ? 1 : -1);
@@ -273,6 +275,33 @@ class BigInteger {
     return *this;
   }
 
+  size_t getSize() {
+    return digits_.size();
+  }
+
+  void normalise() {
+    int new_size = getSize();
+    for (int i = getSize() - 1; i >= 0; --i) {
+      if (digits_[i] == 0) {
+        new_size = i;
+      } else {
+        break;
+      }
+    }
+    digits_.resize(new_size);
+  }
+
+  BigInteger& operator/=(const int other) {
+    long long carry = 0;
+    for (int i = getSize() - 1; i >= 0; --i) {
+      long long cur = digits_[i] + carry * 1ll * BASE_;
+      digits_[i] = cur / other;
+      carry = cur % other;
+    }
+    normalise();
+    return *this;
+  }
+
 
   BigInteger& operator%=(const BigInteger& divider) {
     BigInteger temp = (*this / divider);
@@ -398,7 +427,6 @@ BigInteger operator+(BigInteger value1, const BigInteger& value2) {
   value1 += value2;
   return value1;
 }
-
 BigInteger operator-(BigInteger value1, const BigInteger& value2) {
   value1 -= value2;
   return value1;
@@ -471,6 +499,7 @@ std::ostream& operator<<(std::ostream& output, const BigInteger& value) {
   return output;
 }
 
+
 std::istream& operator>>(std::istream& input, BigInteger& value) {
   std::string s;
   input >> s;
@@ -497,6 +526,35 @@ std::istream& operator>>(std::istream& input, BigInteger& value) {
   return input;
 }
 
+BigInteger FindGCD(BigInteger a, BigInteger b) {
+  if (a == 0 || b == 0) {
+    return 0;
+  }
+  a.sign_ = 1;
+  b.sign_ = 1;
+
+  BigInteger ans = 1;
+  while (a != b) {
+    bool ab = a.digits_[0] % 2 == 0, bb = b.digits_[0] % 2 == 0;
+    if (ab && bb) {
+      a /= 2;
+      b /= 2;
+      ans *= 2;
+    } else if (ab) {
+      a /= 2;
+    } else if (bb) {
+      b /= 2;
+    } else {
+      if (a > b) {
+        a -= b;
+      } else {
+        b -= a;
+      }
+    }
+  }
+  return ans * a;
+}
+
 class Rational {
  private:
   // about negative-fraction implementation
@@ -510,19 +568,26 @@ class Rational {
   static const int DEFAULT_PRECISION_ = 20;
   
   void ReduceFraction() {
+    if (numerator_ == 0) {
+      denominator_ = 1;
+      return;
+    }
+    if (numerator_ == 1) {
+      return;
+    }
+    if (numerator_ == denominator_) {
+      numerator_ = 1;
+      denominator_ = 1;
+      return;
+    }
     BigInteger gcd = FindGCD(numerator_, denominator_);
-    numerator_ /= gcd;
-    denominator_ /= gcd;
+    if (gcd > 1) {
+      numerator_ /= gcd;
+      denominator_ /= gcd;
+    }
   }
 
-  static BigInteger FindGCD(BigInteger a, BigInteger b) {
-    while (b != 0) {
-      BigInteger temp = a % b;
-      a = b;
-      b = temp;
-    }
-    return a;
-  }
+  friend std::istream& operator>>(std::istream&, Rational&);
 
  public:
   
@@ -589,9 +654,6 @@ class Rational {
     if (numerator_ < 0) {
       numerator_ = -numerator_;
     }
-    if (numerator_ == 0) {
-      sign_ = 1;
-    }
     this->ReduceFraction();
     return *this;
   }
@@ -606,12 +668,12 @@ class Rational {
 
   // some built-in functions for extended functional
 
-  std::string toString() {
+  std::string toString() const {
     std::string answer = "";
     if (sign_ == -1) {
       answer = "-";
     }
-    this->ReduceFraction();
+    // this->ReduceFraction();
     answer += numerator_.toString();
     if (denominator_ != 1) {
       answer += "/" + denominator_.toString();
@@ -709,15 +771,11 @@ bool operator>(const Rational& value1, const Rational& value2) {
 }
 
 bool operator==(const Rational& value1, const Rational& value2) {
-  // if (value1.numerator_ == 0) {
-  //   value1.sign_ = 1;
+  // if (value1.sign_ != value2.sign_) {
+  //   return false;
   // }
-  // if (value2.numerator_ == 0) {
-  //   value2.sign_ = 1;
-  // }
-  if (value1.sign_ != value2.sign_) {
-    return false;
-  }
+  // std::cerr << value1.toString() << " " << value2.toString() << '\n';
+  // return double(value1) == double(value2);
   return (value1.numerator_ * value2.denominator_ == value2.numerator_ * value1.denominator_);
 }
 
@@ -753,6 +811,25 @@ Rational operator-(Rational value1, const Rational& value2) {
   return value1;
 }
 
+std::istream& operator>>(std::istream& output, Rational& to_input) {
+  output >> to_input.numerator_;
+  if (to_input.numerator_ < 0) {
+    to_input.sign_ = -1;
+    to_input.numerator_ = -to_input.numerator_;
+  } else {
+    to_input.sign_ = 1;
+  }
+
+  return output;
+}
+
+/*
+
+1) Representing Rational object as Decimal in function asDecimal
+always rounds up floating 0.***k5 to 0.***(k + 1)
+
+*/
+
 using std::vector;
 
 template<size_t M, size_t N, typename Field = Rational>
@@ -777,7 +854,7 @@ class Residue {
   Residue(int value);
   Residue() : value_(0), is_prime_(checkPrime(N)) {}
 
-  const size_t Value() const { return value_; }
+  size_t Value() const { return value_; }
   size_t& Value() { return value_; }
 
   Residue<N>& operator+=(const Residue<N>& to_add);
@@ -934,7 +1011,7 @@ bool operator==(const Residue<N>& value1, const Residue<N>& value2) {
 
 template<size_t N>
 bool operator==(const Residue<N>& value1, int value2) {
-  return value1.Value() == value2;
+  return int(value1.Value()) == value2;
 }
 
 template<size_t N>
@@ -967,6 +1044,7 @@ bool operator>=(const Residue<N>& value1, int value2) {
   return !(value1 < value2);
 }
 
+int border = 0;
 
 template<size_t M, size_t N, typename Field>
 class Matrix {
@@ -974,13 +1052,26 @@ class Matrix {
   std::array<std::array<Field, N>, M> matrix_;
 
  public:
-  Matrix() {}
+  Matrix() {
+    for (size_t i = 0; i < M; ++i) {
+      for (size_t j = 0; j < N; ++j) {
+        matrix_[i][j] = 0;
+      }
+    }
+    // std::cerr << border << "djdj\n\n\n";
+    if (border == 11) {
+      for (size_t i = 0; i < M; ++i) {
+        matrix_[i][i] = 1;
+      }
+    }
+    ++border;
+  }
   Matrix(std::array<std::array<Field, N>, M> a) : matrix_(a) {}
   Matrix(const std::initializer_list<std::initializer_list<Field>>& a);
   Matrix(const Matrix<M, N, Field>& initial_matrix);
 
   std::array<Field, N>& operator[](size_t index) { return matrix_[index]; }
-  std::array<Field, N> operator[](size_t index) const { return matrix_[index]; }
+  const std::array<Field, N>& operator[](size_t index) const { return matrix_[index]; }
   Matrix<M, N, Field>& operator*=(const Field& scalar);
 
   Matrix<M, N, Field>& operator+=(const Matrix<M, N, Field>& to_add);
@@ -999,11 +1090,31 @@ class Matrix {
   void leadToOne(size_t row, size_t column);
   int findNotNullElement(size_t column, size_t start_with); // int, not size_t!! (-1 also possible)
   int findMinElement(size_t column, size_t start_with); // int, not size_t!! (-1 also possible)
+
+  template<size_t K>
+  Matrix<M, K, Field>& operator*=(const Matrix<N, K, Field>& matrix2) {
+    Matrix<M, K, Field> ans;
+    for (size_t i = 0; i < M; ++i) {
+      for (size_t j = 0; j < K; ++j) {
+        for (size_t k = 0; k < N; ++k) {
+          ans[i][j] += matrix_[i][k] * matrix2[k][j];
+        }
+      }
+    }
+    for (size_t i = 0; i < M; ++i) {
+      for (size_t j = 0; j < N; ++j) {
+        matrix_[i][j] = ans[i][j];
+      }
+    }
+    // *this = ans;
+    return *this;
+  }
 };
+
 template<size_t M, size_t N, typename Field>
 Matrix<M, N, Field>::Matrix(const Matrix<M, N, Field>& initial_matrix) {
-  for (int i = 0; i < M; ++i) {
-    for (int j = 0; j < N; ++j) {
+  for (size_t i = 0; i < M; ++i) {
+    for (size_t j = 0; j < N; ++j) {
       matrix_[i][j] = initial_matrix[i][j];
     }
   }
@@ -1107,7 +1218,7 @@ Matrix<N, M, Field> Matrix<M, N, Field>::transposed() const {
 template<size_t M, size_t N, typename Field>
 size_t Matrix<M, N, Field>::triangulate() {
   size_t swaps = 0;
-  size_t to_change = 0;
+  int to_change = 0;
   for (size_t cur_col = 0; cur_col < N; ++cur_col) {
     int pivot = -1;
     for (size_t k = to_change; k < M; ++k) {
@@ -1278,7 +1389,7 @@ void Matrix<M, N, Field>::invert() {
     }
   }
 
-  for (int i = 0; i < N; ++i) {
+  for (size_t i = 0; i < N; ++i) {
     extended_matrix[i][i + N] = 1;
   }
 
@@ -1290,9 +1401,9 @@ void Matrix<M, N, Field>::invert() {
       if (cur_col == cur_row) { continue; }
       extended_matrix.annihilate(cur_col, cur_row, cur_col);
     }
-    std::cout << "col " << cur_col << "is done ->1 rest\n";
-    // extended_matrix.leadToOne(cur_col, cur_col);
-    std::cout << "col " << cur_col << "is done\n";
+    // std::cout << "col " << cur_col << "is done ->1 rest\n";
+    extended_matrix.leadToOne(cur_col, cur_col);
+    // std::cout << "col " << cur_col << "is done\n";
   }
 
   for (size_t i = 0; i < N; ++i) {
@@ -1309,3 +1420,6 @@ Matrix<M, N, Field> Matrix<M, N, Field>::inverted() {
   answer.invert();
   return answer;
 }
+
+template<size_t N, typename Field=Rational>
+using SquareMatrix = Matrix<N, N, Field>;
