@@ -761,14 +761,14 @@ Rational abs(Rational v) {
   return v;
 }
 
-template<unsigned long V>
+template<unsigned long Value>
 struct Sqrt {
   template<int64_t L, int64_t R>
   struct SqrtHelper {
     static const int64_t M = (L + R + 1) / 2;
-    static const bool COND = M * M < V;
+    static const bool COND = M * M < Value;
     static const bool STOP_POINT = L + 1 >= R;
-    static const int64_t N = R * R > V ? L : R;
+    static const int64_t N = R * R > Value ? L : R;
     static const int64_t value = SqrtHelper<STOP_POINT ? N : (COND ? M : L),
                                         STOP_POINT ? N : (COND ? R : M)>::value;
   };
@@ -794,13 +794,13 @@ struct IsPrimeHelper<N, 1> {
   static const bool value = N % 2 != 0;
 };
 
-template<unsigned long V>
-struct IsPrime {
+template<unsigned long Value>
+struct isPrime {
   static const bool value = IsPrimeHelper<V, Sqrt<V>::value>::value;
 };
 
 template<>
-struct IsPrime<2> {
+struct isPrime<2> {
   static const bool value = true;
 };
 
@@ -847,7 +847,7 @@ class Residue {
   }
 
   Residue<N>& operator/=(const Residue<N>& other) {
-    static_assert(IsPrime<N>::value, "Division in residue field with non-prime base.");
+    static_assert(isPrime<N>::value, "Division in residue field with non-prime base.");
     //assert(other.value != 0);
 
     int inv_v = other.getInvertedValue();

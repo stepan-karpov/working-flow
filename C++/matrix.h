@@ -825,6 +825,53 @@ always rounds up floating 0.***k5 to 0.***(k + 1)
 
 */
 
+template<size_t V>
+struct SqRoot {
+
+  template<size_t Left, size_t Right>
+  struct sqrt {
+    static const bool STOP_POINT = Left + 1 >= Right;
+    static const size_t N = Right * Right > V ? Left : Right;
+    static const size_t value = sqrt<STOP_POINT ? N :
+          ((((Left + Right + 1) / 2) * ((Left + Right + 1) / 2) < V) ? ((Left + Right + 1) / 2) : Left),
+          STOP_POINT ? N : ((((Left + Right + 1) / 2) *
+          ((Left + Right + 1) / 2) < V) ? Right : ((Left + Right + 1) / 2))>::value;
+  };
+
+  template<size_t M>
+  struct sqrt<M, M> {
+    static const size_t value = M;
+  };
+
+  static const size_t value = sqrt<0, V>::value;
+};
+
+template<size_t N, size_t K>
+struct isPrimeTemp {
+  static const bool value = N % K != 0 && isPrimeTemp<N, K - 1>::value;
+};
+
+template<size_t N>
+struct isPrimeTemp<N, 2> {
+  static const bool value = N % 2 != 0;
+};
+
+template<size_t N>
+struct isPrimeTemp<N, 1> {
+  static const bool value = N % 2 != 0;
+};
+
+template<size_t V>
+struct isPrime {
+  static const bool value = isPrimeTemp<V, SqRoot<V>::value>::value;
+};
+
+template<>
+struct isPrime<2> {
+  static const bool value = true;
+};
+
+
 template<size_t M, size_t N, typename Field = Rational>
 class Matrix;
 
@@ -832,20 +879,11 @@ template<size_t N>
 class Residue {
  private:
   size_t value_;
-  bool is_prime_ = false;
-
-  static bool checkPrime(size_t num) {
-    for (size_t i = 2; i < sqrt(num) + 1; ++i) {
-      if (num % i == 0) {
-        return false;
-      }
-    }
-    return true;
-  }
+  static const bool is_prime_ = isPrime<N>::value;
 
  public:
   Residue(int value);
-  Residue() : value_(0), is_prime_(checkPrime(N)) {}
+  Residue() : value_(0) {}
 
   size_t Value() const { return value_; }
   size_t& Value() { return value_; }
@@ -865,6 +903,8 @@ class Residue {
   }
 };
 
+// template<size_t N>
+// bool Residue<N>::is_prime_ = isPrime<N>::value;
 
 template<size_t N>
 Residue<N>& Residue<N>::operator++() {
@@ -913,7 +953,7 @@ Residue<N>& Residue<N>::operator*=(const Residue<N>& to_add) {
 
 template<size_t N>
 Residue<N>& Residue<N>::operator/=(const Residue<N>& divider) {
-  assert(is_prime_ && "division not in the field!!!");
+  static_assert(is_prime_, "division not in the field!!!");
   assert(divider.value_ != 0 && "division by zero!!!");
   size_t x = divider.value_;
   size_t n = N - 2;
@@ -973,7 +1013,7 @@ std::istream& operator>>(std::istream& input, const Residue<N>& to_input) {
 }
 
 template<size_t N>
-Residue<N>::Residue(int to_init) : is_prime_(checkPrime(N)) {
+Residue<N>::Residue(int to_init) {
   if (to_init >= 0) {
     value_ = to_init % N;
   } else {
@@ -1044,12 +1084,16 @@ class Matrix {
   size_t triangulate();
   int findNotNullElement(size_t column, size_t start_with); // int, not size_t!! (-1 also possible)
   int findMinElement(size_t column, size_t start_with); // int, not size_t!! (-1 also possible)
+  void annihilate(size_t init, size_t to_annihilate, size_t column);
+  void leadToOne(size_t row, size_t column);
 
  public:
+  friend class Matrix<M, N / 2, Field>;
+
   Matrix() = default;
-  Matrix(std::array<std::array<Field, N>, M>& a) : matrix_(a) {}
+  Matrix(const std::array<std::array<Field, N>, M>& a) : matrix_(a) {}
   Matrix(const std::initializer_list<std::initializer_list<Field>>& a);
-  Matrix(const Matrix<M, N, Field>& initial_matrix);
+  // Matrix(const Matrix<M, N, Field>& initial_matrix) = default;
 
   std::array<Field, N>& operator[](size_t index) { return matrix_[index]; }
   const std::array<Field, N>& operator[](size_t index) const { return matrix_[index]; }
@@ -1066,39 +1110,15 @@ class Matrix {
 
   Matrix<M, N, Field> inverted();
   void invert();
-  void annihilate(size_t init, size_t to_annihilate, size_t column);
-  void leadToOne(size_t row, size_t column);
 
   std::array<std::array<Field, N>, M>& getMatrix() { return matrix_; }
   const std::array<std::array<Field, N>, M> getMatrix() const { return matrix_; }
 
-  template<size_t K>
-  Matrix<M, K, Field>& operator*=(const Matrix<N, K, Field>& matrix2) {
-    Matrix<M, K, Field> ans;
-    for (size_t i = 0; i < M; ++i) {
-      for (size_t j = 0; j < K; ++j) {
-        for (size_t k = 0; k < N; ++k) {
-          ans[i][j] += matrix_[i][k] * matrix2[k][j];
-        }
-      }
-    }
-    for (size_t i = 0; i < M; ++i) {
-      for (size_t j = 0; j < N; ++j) {
-        matrix_[i][j] = ans[i][j];
-      }
-    }
+  Matrix<M, N, Field>& operator*=(const Matrix<N, N, Field>& matrix2) {
+    *this = (*this) * matrix2;
     return *this;
   }
 };
-
-template<size_t M, size_t N, typename Field>
-Matrix<M, N, Field>::Matrix(const Matrix<M, N, Field>& initial_matrix) {
-  for (size_t i = 0; i < M; ++i) {
-    for (size_t j = 0; j < N; ++j) {
-      matrix_[i][j] = initial_matrix[i][j];
-    }
-  }
-}
 
 template<size_t M, size_t N, typename Field>
 Matrix<M, N, Field>::Matrix(const std::initializer_list<std::initializer_list<Field>>& a) {

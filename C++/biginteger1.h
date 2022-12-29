@@ -5,8 +5,6 @@
 
 class BigInteger;
 
-using std::vector;
-
 BigInteger operator*(BigInteger, const BigInteger&);
 BigInteger operator+(BigInteger, const BigInteger&);
 BigInteger operator-(BigInteger, const BigInteger&);
@@ -50,10 +48,6 @@ class BigInteger {
       }
     }
     return l;
-  }
-
-  size_t getSize() const {
-    return digits_.size();
   }
 
   void DeleteLeadingZeros() {
@@ -141,116 +135,66 @@ class BigInteger {
   friend std::ostream& operator<<(std::ostream&, const BigInteger&);
   friend std::istream& operator>>(std::istream&, BigInteger&);
 
-  
 
-  BigInteger& operator+=(const BigInteger& other) {
-    size_t max_size = std::max(digits_.size(), other.digits_.size());
-    if (sign_ != other.sign_) {
-      sign_ = other.sign_;
-      (*this) -= other;
-      sign_ = (sign_ == 1) ? -1 : 1;
-      if (cmp_wo_sign(0) == 0) {
-        sign_ = 1;
-      }
-    } else {
-      digits_.resize(max_size + 2);
-      for (int i = 0; i < getSize(); ++i) {
-        digits_[i] += (i < other.getSize()) ? other.digits_[i] : 0;
-      }
- 
-      for (int i = 0; i < getSize() - 1; ++i) {
-        if (digits_[i] >= BASE_) {
-          digits_[i] -= BASE_;
-          digits_[i + 1]++;
-        }
-      }
-      normalise();
+  BigInteger& operator+=(const BigInteger& addition) {
+    if (*this == 0) {
+      *this = addition; // this copying is necessary
+      return *this;
     }
-    if (cmp_wo_sign(0) == 0) {
-      sign_ = 1;
+    if (addition == 0) {
+      return *this;
     }
+
+    if (*this > 0 && addition > 0) {
+      this->FindSum(addition);
+      return *this;
+    }
+    if (*this < 0 && addition < 0) {
+      this->FindSum(addition);
+      return *this;
+    }
+
+    if (this->ModuloComparison(*this, addition)) {
+      this->FindDifference(addition);
+      return *this;
+    }
+
+    BigInteger temp = addition; // this copying is unavoidable
+    temp.FindDifference(*this);
+    *this = temp;
     return *this;
   }
 
-  [[nodiscard]] int cmp_wo_sign(const BigInteger& other) const {
-    if (getSize() == 0 && other.getSize() == 0) {
-      return 0;
+  BigInteger& operator-=(const BigInteger& addition) {
+    if (addition == 0) {
+      return *this;
     }
-    if (getSize() == 0) {
-      return -1;
-    }
-    if (other.getSize() == 0) {
-      return 1;
-    }
- 
-    if (getSize() < other.getSize()) {
-      return -1;
-    } else if (getSize() > other.getSize()) {
-      return 1;
-    } else {
-      for (int i = getSize() - 1; i >= 0; --i) {
-        if (digits_[i] < other.digits_[i]) {
-          return -1;
-        } else if (digits_[i] > other.digits_[i]) {
-          return 1;
-        }
-      }
-    }
- 
-    return 0;
-  }
-
-  BigInteger& operator-=(const BigInteger& other) {
-    vector<long long> other_arr = other.digits_;
-    if (sign_ != other.sign_) {
-      sign_ = other.sign_;
-      (*this) += other;
-      sign_ = (sign_ == 1) ? -1 : 1;
-      if (cmp_wo_sign(0) == 0) {
-        sign_ = 1;
-      }
-    } else {
-      if (cmp_wo_sign(other) == 0) {
-        digits_.resize(0);
-        sign_ = 1;
-        return *this;
-      } else if (cmp_wo_sign(other) == -1) {
-        other_arr = digits_;
-        digits_ = other.digits_;
-        sign_ = (sign_ == 1) ? -1 : 1;
-      }
-      size_t max_size = std::max(digits_.size(), other_arr.size());
-      digits_.resize(max_size + 2);
-      for (int i = 0; i < getSize(); ++i) {
-        digits_[i] -= (i < static_cast<int>(other_arr.size())) ? other_arr[i] : 0;
-      }
- 
-      for (int i = 0; i < getSize() - 1; ++i) {
-        if (digits_[i] < 0) {
-          digits_[i] += BASE;
-          digits_[i + 1]--;
-        }
-      }
- 
-      normalise();
-      if (cmp_wo_sign(0) == 0) {
-        sign_ = 1;
-      }
+    if (*this == 0) {
+      *this = -addition; // this copying is necessary
+      return *this;
     }
 
+    if (*this < 0 && addition > 0) {
+      this->FindSum(addition);
+      return *this;
+    }
+    if (*this > 0 && addition < 0) {
+      this->FindSum(addition);
+      return *this;
+    }
+
+    if (this->ModuloComparison(*this, addition)) {
+      this->FindDifference(addition);
+      return *this;
+    }
+
+    BigInteger temp = addition;
+    temp.FindDifference(*this);
+    *this = temp;
+    if (int(digits_.size()) != 0) {
+      this->sign_ = -this->sign_;
+    }
     return *this;
-  }
-
-  void normalise() {
-    int new_size = getSize();
-    for (int i = getSize() - 1; i >= 0; --i) {
-      if (digits_[i] == 0) {
-        new_size = i;
-      } else {
-        break;
-      }
-    }
-    digits_.resize(new_size);
   }
 
   BigInteger& operator*=(const BigInteger& multiplier) { // simple silly multiplication
