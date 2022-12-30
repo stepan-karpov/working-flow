@@ -1,2 +1,2 @@
-print("1/(        max(  abs(u), abs(v)    )        )")
-print("(-2Axv - 2Bxu - Bxv - Axu - A - B) / ((-u - v) * x + uvx^2 - 1)")
+print("1/(   max(abs(u), abs(v))           )")
+print("A/(1 - vt) + B/(1 - ut)")
