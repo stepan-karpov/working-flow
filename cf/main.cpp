@@ -22,23 +22,23 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-void solve(ll a, ll b, ll c, ll d) {
-  for (ll x = a + 1; x <= c; ++x) {
-    ll min_k = x / a;
-    ll max_k = x * d / a / b + 5;
-    for (int k = min_k; k <= max_k; ++k) {
-      ll y = a * b * k / x;
-      if ((x * y) % (a * b) == 0) {
-        if (a < x && x <= c) {
-          if (b < y && y <= d) {
-            cout << x << " " << y << endl;
-            return;
-          }
-        }
-      }
-    }
+void solve() {
+  ll n, m;
+  cin >> n >> m;
+  vll fact(3 * n + 100, 1);
+  for (int i = 1; i <= n; ++i) {
+    fact[i] = fact[i - 1] * i;
+    fact[i] %= m;
   }
-  cout << "-1 -1" << endl;
+
+  ll v1 = fact[2 * n] * 2;
+  v1 -= fact[n];
+  v1 -= 1;
+  v1 = (v1 + m) % m;
+  v1 += fact[n];
+  cout << v1 << '\n';
+
+
 }
 
 int main() {
@@ -46,16 +46,11 @@ int main() {
   cin.tie(nullptr);
   cout.tie(nullptr);
   ll t = 1;
-  cin >> t;
+  // cin >> t;
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    ll a = rand() % int(1e9) + 1;
-    ll b = rand() % int(1e9) + 1;
-    ll c = rand() % int(1e9) + 1;
-    ll d = rand() % int(1e9) + 1;
-    cout << a << " " << b << " " << c << " " << d;
-    solve(a, b, c, d);
+    solve();
     // cout << solve() << endl;
     // if (solve())
     //    cout << "Yes" << endl;
