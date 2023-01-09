@@ -20,36 +20,23 @@ std::string CreateString(int size) {
   return ans;
 }
 
+bool is_prime(int n){
+  bool f = true;
+  for (int i = 2; i <= sqrt(n); i++) {
+    if (n % i == 0){
+      f = false;
+      break;
+    }
+  }
+  return f;   
+}
 
 int main() {
   std::mt19937 mt(time(nullptr)); 
 
-  int nums = 5;
-  int range = 10;
-  std::cout << nums << " " << 0 << '\n';
+  int p = random(0, 100);
 
-  for (int i = 0; i < nums; ++i) {
-    std::cout << random(2, range) << ' ';
-  }
-  std::cout << '\n';
-
-  int size = nums;
-  int tests = 10;
-  std::cout << tests << '\n';
-
-  for (int i = 0; i < tests; ++i) {
-    int border = 0;
-    // if (size >= 3) {
-    //   border = 1;
-    // }
-    int cmd = random(0, border);
-    if (cmd == 0) {
-      std::cout << "2 " << random(1, size) << '\n';
-    } else {
-      std::cout << "1 " << random(1, size) << '\n';
-      --size;
-    }
-  }
+  std::cout << p << '\n';
   
   return 0;
 }

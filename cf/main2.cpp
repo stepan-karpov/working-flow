@@ -22,46 +22,52 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-bool possible(vector<pll> scores, ll time) {
-  ll n = scores.size();
-  for (int i = 0; i < n; ++i) {
-    if (time) 
-  }
-}
-
-ll binSearch(vector<pll>& scores, ll time) {
-  ll l = -1;
-  ll r = 1e5 * 5;
-
-  while (r - l > 1) {
-    ll m = (l + r) / 2;
-    if (possible(m, scores, time)) {
-      r = m;
-    } else {
-      l = m;
-    }
-  }
-
-  return r;
-}
-
 void solve() {
-  ll n, m;
-  cin >> n >> m;
-  vector<pll> a(n);
-  for (int i = 0; i < n; ++i) {
-    cin >> a[i].second;
-    a[i].first = n - i;
+  ll n;
+  cin >> n;
+
+  vvll matrix(n, vll(n, -1));
+
+  ll cnt = 1;
+
+  int i = n - 1;
+  while (i >= -2 * n - 10) {
+    int j = 0;
+    int cp_i = i;
+    while (cp_i <= n - 1 && j <= n - 1) {
+      if (cp_i >= 0 && cp_i < n && j <= n - 1 && j >= 0) {
+        matrix[cp_i][j] = cnt;
+        ++cnt;
+      }
+      ++cp_i;
+      ++j;
+    }
+    i -= 2;
   }
 
-  sort(a.begin(), a.end());
-
-  for (int i = 0; i < n; ++i) {
-    cout << a[i].first << " " << a[i].second << '\n';
+  i = 1;
+  while (i <= 2 * n + 10) {
+    int j = n - 1;
+    int cp_i = i;
+    while (cp_i >= 0 && j >= 0) {
+      if (cp_i >= 0 && cp_i < n && j <= n - 1 && j >= 0) {
+        matrix[cp_i][j] = cnt;
+        ++cnt;
+      }
+      --cp_i;
+      --j;
+    }
+    i += 2;
   }
-
-  cout << binSearch(a, m) << '\n';
   
+
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
+      cout << matrix[i][j] << ' ';
+    }
+    cout << '\n';
+  }
+
 }
 
 int main() {
@@ -69,7 +75,7 @@ int main() {
   cin.tie(nullptr);
   cout.tie(nullptr);
   ll t = 1;
-  // cin >> t;
+  cin >> t;
   // cout << fixed << setprecision(10);
   
   while (t--) {

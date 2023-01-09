@@ -7,39 +7,46 @@ void Init() {
   std::cout.tie(nullptr);
 }
 
-const long long MOD = 998244353;
-
-long long BinPow(long long a, long long x) {
-  if (x == 0) {
-    return 1;
-  }
-  if (x % 2 == 0) {
-    long long t = BinPow(a, x / 2);
-    return (t * t) % MOD;
-  }
-  return (a * BinPow(a, x - 1)) % MOD;
-}
-
 int main() {
   Init();
-  long long n;
-  std::cin >> n;
-  if (n == 1) {
-    std::cout << "0\n";
-    return 0;
+  int k;
+  std::cin >> k;
+
+  std::vector<int> a(k);
+  for (int i = 0; i < k; ++i) {
+    std::cin >> a[i];
   }
 
-  long long answer = 0;
+  std::vector<int> c(k + 1);
+  for (int i = 1; i <= k; ++i) {
+    std::cin >> c[i];
+  }
 
-  answer += BinPow(3, n - 1);
-  answer -= BinPow(-1, n - 1);
-  answer += MOD;
-  answer *= 3;
-  answer %= MOD;
-  answer *= BinPow(4, MOD - 2);
-  answer %= MOD;
+  std::vector<int> p(k, 0);
 
-  std::cout << answer << '\n';
+  for (int i = 0; i < k; ++i) {
+    p[i] = a[i];
+    for (int j = 0; j <= std::min(k, i); ++j) {
+      p[i] -= a[i - j] * c[j];
+    }
+  }
+
+  while (!p.empty() && p[p.size() - 1] == 0) {
+    p.pop_back();
+  }
+  std::cout << p.size() - 1 << '\n';
+
+  for (int i = 0; i < p.size(); ++i) {
+    std::cout << p[i] << ' ';
+  }
+  std::cout << '\n';
+  std::cout << '\n';
+
+  std::cout << k << '\n' << 1 << ' ';
+  for (int i = 1; i <= k; ++i) {
+    std::cout << -c[i] << " ";
+  }
+  std::cout << '\n';
 
   return 0;
 }

@@ -1,62 +1,90 @@
-#include <bits/stdc++.h>
-using namespace std;
-// #pragma GCC optimize("unroll-loops")
-// #pragma GCC optimize("Ofast")
-// #pragma GCC optimize("no-stack-protector")
-// #pragma GCC target("sse,sse2,sse3,ssse3,popcnt,abm,mmx,avx,tune=native")
-// #pragma GCC optimize("fast-math")
-// #pragma GCC optimize(2)
-// #pragma GCC optimize("Ofast","inline","-ffast-math")
-// #pragma GCC optimize "-O3"
+#include <iostream>
+#include <vector>
+#include <algorithm>
 
-using ll = long long;
-using pll = pair<ll, ll>;
-using pii = pair<int, int>;
-using vll = vector<ll>;
-using vvll = vector<vll>;
-using ld = long double;
+const long long MOD = 998'244'353;
+const long long SIZE = 1100;
 
-const ll INF = 1e16;
-const ld EPS = 1e-8;
-
-// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
-const ll MOD = 998'244'353;
-
-void solve() {
-  ll n, m;
-  cin >> n >> m;
-  vll p(n + 1), q(m + 1);
-  for (int i = 0; i < n + 1; ++i) {
-    cin >> p[i];
-  }
-  for (int i = 0; i < m + 1; ++i) {
-    cin >> q[i];
-  }
-  ll l = max(n, m);
-  vll sum(l, 0), mult(n * m, 0), div(n * m, 0);
-
-  for (int i = 0; i < l; ++i) {
-    
-  }
-
+void Init() {
+  std::ios_base::sync_with_stdio(false);
+  std::cin.tie(nullptr);
+  std::cout.tie(nullptr);
 }
 
-int main(){
-    ios_base::sync_with_stdio(false);
-    cin.tie(nullptr);
-    cout.tie(nullptr);
-    ll t = 1;
-    // cin >> t;
-    // cout << fixed << setprecision(10);
-    
-    while (t--) {
-        solve();
-        // cout << solve() << endl;
-        // if (solve())
-        //    cout << "Yes" << endl;
-        // else
-        //    cout << "No" << endl;
-    }
+int main() {
+  Init();
+  
+  long long n = 0;
+  long long m = 0;
+  std::cin >> n >> m;
+  std::vector<long long> p(n + 1);
+  std::vector<long long> q(m + 1);
+  for (long long i = 0; i <= n; ++i) {
+    std::cin >> p[i];
+  }
+  for (long long i = 0; i <= m; ++i) {
+    std::cin >> q[i];
+  }
+  while (p.size() != SIZE) {
+    p.push_back(0);
+  }
+  while (q.size() != SIZE) {
+    q.push_back(0);
+  }
 
-    return 0;
+  std::vector<long long> sum;
+
+  for (long long i = 0; i < SIZE; ++i) {
+    sum.push_back((p[i] + q[i]) % MOD);  
+  }
+  while (!sum.empty() && sum[sum.size() - 1] == 0) {
+    sum.pop_back();
+  }
+  std::vector<long long> mult(SIZE);
+  
+  for (long long i = 0; i < SIZE; ++i) {
+    for (long long j = 0; j <= i; ++j) {
+      mult[i] += p[j] * q[i - j];
+      mult[i] %= MOD;
+    }
+  }
+  while (!mult.empty() && mult[mult.size() - 1] == 0) {
+    mult.pop_back();
+  }
+
+  int ZERO = 0;
+  int s1 = sum.size() - 1;
+  int s2 = mult.size() - 1;
+
+  std::cout << std::max(ZERO, s1) << '\n';
+  for (long long i = 0; i < sum.size(); ++i) {
+    std::cout << sum[i] << ' ';
+  }
+  std::cout << '\n';
+
+  std::cout << std::max(ZERO, s2) << '\n';
+  for (long long i = 0; i < mult.size(); ++i) {
+    std::cout << mult[i] << ' ';
+  }
+  std::cout << '\n';
+
+  std::vector<long long> div(SIZE + 1);
+  div[0] = p[0] % MOD;
+
+  for (long long i = 1; i < 1000; ++i) {
+    div[i] = p[i] + MOD;
+    for (int j = i - 1; j >= 0; --j) {
+      long long delta = div[j] * q[i - j];
+      delta %= MOD;
+      div[i] -= delta;
+      div[i] = (div[i] + 2 * MOD) % MOD;
+    }
+  }
+
+  for (int i = 0; i < 1000; ++i) {
+    std::cout << div[i] << ' ';
+  }
+  std::cout << '\n';
+
+  return 0;
 }

@@ -1,35 +1,76 @@
-#include <iostream>
-#include <vector>
+#include <bits/stdc++.h>
+using namespace std;
+// #pragma GCC optimize("unroll-loops")
+// #pragma GCC optimize("Ofast")
+// #pragma GCC optimize("no-stack-protector")
+// #pragma GCC target("sse,sse2,sse3,ssse3,popcnt,abm,mmx,avx,tune=native")
+// #pragma GCC optimize("fast-math")
+// #pragma GCC optimize(2)
+// #pragma GCC optimize("Ofast","inline","-ffast-math")
+// #pragma GCC optimize "-O3"
 
-void Init() {
-  std::ios_base::sync_with_stdio(false);
-  std::cin.tie(nullptr);
-  std::cout.tie(nullptr);
+using ll = long long;
+using pll = pair<ll, ll>;
+using pii = pair<int, int>;
+using vll = vector<ll>;
+using vvll = vector<vll>;
+using ld = long double;
+
+const ll INF = 1e16;
+const ld EPS = 1e-8;
+const string ALPH = "abcdefghijklmnopqrstuvwxyz";
+
+// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
+
+std::vector<long long> extendedGCD(long long a, long long b) {
+  if (a == 0) {
+    return {0, 1, b};
+  }
+  std::vector<long long> answer = extendedGCD(b % a, a);
+  return {
+    answer[1] - (b / a) * answer[0],
+    answer[0],
+    answer[2]
+  };
 }
 
-struct Column {
-  long long a, b, c;
-  Column(long long a, long long b, long long c) : a(a), b(b), c(c) {}
-};
+void solve() {
+  long long a, b, n, m;
+  cin >> a >> b >> n >> m;
 
-const long long MOD = 1e9 + 7;
+  vll answer = extendedGCD(n, m);
 
-int main() {
-  Init();
-  int n;
-  std::cin >> n;
-  std::vector<Column> table(n, {0, 0, 0});
-
-  table[0].b = 1;
-
-  for (int i = 1; i < n; ++i) {
-    table[i].a = (table[i - 1].a + table[i - 1].b) % MOD;
-    table[i].b = (table[i - 1].a + table[i - 1].b + table[i - 1].c) % MOD;
-    table[i].c = (table[i - 1].b + table[i - 1].c) % MOD;
+  if (abs(b - a) % answer[2] != 0) {
+    cout << "NO" << '\n';
+    return; 
   }
 
-  long long s = table[n - 1].a + table[n - 1].b + table[n - 1].c;
+  ll gcd = answer[2];
 
-  std::cout << (s % MOD) << '\n';
+  std::cout << "YES ";
+  ll x = -answer[0] * n * ((a - b) / gcd) + a;
+  ll p = n * m / gcd;
+  x %= p;
+  x = (x + p) % p;
+  std::cout << x << " " << p << '\n';
+}
+
+int main() {
+  ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
+  cout.tie(nullptr);
+  ll t = 1;
+  cin >> t;
+  // cout << fixed << setprecision(10);
+  
+  while (t--) {
+    solve();
+    // cout << solve() << endl;
+    // if (solve())
+    //    cout << "Yes" << endl;
+    // else
+    //    cout << "No" << endl;
+  }
+
   return 0;
 }
