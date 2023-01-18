@@ -22,51 +22,113 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
+ll find(string& str, char s) {
+  for (int i = 0; i < str.size(); ++i) {
+    if (str[i] == s) {
+      return i;
+    }
+  }
+  return str.size();
+}
+
+// k is number of string we can use
+string get_string(string s, ll k, vector<pair<ll, ll>>& usage) {
+  ll n = s.size();
+  ll t = n / k; // how many times we should used single letter
+
+
+  ll ans = INF;
+  ll to_start = -1;
+
+  for (int i = 0; i <= ALPH.size() - k; ++i) {
+    ll cur_ans = 0;
+    for (int j = i; j < i + k; ++j) {
+      cur_ans += abs(t - usage[j].first);
+    }
+    if (cur_ans <= ans) {
+      ans = cur_ans;
+      to_start = i;
+    }
+  }
+
+  string new_alph = "";
+  vll rest(30, 0);
+
+  for (int i = to_start; i < to_start + k; ++i) {
+    rest[usage[i].second] = t;
+    new_alph += ALPH[usage[i].second];
+  }
+
+  vll fixed(n, 0);
+
+  for (int i = 0; i < n; ++i) {
+    ll pos = find(new_alph, s[i]);
+    if (pos != new_alph.size()) {
+      ll pos_in_alph = ALPH.find(new_alph[pos]);
+      if (rest[pos_in_alph] > 0) {
+        --rest[pos_in_alph];
+        fixed[i] = 1;
+      }
+    }
+  }
+
+  for (int i = 0; i < n; ++i) {
+    if (fixed[i] == 0) {
+      ll v = 0;
+      for (int j = 0; j < 30; ++j) {
+        if (rest[j] != 0) {
+          v = j;
+          break;
+        }
+      }
+      s[i] = ALPH[v];
+      --rest[v];
+    }
+  }
+
+  return s;
+
+}
+
 void solve() {
   ll n;
   cin >> n;
+  string s;
+  cin >> s;
+  vll coords(ALPH.size(), 0);
+  for (int i = 0; i < s.size(); ++i) {
+    ++coords[ALPH.find(s[i])];
+  }
+  vector<pair<ll, ll>> used;
+  for (int i = 0; i < ALPH.size(); ++i) {
+    used.push_back({coords[i], i});
+  }
 
-  vvll matrix(n, vll(n, -1));
+  sort(used.begin(), used.end());
 
-  ll cnt = 1;
+  string ans = "";
+  ll cur_d = INF;
 
-  int i = n - 1;
-  while (i >= -2 * n - 10) {
-    int j = 0;
-    int cp_i = i;
-    while (cp_i <= n - 1 && j <= n - 1) {
-      if (cp_i >= 0 && cp_i < n && j <= n - 1 && j >= 0) {
-        matrix[cp_i][j] = cnt;
+  for (int i = 1; i <= ALPH.size(); ++i) {
+    if (n % i != 0) {
+      continue;
+    }
+    string new_s = get_string(s, i, used);
+    
+    ll cnt = 0;
+    for (int i = 0; i < n; ++i ) {
+      if (s[i] != new_s[i]) {
         ++cnt;
       }
-      ++cp_i;
-      ++j;
     }
-    i -= 2;
+    if (cnt < cur_d) {
+      ans = new_s;
+      cur_d = cnt;
+    }
   }
 
-  i = 1;
-  while (i <= 2 * n + 10) {
-    int j = n - 1;
-    int cp_i = i;
-    while (cp_i >= 0 && j >= 0) {
-      if (cp_i >= 0 && cp_i < n && j <= n - 1 && j >= 0) {
-        matrix[cp_i][j] = cnt;
-        ++cnt;
-      }
-      --cp_i;
-      --j;
-    }
-    i += 2;
-  }
-  
-
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      cout << matrix[i][j] << ' ';
-    }
-    cout << '\n';
-  }
+  cout << cur_d << '\n';
+  cout << ans << '\n';
 
 }
 

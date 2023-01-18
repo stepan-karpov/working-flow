@@ -20,48 +20,159 @@ const ll INF = 1e16;
 const ld EPS = 1e-8;
 const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
-// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
-
-bool possible(vector<pll> scores, ll time) {
-  ll n = scores.size();
-  for (int i = 0; i < n; ++i) {
-    if (time) 
-  }
-}
-
-ll binSearch(vector<pll>& scores, ll time) {
-  ll l = -1;
-  ll r = 1e5 * 5;
-
-  while (r - l > 1) {
-    ll m = (l + r) / 2;
-    if (possible(m, scores, time)) {
-      r = m;
-    } else {
-      l = m;
+ll find(string& str, char s) {
+  for (int i = 0; i < str.size(); ++i) {
+    if (str[i] == s) {
+      return i;
     }
   }
+  return str.size();
+}
 
-  return r;
+// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
+
+// how many letter should we change
+// to make a string balanced?
+// k - number of letters we use
+ll use_only_i_letters(string& s, ll k) {
+  ll n = s.size();
+  ll t = n / k; // how many time we should use each letter
+
+  if (t * k != n) {
+    return INF;
+  }
+
+  vector<ll> coords(ALPH.size(), 0);
+
+  for (int i = 0; i < n; ++i) {
+    ++coords[s[i] - 97];
+  }
+
+  vector<pair<ll, ll>> usage;
+
+  for (int i = 0; i < ALPH.size(); ++i) {
+    usage.push_back({coords[i], i});
+  }
+
+  sort(usage.begin(), usage.end());
+
+  ll ans = INF;
+
+  for (int i = 0; i < ALPH.size(); ++i) {
+    ll cur_ans = 0;
+    for (int j = i; j < i + k; ++j) {
+      cur_ans += abs(t - usage[j].first);
+    }
+    ans = min(ans, cur_ans);
+  }
+
+  return ans / 2;
+}
+
+char find_cand(string& new_alph, vll& coords, ll t) {
+  for (int i = 0; i < ALPH.size(); ++i) {
+    if (find(new_alph, ALPH[i]) == new_alph.size()) {
+      continue;
+    }
+
+    if (coords[i] > t) {
+      --coords[i];
+      return ALPH[i];
+    }
+
+  }
+  return ALPH[0];
 }
 
 void solve() {
-  ll n, m;
-  cin >> n >> m;
-  vector<pll> a(n);
-  for (int i = 0; i < n; ++i) {
-    cin >> a[i].second;
-    a[i].first = n - i;
+  ll n;
+  cin >> n;
+  string s;
+  cin >> s;
+
+
+  ll ans_t = INF;
+  ll ind = 1;
+  for (int i = 1; i <= ALPH.size(); ++i) {
+    ll cur_ans = use_only_i_letters(s, i);
+    if (cur_ans < ans_t) {
+      ans_t = cur_ans;
+      ind = i;
+    }
+    // cout << i << ": " << cur_ans << '\n';
   }
 
-  sort(a.begin(), a.end());
+
+  ll k = ind;
+  ll t = n / k; // how many time we should use each letter
+
+  vector<ll> coords(ALPH.size(), 0);
 
   for (int i = 0; i < n; ++i) {
-    cout << a[i].first << " " << a[i].second << '\n';
+    ++coords[s[i] - 97];
   }
 
-  cout << binSearch(a, m) << '\n';
-  
+  vector<pair<ll, ll>> usage;
+
+  for (int i = 0; i < ALPH.size(); ++i) {
+    usage.push_back({coords[i], i});
+  }
+
+  sort(usage.begin(), usage.end());
+
+  ll ans = INF;
+  ll to_start = -1;
+
+  for (int i = 0; i < ALPH.size(); ++i) {
+    ll cur_ans = 0;
+    for (int j = i; j < i + k; ++j) {
+      cur_ans += abs(t - usage[j].first);
+    }
+    if (ans < cur_ans) {
+      ans = cur_ans;
+      to_start = i;
+    }
+  }
+
+  cout << to_start << '\n';
+  cout << '\n';
+
+  string new_alph = "";
+  cout << to_start << '\n';
+  cout << '\n';
+  cout << '\n';
+  cout << k << '\n';
+  cout << '\n';
+  cout << '\n';
+
+  for (int i = to_start; i < to_start + k; ++i) {
+    new_alph += ALPH[usage[i].second];
+  }
+
+  vll new_usage(30, 0);
+
+  for (int i = 0; i < n; ++i) {
+    if (find(new_alph, s[i]) != new_alph.size()) { // s[i] in new_alph
+      ll used = new_usage[ALPH.find(s[i])];
+      if (used < t) {
+        ++new_usage[ALPH.find(s[i])];
+      } else {
+
+        char new_value = find_cand(new_alph, coords, t);
+        ++new_usage[ALPH.find(new_value)];
+        s[i] = new_value;
+
+      }
+    } else {
+      char new_value = find_cand(new_alph, coords, t);
+      ++new_usage[ALPH.find(new_value)];
+      s[i] = new_value;
+    }
+  }
+
+
+
+  cout << s << '\n';
 }
 
 int main() {
@@ -69,7 +180,7 @@ int main() {
   cin.tie(nullptr);
   cout.tie(nullptr);
   ll t = 1;
-  // cin >> t;
+  cin >> t;
   // cout << fixed << setprecision(10);
   
   while (t--) {
