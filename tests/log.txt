@@ -1,145 +1,49 @@
 0 test is ok
+Warning: test is incorrect
+======== test ========
+6 ? 43 + 38 + 23 + 91 ? 68 + 13
+======================
+right answer is: 
+-1
+91
+=====================
+your answer is: 
+-1
+
+Warning: test is incorrect
+======== test ========
+5 + 50 + 55 ? 19 + 1 ? 97
+======================
+right answer is: 
+50
+-1
+=====================
+your answer is: 
+50
+
 10 test is ok
-20 test is ok
 Warning: test is incorrect
 ======== test ========
-5
+6 ? 58 ? 63 + 57 + 43 ? 64 ? 59
 ======================
 right answer is: 
-5
+-1
+-1
+-1
+-1
 =====================
 your answer is: 
-3
+-1
+-1
 
-30 test is ok
 Warning: test is incorrect
 ======== test ========
-6
+5 + 18 ? 62 + 86 + 72 ? 37
 ======================
 right answer is: 
-3
+-1
+72
 =====================
 your answer is: 
-6
 
-40 test is ok
-Warning: test is incorrect
-======== test ========
-5
-======================
-right answer is: 
-5
-=====================
-your answer is: 
-3
 
-50 test is ok
-60 test is ok
-70 test is ok
-80 test is ok
-90 test is ok
-100 test is ok
-110 test is ok
-120 test is ok
-Warning: test is incorrect
-======== test ========
-5
-======================
-right answer is: 
-5
-=====================
-your answer is: 
-3
-
-130 test is ok
-140 test is ok
-150 test is ok
-160 test is ok
-170 test is ok
-180 test is ok
-190 test is ok
-200 test is ok
-210 test is ok
-Warning: test is incorrect
-======== test ========
-6
-======================
-right answer is: 
-3
-=====================
-your answer is: 
-6
-
-220 test is ok
-230 test is ok
-240 test is ok
-Warning: test is incorrect
-======== test ========
-5
-======================
-right answer is: 
-5
-=====================
-your answer is: 
-3
-
-250 test is ok
-Warning: test is incorrect
-======== test ========
-5
-======================
-right answer is: 
-5
-=====================
-your answer is: 
-3
-
-260 test is ok
-270 test is ok
-280 test is ok
-290 test is ok
-300 test is ok
-310 test is ok
-Warning: test is incorrect
-======== test ========
-5
-======================
-right answer is: 
-5
-=====================
-your answer is: 
-3
-
-320 test is ok
-330 test is ok
-340 test is ok
-Warning: test is incorrect
-======== test ========
-5
-======================
-right answer is: 
-5
-=====================
-your answer is: 
-3
-
-350 test is ok
-360 test is ok
-370 test is ok
-380 test is ok
-390 test is ok
-400 test is ok
-410 test is ok
-420 test is ok
-430 test is ok
-Warning: test is incorrect
-======== test ========
-5
-======================
-right answer is: 
-5
-=====================
-your answer is: 
-3
-
-440 test is ok

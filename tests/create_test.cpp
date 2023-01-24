@@ -34,9 +34,19 @@ bool is_prime(int n){
 int main() {
   std::mt19937 mt(time(nullptr)); 
 
-  int p = random(0, 100);
+  int n = random(5, 6);
 
-  std::cout << p << '\n';
+  std::cout << n << '\n';
+
+  for (int i = 0; i < n; ++i) {
+    int t = random(0, 1);
+    if (t == 0) {
+      std::cout << "+ " << random(0, 100) << '\n';
+    } else {
+      std::cout << "? " << random(0, 100) << '\n';
+    }
+  }
+
   
   return 0;
 }
