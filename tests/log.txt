@@ -1,49 +1,29 @@
 0 test is ok
-Warning: test is incorrect
-======== test ========
-6 ? 43 + 38 + 23 + 91 ? 68 + 13
-======================
-right answer is: 
--1
-91
-=====================
-your answer is: 
--1
-
-Warning: test is incorrect
-======== test ========
-5 + 50 + 55 ? 19 + 1 ? 97
-======================
-right answer is: 
-50
--1
-=====================
-your answer is: 
-50
-
 10 test is ok
+20 test is ok
+30 test is ok
+40 test is ok
+50 test is ok
+60 test is ok
+70 test is ok
+80 test is ok
+90 test is ok
+100 test is ok
+110 test is ok
+120 test is ok
+130 test is ok
+140 test is ok
 Warning: test is incorrect
 ======== test ========
-6 ? 58 ? 63 + 57 + 43 ? 64 ? 59
+3 NXUV JULK INJN VGFS UBKU AZGC 3 VGFS UBKU JULK
 ======================
 right answer is: 
--1
--1
--1
--1
-=====================
-your answer is: 
--1
--1
-
-Warning: test is incorrect
-======== test ========
-5 + 18 ? 62 + 86 + 72 ? 37
-======================
-right answer is: 
--1
-72
+INJN
+AZGC
+NXUV
 =====================
 your answer is: 
 
 
+150 test is ok
+160 test is ok

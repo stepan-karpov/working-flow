@@ -3,230 +3,247 @@ import java.util.Scanner;
 import java.util.Collections;
 
 public class incorrect_program {
-  static public class AVLTree {
-    public class Node {
-      Long value = Long.valueOf(0);
-      Integer left_child = -1;
-      Integer right_child = -1;
-      Integer size = 0;
-      Integer balance = 0;
-      public Node(Long value) {
+  static public class SplayTree {
+    static public class Node {
+      String value;
+      String key;
+      Integer left_son = -1;
+      Integer right_son = -1;
+      Integer parent = -1;
+      public Node(String value, String key) {
         this.value = value;
-        this.size = 1;
+        this.key = key;
       }
-      public Node(Integer value) {
-        this.value = Long.valueOf(value);
-        this.size = 1;
-      }
+      public Node() {}
     }
-  
+
+    public Boolean Less(Node a, Node b) {
+      Integer res = a.value.compareTo(b.value);
+      if (res < 0) {
+        return true;
+      } else if (res == 0) {
+        if (a.key.compareTo(b.key) < 0) {
+          return true;
+        }
+        return false;
+      }
+      return false;
+    }
+
+    public Boolean Equals(Node a, Node b) {
+      if (a.value.compareTo(b.value) != 0) {
+        return false;
+      }
+      return a.key.compareTo(b.key) == 0;
+    }
+
     ArrayList<Node> tree = new ArrayList<Node>();
-  
-    public Boolean Find(Integer value) {
-      return Find(Long.valueOf(value));
-    }
 
-    private Integer GetBalance(Integer x) {
-      if (x == -1) {
-        return 0;
+    private void AssignParent(Integer subtree, Integer parent) {
+      if (subtree != -1) {
+        tree.get(subtree).parent = parent;
       }
-      Node cur_x = tree.get(x);
-      Integer left_child_size = 0;
-      Integer right_child_size = 0;
-      if (cur_x.left_child != -1) {
-        left_child_size = tree.get(cur_x.left_child).size;
-      }
-      if (cur_x.left_child != -1) {
-        right_child_size = tree.get(cur_x.right_child).size;
-      }
-      return left_child_size - right_child_size;
     }
 
-    private void SmallLeftRotation(Integer x) {
+    private void LeftZig(Integer p) {
+      Node cur_p = tree.get(p);
+      Integer x = cur_p.left_son;
       Node cur_x = tree.get(x);
-      Integer y = cur_x.left_child;
-      Node cur_y = tree.get(y);
-      Integer A = cur_y.left_child;
-      Integer B = cur_y.right_child;
-      Integer C = cur_x.right_child;
-      Collections.swap(tree, x, y);
-      cur_x = tree.get(x);
-      cur_y = tree.get(y);
-      cur_y.left_child = A;
-      cur_y.right_child = x;
-      cur_x.left_child = B;
-      cur_x.right_child = C;
-      Update(x);
-      Update(y);
+      Integer A = cur_x.left_son;
+      Integer B = cur_x.right_son;
+      Integer C = cur_p.right_son;
+      Collections.swap(tree, p, x);
+      Integer temp = x; x = p; p = temp;
+      cur_x = tree.get(x); cur_p = tree.get(p);
+      cur_x.left_son = A;
+      cur_x.right_son = p;
+      cur_p.left_son = B;
+      cur_p.right_son = C;
+      Integer temp_p = cur_p.parent;
+      cur_p.parent = cur_x.parent;
+      cur_x.parent = temp_p;
+      AssignParent(A, x);
+      AssignParent(B, p);
+      AssignParent(C, p);
     }
 
-    private void SmallRightRotation(Integer x) {
+    private void RightZig(Integer p) {
+      Node cur_p = tree.get(p);
+      Integer x = cur_p.right_son;
       Node cur_x = tree.get(x);
-      Integer y = cur_x.right_child;
-      Node cur_y = tree.get(y);
-      Integer A = cur_x.left_child;
-      Integer B = cur_y.left_child;
-      Integer C = cur_y.right_child;
-      Collections.swap(tree, x, y);
-      cur_x = tree.get(x);
-      cur_y = tree.get(y);
-      cur_y.left_child = x;
-      cur_y.right_child = C;
-      cur_x.left_child = A;
-      cur_x.right_child = B;
-      Update(x);
-      Update(y);
+      Integer A = cur_p.left_son;
+      Integer B = cur_x.left_son;
+      Integer C = cur_x.right_son;
+      Collections.swap(tree, p, x);
+      Integer temp = x; x = p; p = temp;
+      cur_x = tree.get(x); cur_p = tree.get(p);
+      cur_x.left_son = p;
+      cur_x.right_son = C;
+      cur_p.left_son = A;
+      cur_p.right_son = B;
+      Integer temp_p = cur_p.parent;
+      cur_p.parent = cur_x.parent;
+      cur_x.parent = temp_p;
+      AssignParent(A, p);
+      AssignParent(B, p);
+      AssignParent(C, x);
     }
 
-    private void Rebuild(Integer x) {
-      Node cur_x = tree.get(x);
-      Integer balance = GetBalance(x);
-      if (Math.abs(balance) != 2) {
+    private void LeftZigZig(Integer g) {
+      Integer p = tree.get(g).left_son;
+      LeftZig(p);
+      LeftZig(g);
+    }
+
+    private void RightZigZig(Integer g) {
+      Integer p = tree.get(g).right_son;
+      RightZig(p);
+      RightZig(g);
+    }
+
+    private void LeftZigZag(Integer g) {
+      Integer p = tree.get(g).left_son;
+      RightZig(p);
+      LeftZig(g);
+    }
+
+    private void RightZigZag(Integer g) {
+      Integer p = tree.get(g).right_son;
+      LeftZig(p);
+      RightZig(g);
+    }
+
+    private void Splay(Integer x) {
+      Integer p = tree.get(x).parent;
+      if (p == -1) {
         return;
       }
-      if (balance == -2) {
-        if (GetBalance(cur_x.right_child) != -1) {
-          SmallRightRotation(x);
+      Integer g = tree.get(p).parent;
+      if (g == -1) {
+        Node cur_p = tree.get(p);
+        if (cur_p.left_son == x) {
+          LeftZig(p);
         } else {
-          SmallLeftRotation(cur_x.right_child);
-          SmallRightRotation(x);
+          RightZig(p);
         }
       } else {
-        if (GetBalance(cur_x.left_child) != -1) {
-          SmallLeftRotation(x);
+        Node cur_g = tree.get(g);
+        Node cur_p = tree.get(p);
+        if (cur_g.left_son == p) {
+          if (cur_p.left_son == x) {
+            LeftZigZig(g);
+          } else {
+            LeftZigZag(g);
+          }
         } else {
-          SmallRightRotation(cur_x.left_child);
-          SmallLeftRotation(x);
+          if (cur_p.left_son == x) {
+            RightZigZag(g);
+          } else {
+            RightZigZig(g);
+          }
         }
       }
     }
-  
-    private void Update(Integer x) {
-      Integer left_size = 0;
-      Integer right_size = 0;
+    
+    private void Add(Node value, Integer x) {
       Node cur_x = tree.get(x);
-      if (cur_x.left_child != -1) {
-        left_size = tree.get(cur_x.left_child).size;
-      }
-      if (cur_x.right_child != -1) {
-        right_size = tree.get(cur_x.right_child).size;
-      }
-      cur_x.size = left_size + right_size + 1;
-      cur_x.balance = left_size - right_size;
-    }
-  
-    private Boolean Find(Long value, Integer x) {
-      Node cur_x = tree.get(x);
-      if (value == cur_x.value) {
-        return true;
-      }
-      if (value < cur_x.value) {
-        if (cur_x.left_child == -1) {
-          return false;
-        }
-        return Find(value, cur_x.left_child);
-      }
-      if (cur_x.right_child == -1) {
-        return false;
-      }
-      return Find(value, cur_x.right_child);
-    }
-  
-    public Boolean Find(Long value) {
-      if (tree.isEmpty()) {
-        return false;
-      }
-      return Find(value, 0);
-    }
-  
-    private void Add(Long value, Integer x) {
-      Node cur_x = tree.get(x);
-      if (cur_x.value == value) {
+      if (Equals(cur_x, value)) {
         return;
       }
-      if (value < cur_x.value) {
-        if (cur_x.left_child == -1) {
-          tree.add(new Node(value));
-          cur_x.left_child = tree.size() - 1;
-          Update(x);
-          Rebuild(x);
+      if (Less(value, cur_x)) {
+        if (cur_x.left_son == -1) {
+          tree.add(value);
+          cur_x.left_son = tree.size() - 1;
+          tree.get(tree.size() - 1).parent = x;
           return;
         }
-        Add(value, cur_x.left_child);
-        Update(x);
-        Rebuild(x);
-        return;
+        Add(value, cur_x.left_son);
+      } else {
+        if (cur_x.right_son == -1) {
+          tree.add(value);
+          cur_x.right_son = tree.size() - 1;
+          tree.get(tree.size() - 1).parent = x;
+          return;
+        }
+        Add(value, cur_x.right_son);
       }
-      if (cur_x.right_child == -1) {
-        tree.add(new Node(value));
-        cur_x.right_child = tree.size() - 1;
-        Update(x);
-        Rebuild(x);
-        return;
-      }
-      Add(value, cur_x.right_child);
-      Update(x);
-      Rebuild(x);
     }
-  
-    public void Add(Integer value) {
-      Add(Long.valueOf(value));
-    }
-  
-    public void Add(Long value) {
+
+    public void Add(Node value) {
       if (tree.isEmpty()) {
-        tree.add(new Node(value));
+        tree.add(value);
         return;
       }
       Add(value, 0);
     }
-  
-    private Long Next(Long value, Integer x) {
-      if (x == -1) {
-        return Long.valueOf(-1);
-      }
+
+    private String Find(String value, Integer x) {
       Node cur_x = tree.get(x);
-      if (cur_x.value >= value) {
-        Long new_ans = Next(value, cur_x.left_child);
-        return (new_ans == -1) ? cur_x.value : new_ans;
+      if (cur_x.value.compareTo(value) == 0) {
+        Splay(x);
+        return cur_x.key;
       }
-      return Next(value, cur_x.right_child);
+      if (cur_x.value.compareTo(value) > 0) {
+        if (cur_x.left_son == -1) {
+          return "None";
+        }
+        String ans = Find(value, cur_x.left_son);
+        if (ans != "None") {
+          Splay(x);
+        }
+        return ans;
+      } else {
+        if (cur_x.right_son == -1) {
+          return "None";
+        }
+        String ans = Find(value, cur_x.right_son);
+        if (ans != "None") {
+          Splay(x);
+        }
+        return ans;
+      }
     }
-  
-    public Long Next(Integer value) {
-      return Next(Long.valueOf(value));
-    }
-  
-    public Long Next(Long value) {
+
+    public String Find(String value) {
       if (tree.isEmpty()) {
-        return Long.valueOf(-1);
+        return "None";
       }
-      return Next(value, 0);
+      return Find(value, 0);
     }
   }
+
   public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
-    Long MOD = Long.valueOf(1000000000);
     Integer n;
-    AVLTree a = new AVLTree();
+    SplayTree a1 = new SplayTree();
+    SplayTree a2 = new SplayTree();
 
     n = sc.nextInt();
-    Long y = Long.valueOf(0);
 
     for (int i = 0; i < n; ++i) {
-      String cmd;
-      cmd = sc.next();
-      if (cmd.equals("+")) {
-        Long value = sc.nextLong();
-        a.Add((value + y) % MOD);
-        // System.out.println("size: " + a.tree.get(0).size);
-        y = Long.valueOf(0);
-      } else {
-        Long value = sc.nextLong();
-        y = a.Next(value);
-        System.out.println(y);
-      }
+      SplayTree.Node temp1 = new SplayTree.Node();
+      SplayTree.Node temp2 = new SplayTree.Node();
+      temp1.value = sc.next();
+      temp1.key = sc.next();
+      temp2.key = temp1.value;
+      temp2.value = temp1.key;
+      a1.Add(temp1);
+      a2.Add(temp2);
     }
 
+    Integer q;
+    
+    q = sc.nextInt();
+
+    for (int i = 0; i < q; ++i) {
+      String query = sc.next();
+      String ans1 = a1.Find(query);
+      String ans2 = a2.Find(query);
+      if (ans1 != "None") {
+        System.out.println(ans1);
+      } else {
+        System.out.println(ans2);
+      }
+    }
   }
 }

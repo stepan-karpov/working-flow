@@ -1,174 +1,177 @@
 #include <iostream>
 #include <vector>
 
-const int kMod = 1e9;
-
 void Init() {
   std::ios_base::sync_with_stdio(false);
   std::cin.tie(nullptr);
   std::cout.tie(nullptr);
 }
 
-class AVLTree {
- private:
-  static const int kNoSon = 1e9;
-  static const int kMin = -1e9;
-  static const int kMax = 1e9;
+struct SplayTree {
+  // use when smb has no parent/son
+  static const int kNoValue = 1e9;
   struct Node {
-    int value = -1;
-    int size = 1;
-    int balance = 0;
-    int max_value = kMin;
-    int min_value = kMin;
-    int left_son = kNoSon, right_son = kNoSon;
-    Node(int value) : value(value), max_value(value), min_value(value) {}
+    std::string key = "", value = "";
+    int left = kNoValue;
+    int right = kNoValue;
+    int parent = kNoValue;
+    Node(std::string key, std::string value, int parent)
+        : key(key), value(value), parent(parent) {}
   };
+  std::vector<Node> tree;
 
-  std::vector<Node> tree_;
-
-  void UpdateData(int x) {
-    tree_[x].max_value = tree_[x].value;
-    tree_[x].min_value = tree_[x].value;
-    int size_l = 0;
-    int size_r = 0;
-    if (tree_[x].left_son != kNoSon) {
-      tree_[x].max_value =
-          std::max(tree_[x].max_value, tree_[tree_[x].left_son].max_value);
-      tree_[x].min_value =
-          std::min(tree_[x].min_value, tree_[tree_[x].left_son].min_value);
-      size_l =
-          (tree_[x].left_son == kNoSon ? 0 : tree_[tree_[x].left_son].size);
+  // returns Grandparent of x
+  // UB if x == kNoValue
+  int G(int x) {
+    if (P(x) == kNoValue) {
+      return kNoValue;
     }
-    if (tree_[x].right_son != kNoSon) {
-      tree_[x].max_value =
-          std::max(tree_[x].max_value, tree_[tree_[x].right_son].max_value);
-      tree_[x].min_value =
-          std::min(tree_[x].min_value, tree_[tree_[x].right_son].min_value);
-      size_r =
-          (tree_[x].right_son == kNoSon ? 0 : tree_[tree_[x].right_son].size);
-    }
-    tree_[x].size = std::max(size_l, size_r) + 1;
-    tree_[x].balance = size_l - size_r;
+    return tree[tree[x].parent].parent;
   }
 
-  bool Contains(int x, int value) {
-    if (x >= int(tree_.size())) {
-      return false;
-    }
-    if (tree_[x].value == value) {
-      return true;
-    }
-    if (value < tree_[x].value) {
-      return Contains(tree_[x].left_son, value);
-    }
-    return Contains(tree_[x].right_son, value);
-  }
+  // returns Parent of x
+  // UB if x == kNoValue
+  int P(int x) { return tree[x].parent; }
 
-  void SmallLeftRotation(int x) {
+  void RightZig(int x) {
     int a = x;
-    int b = tree_[x].right_son;
-    int a_t = tree_[x].left_son;
-    int b_t = tree_[b].left_son;
-    int c_t = tree_[b].right_son;
-    std::swap(tree_[a], tree_[b]);
+    int b = tree[x].right;
+    int a_t = tree[x].left;
+    int b_t = tree[b].left;
+    int c_t = tree[b].right;
+    std::swap(tree[a], tree[b]);
     std::swap(a, b);
-    tree_[a].left_son = a_t;
-    tree_[a].right_son = b_t;
-    tree_[b].left_son = a;
-    tree_[b].right_son = c_t;
-    UpdateData(a);
-    UpdateData(b);
+    tree[b].parent = tree[a].parent;
+    tree[a].left = a_t;
+    if (a_t != kNoValue) {
+      tree[a_t].parent = a;
+    }
+    tree[a].right = b_t;
+    if (b_t != kNoValue) {
+      tree[b_t].parent = a;
+    }
+    tree[b].left = a;
+    if (a != kNoValue) {
+      tree[a].parent = b;
+    }
+    tree[b].right = c_t;
+    if (c_t != kNoValue) {
+      tree[c_t].parent = b;
+    }
   }
 
-  void SmallRightRotation(int x) {
+  void LeftZig(int x) {
     int a = x;
-    int b = tree_[x].left_son;
-    int a_t = tree_[b].left_son;
-    int b_t = tree_[b].right_son;
-    int c_t = tree_[x].right_son;
-    std::swap(tree_[a], tree_[b]);
+    int b = tree[x].left;
+    int a_t = tree[b].left;
+    int b_t = tree[b].right;
+    int c_t = tree[x].right;
+    std::swap(tree[a], tree[b]);
     std::swap(a, b);
-    tree_[a].left_son = b_t;
-    tree_[a].right_son = c_t;
-    tree_[b].left_son = a_t;
-    tree_[b].right_son = a;
-    UpdateData(a);
-    UpdateData(b);
-  }
-
-  void BigLeftRotation(int x) {
-    SmallRightRotation(tree_[x].right_son);
-    SmallLeftRotation(x);
-  }
-
-  void BigRightRotation(int x) {
-    SmallLeftRotation(tree_[x].left_son);
-    SmallRightRotation(x);
-  }
-
-  int Add(int x, int value) {
-    if (x >= int(tree_.size())) {
-      tree_.push_back(value);
-      return int(tree_.size() - 1);
+    tree[b].parent = tree[a].parent;
+    tree[a].left = b_t;
+    if (b_t != kNoValue) {
+      tree[b_t].parent = a;
     }
-    if (value < tree_[x].value) {
-      tree_[x].left_son = Add(tree_[x].left_son, value);
-    } else {
-      tree_[x].right_son = Add(tree_[x].right_son, value);
+    tree[a].right = c_t;
+    if (c_t != kNoValue) {
+      tree[c_t].parent = a;
     }
-    UpdateData(x);
-    if (tree_[x].balance == -2) {
-      if (tree_[tree_[x].right_son].balance != 1) {
-        SmallLeftRotation(x);
-      } else {
-        BigLeftRotation(x);
+    tree[b].left = a_t;
+    if (a_t != kNoValue) {
+      tree[a_t].parent = b;
+    }
+    tree[b].right = a;
+    if (a != kNoValue) {
+      tree[a].parent = b;
+    }
+  }
+
+  void LeftZigZig(int x) {
+    LeftZig(x);
+    LeftZig(x);
+  }
+
+  void LeftZigZag(int x) {
+    int daddy = tree[x].left;
+    RightZig(daddy);
+    LeftZig(x);
+  }
+
+  void RightZigZag(int x) {
+    int daddy = tree[x].right;
+    LeftZig(daddy);
+    RightZig(x);
+  }
+
+  void RightZigZig(int x) {
+    RightZig(x);
+    RightZig(x);
+  }
+
+  void Splay(int x) {
+    int cur_vertex = x;
+    while (cur_vertex != 0) {
+      int granny = G(cur_vertex);
+      int daddy = P(cur_vertex);
+      if (granny == kNoValue && daddy != kNoValue) {
+        if (tree[daddy].left == cur_vertex) {
+          LeftZig(daddy);
+        } else {
+          RightZig(daddy);
+        }
+        cur_vertex = daddy;
+        continue;
       }
-    }
-    if (tree_[x].balance == 2) {
-      if (tree_[tree_[x].left_son].balance != -1) {
-        SmallRightRotation(x);
+      // granny definitely exists
+      if (tree[granny].left == daddy && tree[daddy].left == cur_vertex) {
+        LeftZigZig(granny);
+      } else if (tree[granny].left == daddy &&
+                 tree[daddy].right == cur_vertex) {
+        LeftZigZag(granny);
+      } else if (tree[granny].right == daddy &&
+                 tree[daddy].right == cur_vertex) {
+        RightZigZig(granny);
       } else {
-        BigRightRotation(x);
+        RightZigZag(granny);
       }
+      cur_vertex = granny;
     }
-    return x;
   }
 
-  int LowerBound(int x, int value) {
-    if (x >= int(tree_.size())) {
-      return -1;
+  void Add(std::string& key, std::string& value) { Add(0, key, value); }
+
+  int Add(int root, std::string& key, std::string& value) {
+    if (root >= int(tree.size())) {
+      tree.push_back({key, value, (root == 0 ? kNoValue : root)});
+      return tree.size() - 1;
     }
-    int max_l =
-        (tree_[x].left_son != kNoSon ? tree_[tree_[x].left_son].max_value
-                                     : kMin);
-    if (max_l >= value) {
-      int ans = LowerBound(tree_[x].left_son, value);
-      return (ans == -1 && tree_[x].value >= value ? tree_[x].value : ans);
+    if (tree[root].key > key) {
+      tree[root].left = Add(tree[root].left, key, value);
+      tree[tree[root].left].parent = root;
+      return root;
     }
-    if (tree_[x].value >= value) {
-      return tree_[x].value;
-    }
-    int ans = LowerBound(tree_[x].right_son, value);
-    return (ans == -1 && tree_[x].value >= value ? tree_[x].value : ans);
+    tree[root].right = Add(tree[root].right, key, value);
+    tree[tree[root].right].parent = root;
+    return root;
   }
 
- public:
-  bool Contains(int value) { return Contains(0, value); }
-  void Add(int value) {
-    if (Contains(value)) {
-      return;
+  std::string Get(int root, std::string& key) {
+    if (root >= int(tree.size())) {
+      return "no_value_exists";
     }
-    Add(0, value);
+    if (tree[root].key > key) {
+      return Get(tree[root].left, key);
+    }
+    if (tree[root].key < key) {
+      return Get(tree[root].right, key);
+    }
+    std::string answer = tree[root].value;
+    Splay(root);
+    return answer;
   }
-  int LowerBound(int value) {
-    if (int(tree_.size()) == 0) {
-      return -1;
-    }
-    if (tree_[0].max_value < value) {
-      return -1;
-    }
-    return LowerBound(0, value);
-  }
+
+  std::string Get(std::string& key) { return Get(0, key); }
 };
 
 int main() {
@@ -176,27 +179,22 @@ int main() {
   int n;
   std::cin >> n;
 
-  AVLTree tree;
+  SplayTree tree;
 
-  int y = 0;
   for (int i = 0; i < n; ++i) {
-    std::string cmd;
-    std::cin >> cmd;
-    int value;
-    std::cin >> value;
-    if (cmd == "+") {
-      tree.Add((value + y) % kMod);
-      y = 0;
-    } else if (cmd == ">") {
-      if (tree.Contains(value)) {
-        std::cout << "YES\n";
-      } else {
-        std::cout << "NO\n";
-      }
-    } else {
-      y = tree.LowerBound(value);
-      std::cout << y << '\n';
-    }
+    std::string key, value;
+    std::cin >> key >> value;
+    tree.Add(value, key);
+    tree.Add(key, value);
   }
+
+  int q;
+  std::cin >> q;
+  for (int i = 0; i < q; ++i) {
+    std::string key;
+    std::cin >> key;
+    std::cout << tree.Get(key) << '\n';
+  }
+
   return 0;
 }

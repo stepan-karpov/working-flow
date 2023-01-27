@@ -7,7 +7,7 @@ void Init() {
   std::cout.tie(nullptr);
 }
 
-struct DescartesTree {
+struct CartesianTree {
   struct Node {
     int value = -1;
     int priority = -1;
@@ -237,13 +237,13 @@ struct DescartesTree {
     return GetKth(root, index);
   }
 
-  ~DescartesTree() { ClearTree(root); }
+  ~CartesianTree() { ClearTree(root); }
 };
 
 int main() {
   Init();
 
-  DescartesTree a;
+  CartesianTree a;
 
   std::string cmd;
   while (std::cin >> cmd) {
@@ -267,7 +267,7 @@ int main() {
       int v;
       std::cin >> v;
       int ans = a.LowerBound(v + 1);
-      if (ans == DescartesTree::kNoValue) {
+      if (ans == CartesianTree::kNoValue) {
         std::cout << "none\n";
       } else {
         std::cout << ans << '\n';
@@ -276,7 +276,7 @@ int main() {
       int v;
       std::cin >> v;
       int ans = a.LowerBound(v - 1, true);
-      if (ans == DescartesTree::kNoValue) {
+      if (ans == CartesianTree::kNoValue) {
         std::cout << "none\n";
       } else {
         std::cout << ans << '\n';
@@ -285,7 +285,7 @@ int main() {
       int k;
       std::cin >> k;
       int ans = a.Get(k);
-      if (ans == DescartesTree::kNoValue) {
+      if (ans == CartesianTree::kNoValue) {
         std::cout << "none\n";
       } else {
         std::cout << ans << '\n';
