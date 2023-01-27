@@ -34,29 +34,18 @@ bool is_prime(int n){
 int main() {
   std::mt19937 mt(time(nullptr)); 
 
-  int n = random(6, 6);
-  std::vector<std::string> words;
+  int n = random(2, 10);
 
   for (int i = 0; i < n; ++i) {
-    words.push_back(CreateString(4));
-  }
-
-  std::cout << n / 2 << '\n';
-  for (int i = 0; i < n; ++i) {
-    std::cout << words[i] << " ";
-    if (i % 2 == 1) {
-      std::cout << '\n';
+    int t = random(0, 2);
+    if (t == 0) {
+      std::cout << "insert " << random(0, 20) << '\n'; 
+    } else if (t == 1) {
+      std::cout << "exists " << random(0, 20) << '\n'; 
+    } else if (t == 2) {
+      std::cout << "delete " << random(0, 20) << '\n'; 
     }
   }
-
-  int q = 3;
-  
-  std::cout << q << '\n';
-
-  for (int i = 0; i < q; ++i) {
-    std::cout << words[random(0, words.size() - 1)] << '\n';
-  }
-
   
   return 0;
 }

@@ -1,8 +1,2 @@
-3
-FMNF XPLD 
-FEJR VYXI 
-FCGE RVFF 
-3
-XPLD
-VYXI
-FMNF
+exists 14
+exists 6

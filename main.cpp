@@ -23,32 +23,7 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
 void solve() {
-  ll n; cin >> n;
-  ll k; cin >> k;
-  vector<pll> a(n);
-  for (int i = 0; i < n; ++i) {
-    cin >> a[i].first;
-    a[i].second = i;
-  }
-  sort(a.begin(), a.end());
-
-  vll ans(n, INF);
-
-  ans[a[0].second] = 0;
-  ans[a[n - 1].second] = 0;
-
-  for (int i = 0; i < k; ++i) {
-    ans[a[0].second] += abs(a[0].first - a[i + 1].first);
-    ans[a[n - 1].second] += abs(a[n - 1].first - a[n - 1 - i - 1].first);
-  }
-
-  for (int i = 0; i < )
-
-  for (int i = 0; i < n; ++i) {
-    cout << ans[i] << " ";
-  }
-  cout << '\n';
-
+  
 }
 
 int main() {

@@ -1,2 +1,5 @@
-print("1/(   max(abs(u), abs(v))           )")
-print("A/(1 - vt) + B/(1 - ut)")
+t = int(input())
+
+for i in range(0, t):
+  inp = input().split("+")
+  print(int(inp[0]) + int(inp[1]))

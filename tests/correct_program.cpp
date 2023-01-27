@@ -7,193 +7,290 @@ void Init() {
   std::cout.tie(nullptr);
 }
 
-struct SplayTree {
-  // use when smb has no parent/son
-  static const int kNoValue = 1e9;
+struct DescartesTree {
   struct Node {
-    std::string key = "", value = "";
-    int left = kNoValue;
-    int right = kNoValue;
-    int parent = kNoValue;
-    Node(std::string key, std::string value, int parent)
-        : key(key), value(value), parent(parent) {}
+    int value = -1;
+    int priority = -1;
+    long long sum = 0;
+    int size = 1;
+    Node* left = nullptr;
+    Node* right = nullptr;
+    Node(int value) : value(value), priority(rand() % 10000), sum(value) {}
+    Node(int value, int priority)
+        : value(value), priority(priority), sum(value) {}
   };
-  std::vector<Node> tree;
 
-  // returns Grandparent of x
-  // UB if x == kNoValue
-  int G(int x) {
-    if (P(x) == kNoValue) {
+  Node* root = nullptr;
+  static const int kNoValue = -1e9;
+
+  void Recalc(Node* root) {
+    if (root == nullptr) {
+      return;
+    }
+    root->sum = root->value;
+    root->size = 1;
+    if (root->left != nullptr) {
+      root->sum += root->left->sum;
+      root->size += root->left->size;
+    }
+    if (root->right != nullptr) {
+      root->sum += root->right->sum;
+      root->size += root->right->size;
+    }
+  }
+
+  auto Split(Node* root, int key) -> std::pair<Node*, Node*> {
+    if (root == nullptr) {
+      return {nullptr, nullptr};
+    }
+    if (root->value < key) {
+      auto[left, right] = Split(root->right, key);  // NOLINT
+      root->right = left;
+      Recalc(root);
+      return {root, right};
+    }
+    auto[left, right] = Split(root->left, key);  // NOLINT
+    root->left = right;
+    Recalc(root);
+    return {left, root};
+  }
+
+  auto Merge(Node* left, Node* right) -> Node* {
+    if (left == nullptr) {
+      return right;
+    }
+    if (right == nullptr) {
+      return left;
+    }
+    if (left->priority > right->priority) {
+      left->right = Merge(left->right, right);
+      Recalc(left);
+      return left;
+    }
+    right->left = Merge(left, right->left);
+    Recalc(right);
+    return right;
+  }
+
+  int GetMin(Node* root) {
+    if (root == nullptr) {
       return kNoValue;
     }
-    return tree[tree[x].parent].parent;
+    if (root != nullptr && root->left == nullptr) {
+      return root->value;
+    }
+    return GetMin(root->left);
   }
 
-  // returns Parent of x
-  // UB if x == kNoValue
-  int P(int x) { return tree[x].parent; }
-
-  void RightZig(int x) {
-    int a = x;
-    int b = tree[x].right;
-    int a_t = tree[x].left;
-    int b_t = tree[b].left;
-    int c_t = tree[b].right;
-    std::swap(tree[a], tree[b]);
-    std::swap(a, b);
-    tree[b].parent = tree[a].parent;
-    tree[a].left = a_t;
-    if (a_t != kNoValue) {
-      tree[a_t].parent = a;
+  int GetMax(Node* root) {
+    if (root == nullptr) {
+      return kNoValue;
     }
-    tree[a].right = b_t;
-    if (b_t != kNoValue) {
-      tree[b_t].parent = a;
+    if (root != nullptr && root->right == nullptr) {
+      return root->value;
     }
-    tree[b].left = a;
-    if (a != kNoValue) {
-      tree[a].parent = b;
-    }
-    tree[b].right = c_t;
-    if (c_t != kNoValue) {
-      tree[c_t].parent = b;
-    }
+    return GetMax(root->right);
   }
 
-  void LeftZig(int x) {
-    int a = x;
-    int b = tree[x].left;
-    int a_t = tree[b].left;
-    int b_t = tree[b].right;
-    int c_t = tree[x].right;
-    std::swap(tree[a], tree[b]);
-    std::swap(a, b);
-    tree[b].parent = tree[a].parent;
-    tree[a].left = b_t;
-    if (b_t != kNoValue) {
-      tree[b_t].parent = a;
+  void Add(int value) {
+    if (Contains(value)) {
+      return;
     }
-    tree[a].right = c_t;
-    if (c_t != kNoValue) {
-      tree[c_t].parent = a;
-    }
-    tree[b].left = a_t;
-    if (a_t != kNoValue) {
-      tree[a_t].parent = b;
-    }
-    tree[b].right = a;
-    if (a != kNoValue) {
-      tree[a].parent = b;
-    }
+    Node* to_add = new Node(value);
+    auto[left, right] = Split(root, value);  // NOLINT
+    root = Merge(left, Merge(to_add, right));
   }
 
-  void LeftZigZig(int x) {
-    LeftZig(x);
-    LeftZig(x);
-  }
-
-  void LeftZigZag(int x) {
-    int daddy = tree[x].left;
-    RightZig(daddy);
-    LeftZig(x);
-  }
-
-  void RightZigZag(int x) {
-    int daddy = tree[x].right;
-    LeftZig(daddy);
-    RightZig(x);
-  }
-
-  void RightZigZig(int x) {
-    RightZig(x);
-    RightZig(x);
-  }
-
-  void Splay(int x) {
-    int cur_vertex = x;
-    while (cur_vertex != 0) {
-      int granny = G(cur_vertex);
-      int daddy = P(cur_vertex);
-      if (granny == kNoValue && daddy != kNoValue) {
-        if (tree[daddy].left == cur_vertex) {
-          LeftZig(daddy);
-        } else {
-          RightZig(daddy);
-        }
-        cur_vertex = daddy;
-        continue;
-      }
-      // granny definitely exists
-      if (tree[granny].left == daddy && tree[daddy].left == cur_vertex) {
-        LeftZigZig(granny);
-      } else if (tree[granny].left == daddy &&
-                 tree[daddy].right == cur_vertex) {
-        LeftZigZag(granny);
-      } else if (tree[granny].right == daddy &&
-                 tree[daddy].right == cur_vertex) {
-        RightZigZig(granny);
-      } else {
-        RightZigZag(granny);
-      }
-      cur_vertex = granny;
+  // returns first value in a tree which is:
+  // >= value if reverse_order = false
+  // <= value if reverse_order = true
+  int LowerBound(int value, bool reverse_order = false) {
+    if (!reverse_order) {
+      auto[left, right] = Split(root, value);  // NOLINT
+      int ans = GetMin(right);
+      root = Merge(left, right);
+      return ans;
     }
+    auto[left, right] = Split(root, value + 1);  // NOLINT
+    int ans = GetMax(left);
+    root = Merge(left, right);
+    return ans;
   }
 
-  void Add(std::string& key, std::string& value) { Add(0, key, value); }
-
-  int Add(int root, std::string& key, std::string& value) {
-    if (root >= int(tree.size())) {
-      tree.push_back({key, value, (root == 0 ? kNoValue : root)});
-      return tree.size() - 1;
+  // returns first value in a tree which is:
+  // > value if reverse_order = false
+  // < value if reverse_order = true
+  int UpperBound(int value, bool reverse_order = false) {
+    if (!reverse_order) {
+      auto[left, right] = Split(root, value + 1);  // NOLINT
+      int ans = GetMin(right);
+      root = Merge(left, right);
+      return ans;
     }
-    if (tree[root].key > key) {
-      tree[root].left = Add(tree[root].left, key, value);
-      tree[tree[root].left].parent = root;
-      return root;
-    }
-    tree[root].right = Add(tree[root].right, key, value);
-    tree[tree[root].right].parent = root;
-    return root;
+    auto[left, right] = Split(root, value);  // NOLINT
+    int ans = GetMax(left);
+    root = Merge(left, right);
+    return ans;
   }
 
-  std::string Get(int root, std::string& key) {
-    if (root >= int(tree.size())) {
-      return "no_value_exists";
-    }
-    if (tree[root].key > key) {
-      return Get(tree[root].left, key);
-    }
-    if (tree[root].key < key) {
-      return Get(tree[root].right, key);
-    }
-    std::string answer = tree[root].value;
-    Splay(root);
-    return answer;
+  void Remove(int value) {
+    auto[left, temp_right] = Split(root, value);         // NOLINT
+    auto[middle, right] = Split(temp_right, value + 1);  // NOLINT
+    root = Merge(left, right);
+    delete middle;
   }
 
-  std::string Get(std::string& key) { return Get(0, key); }
+  int KthStatistics(Node* root, int k) {
+    if (root == nullptr) {
+      return kNoValue;
+    }
+    if (k == 1 && root->left == nullptr) {
+      return root->value;
+    }
+    int size_left = (root->left == nullptr ? 0 : root->left->size);
+    if (k <= size_left) {
+      return KthStatistics(root->left, k);
+    }
+    if (k == size_left + 1) {
+      return root->value;
+    }
+    return KthStatistics(root->right, k - size_left - 1);
+  }
+
+  int KthStatistics(int k) {
+    int size = 0;
+    if (root != nullptr) {
+      size = root->size;
+    }
+    if (!(0 < k && k <= size)) {
+      return kNoValue;
+    }
+    return KthStatistics(root, k);
+  }
+
+  long long GetSum(int l, int r) {
+    auto[less_l, more_eq_l] = Split(root, l);     // NOLINT
+    auto[l_r, more_r] = Split(more_eq_l, r + 1);  // NOLINT
+    long long ans = 0;
+    if (l_r != nullptr) {
+      ans = l_r->sum;
+    }
+    root = Merge(less_l, l_r);
+    root = Merge(root, more_r);
+    return ans;
+  }
+
+  bool Contains(Node* root, int value) {
+    if (root == nullptr) {
+      return false;
+    }
+    if (root->value == value) {
+      return true;
+    }
+    if (root->value > value) {
+      return Contains(root->left, value);
+    }
+    return Contains(root->right, value);
+  }
+
+  bool Contains(int value) { return Contains(root, value); }
+
+  void ClearTree(Node* root) {
+    if (root == nullptr) {
+      return;
+    }
+    ClearTree(root->left);
+    ClearTree(root->right);
+    delete root;
+  }
+
+  int Size() {
+    if (root == nullptr) {
+      return 0;
+    }
+    return root->size;
+  }
+
+  // returns a[i] (in 0-numeration)
+  int GetKth(Node* root, int index) {
+    if (root == nullptr) {
+      return kNoValue;
+    }
+    if (root->left == nullptr && index == 0) {
+      return root->value;
+    }
+    int size_left = (root->left == 0 ? 0 : root->left->size);
+    if (index < size_left) {
+      return GetKth(root->left, index);
+    }
+    if (index == size_left) {
+      return root->value;
+    }
+    return GetKth(root->right, index - size_left - 1);
+  }
+
+  // returns a[i] (in 0-numeration)
+  int Get(int index) {
+    if (!(0 <= index && index < this->Size())) {
+      return kNoValue;
+    }
+    return GetKth(root, index);
+  }
+
+  ~DescartesTree() { ClearTree(root); }
 };
 
 int main() {
   Init();
-  int n;
-  std::cin >> n;
 
-  SplayTree tree;
+  DescartesTree a;
 
-  for (int i = 0; i < n; ++i) {
-    std::string key, value;
-    std::cin >> key >> value;
-    tree.Add(value, key);
-    tree.Add(key, value);
-  }
-
-  int q;
-  std::cin >> q;
-  for (int i = 0; i < q; ++i) {
-    std::string key;
-    std::cin >> key;
-    std::cout << tree.Get(key) << '\n';
+  std::string cmd;
+  while (std::cin >> cmd) {
+    if (cmd == "insert") {
+      int v;
+      std::cin >> v;
+      a.Add(v);
+    } else if (cmd == "delete") {
+      int v;
+      std::cin >> v;
+      a.Remove(v);
+    } else if (cmd == "exists") {
+      int v;
+      std::cin >> v;
+      if (a.Contains(v)) {
+        std::cout << "true\n";
+      } else {
+        std::cout << "false\n";
+      }
+    } else if (cmd == "next") {
+      int v;
+      std::cin >> v;
+      int ans = a.LowerBound(v + 1);
+      if (ans == DescartesTree::kNoValue) {
+        std::cout << "none\n";
+      } else {
+        std::cout << ans << '\n';
+      }
+    } else if (cmd == "prev") {
+      int v;
+      std::cin >> v;
+      int ans = a.LowerBound(v - 1, true);
+      if (ans == DescartesTree::kNoValue) {
+        std::cout << "none\n";
+      } else {
+        std::cout << ans << '\n';
+      }
+    } else if (cmd == "kth") {
+      int k;
+      std::cin >> k;
+      int ans = a.Get(k);
+      if (ans == DescartesTree::kNoValue) {
+        std::cout << "none\n";
+      } else {
+        std::cout << ans << '\n';
+      }
+    }
   }
 
   return 0;
