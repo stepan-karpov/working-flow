@@ -14,73 +14,99 @@ using pll = pair<ll, ll>;
 using pii = pair<int, int>;
 using vll = vector<ll>;
 using vvll = vector<vll>;
-using ld = long double;
 
-const ll INF = 1e16;
-const ld EPS = 1e-8;
-const string ALPH = "abcdefghijklmnopqrstuvwxyz";
-const ll MOD = 1e9 + 7;
+void topological_sort(vector<set<ll>>& E, set<pll>& in,
+                      vll& in_accordance, vvll& nums, vector<pll>& a,
+                      vector<bool>& handled) {
+  if (in.size() == 0) { return; }
 
-// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
+  pll temp = *in.begin();
+  if (temp.first != 0) { return; }
 
-ll BinPow(ll a, ll x) {
-  if (x == 0) {
-    return 1;
+  ll current_vertex = temp.second;
+  handled[current_vertex] = true;
+  in.erase(temp);
+
+  for (int i = 0; i < nums[current_vertex].size(); ++i) {
+    ll cur_v = nums[current_vertex][i];
+    if (!handled[cur_v]) {
+      handled[current_vertex] = false;
+      return;
+    }
+    a[current_vertex].first += a[cur_v].first;
+    a[current_vertex].second += a[cur_v].second;
   }
-  if (x == 1) {
-    return a % MOD;
+
+  for (ll cur_v : E[current_vertex]) {
+    ll current_in = in_accordance[cur_v];
+    in.erase({current_in, cur_v});
+    in.insert({current_in - 1, cur_v});
+    --in_accordance[cur_v];
   }
-  if (x % 2 == 0) {
-    ll t = BinPow(a, x / 2);
-    return (t * t) % MOD;
-  } else {
-    return (a * BinPow(a, x - 1)) % MOD;
-  }
+  
+  topological_sort(E, in, in_accordance, nums, a, handled);
 }
 
 void solve() {
   ll n; cin >> n;
+  vvll nums(n + 1);
+  vector<pll> a(n + 1, {0, 0});
+  a[1] = {1, 0};
+  a[2] = {0, 1};
 
-  vll C(n + 10);
-  vll fact(n + 10);
-  fact[0] = 1;
-  for (ll i = 1; i <= n; ++i) {
-    fact[i] = fact[i - 1] * i;
-    fact[i] %= MOD;
-  }
+  vll in_accordance(n + 1, 0);
+  set<pll> in;
+  vector<set<ll>> E(n + 1);
 
-  for (ll i = 1; i <= n; ++i) {
-    ll temp = i;
-    temp *= (i - 1);
-    C[i] = temp / 2;
-    C[i] %= MOD;
-  }
-
-  vll a(n + 10);
-  a[0] = 0;
-  a[1] = 1;
-
-  for (int i = 2; i <= n; ++i) {
-    ll ans = C[i - 1];
-    for (int j = i - 1; j >= 0; --j) {
-      ll curC =  fact[i - 1];
-      curC *= BinPow(fact[i - 1 - j], MOD - 2);
-      curC %= MOD;
-      curC *= BinPow(fact[j], MOD - 2);
-      curC %= MOD;
-      ll temp = a[j] * curC;
-      temp %= MOD;
-      ans = ans + temp;
-      ans %= MOD;
+  for (int i = 3; i <= n; ++i) {
+    ll k; cin >> k;
+    for (int j = 0; j < k; ++j) {
+      ll current_prev; cin >> current_prev;
+      nums[i].push_back(current_prev);
+      E[current_prev].insert(i);
     }
-    a[i] = i;
-    ll temp = BinPow(2, C[i - 1]) - ans + MOD;
-    temp %= MOD;
-    a[i] *= temp;
-    a[i] %= MOD;
   }
 
-  cout << a[n] << '\n';
+  for (int i = 1; i <= n; ++i) {
+    for (ll cur_v : E[i]) {
+      ++in_accordance[cur_v];
+    }
+  }
+
+  for (int i = 1; i <= n; ++i) {
+    in.insert({in_accordance[i], i});
+  }
+
+  vector<bool> handled(n + 1, false);
+
+  topological_sort(E, in, in_accordance, nums, a, handled);
+
+  // for (int i = 1; i <= n; ++i) {
+  //   if (!handled[i]) {
+  //     cout << '0';
+  //   } else {
+  //     cout << '1';
+  //   }
+  // }
+  // cout << '\n';
+  // cout << '\n';
+  // cout << '\n';
+
+  ll q; cin >> q;
+
+  for (int i = 0; i < q; ++i) {
+    ll x, y, s; cin >> x >> y >> s;
+    if (!handled[s]) {
+      cout << '0';
+      continue;
+    }
+    if (a[s].first <= x && a[s].second <= y) {
+      cout << '1';
+    } else {
+      cout << '0';
+    }
+  }
+  cout << '\n';
 }
 
 int main() {
