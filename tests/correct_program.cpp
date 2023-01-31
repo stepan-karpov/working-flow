@@ -1,296 +1,90 @@
-#include <iostream>
-#include <vector>
+#include <bits/stdc++.h>
+using namespace std;
+// #pragma GCC optimize("unroll-loops")
+// #pragma GCC optimize("Ofast")
+// #pragma GCC optimize("no-stack-protector")
+// #pragma GCC target("sse,sse2,sse3,ssse3,popcnt,abm,mmx,avx,tune=native")
+// #pragma GCC optimize("fast-math")
+// #pragma GCC optimize(2)
+// #pragma GCC optimize("Ofast","inline","-ffast-math")
+// #pragma GCC optimize "-O3"
 
-void Init() {
-  std::ios_base::sync_with_stdio(false);
-  std::cin.tie(nullptr);
-  std::cout.tie(nullptr);
+using ll = long long;
+using pll = pair<ll, ll>;
+using pii = pair<int, int>;
+using vll = vector<ll>;
+using vvll = vector<vll>;
+using ld = long double;
+
+const ll INF = 1e16;
+const ld EPS = 1e-8;
+const string ALPH = "abcdefghijklmnopqrstuvwxyz";
+
+// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
+
+pll cnt_need(ll s, vvll& nums, ll level) {
+  if (s == 1) {
+    return {1, 0};
+  } else if (s == 2) {
+    return {0, 1};
+  }
+  if (level > 100) {
+    return {INF, INF};
+  }
+  pll ans = {0, 0};
+  for (int i = 0; i < nums[s].size(); ++i) {
+    pll cur_ans = cnt_need(nums[s][i], nums, level + 1);
+    ans.first += cur_ans.first;
+    ans.second += cur_ans.second;
+  }
+  return ans;
 }
 
-struct DescartesTree {
-  struct Node {
-    int value = -1;
-    int priority = -1;
-    long long sum = 0;
-    int size = 1;
-    Node* left = nullptr;
-    Node* right = nullptr;
-    Node(int value) : value(value), priority(rand() % 10000), sum(value) {}
-    Node(int value, int priority)
-        : value(value), priority(priority), sum(value) {}
-  };
-
-  Node* root = nullptr;
-  static const int kNoValue = -1e9;
-
-  void Recalc(Node* root) {
-    if (root == nullptr) {
-      return;
-    }
-    root->sum = root->value;
-    root->size = 1;
-    if (root->left != nullptr) {
-      root->sum += root->left->sum;
-      root->size += root->left->size;
-    }
-    if (root->right != nullptr) {
-      root->sum += root->right->sum;
-      root->size += root->right->size;
+void solve() {
+  ll n; cin >> n;
+  vvll nums(n + 1);
+  for (int i = 3; i <= n; ++i) {
+    ll k; cin >> k;
+    for (int j = 0; j < k; ++j) {
+      ll x; cin >> x;
+      nums[i].push_back(x);
     }
   }
 
-  auto Split(Node* root, int key) -> std::pair<Node*, Node*> {
-    if (root == nullptr) {
-      return {nullptr, nullptr};
+  ll q; cin >> q;
+
+  for (int i = 0; i < q; ++i) {
+    ll x, y, s; cin >> x >> y >> s;
+    pll cur_v = cnt_need(s, nums, 0);
+    if (cur_v.first >= INF && cur_v.second >= INF) {
+      cout << '0';
+    } else {
+      if (x >= cur_v.first && y >= cur_v.second) {
+        cout << '1';
+      } else {
+        cout << '0';
+      }
     }
-    if (root->value < key) {
-      auto[left, right] = Split(root->right, key);  // NOLINT
-      root->right = left;
-      Recalc(root);
-      return {root, right};
-    }
-    auto[left, right] = Split(root->left, key);  // NOLINT
-    root->left = right;
-    Recalc(root);
-    return {left, root};
   }
+  cout << '\n';
 
-  auto Merge(Node* left, Node* right) -> Node* {
-    if (left == nullptr) {
-      return right;
-    }
-    if (right == nullptr) {
-      return left;
-    }
-    if (left->priority > right->priority) {
-      left->right = Merge(left->right, right);
-      Recalc(left);
-      return left;
-    }
-    right->left = Merge(left, right->left);
-    Recalc(right);
-    return right;
-  }
-
-  int GetMin(Node* root) {
-    if (root == nullptr) {
-      return kNoValue;
-    }
-    if (root != nullptr && root->left == nullptr) {
-      return root->value;
-    }
-    return GetMin(root->left);
-  }
-
-  int GetMax(Node* root) {
-    if (root == nullptr) {
-      return kNoValue;
-    }
-    if (root != nullptr && root->right == nullptr) {
-      return root->value;
-    }
-    return GetMax(root->right);
-  }
-
-  void Add(int value) {
-    if (Contains(value)) {
-      return;
-    }
-    Node* to_add = new Node(value);
-    auto[left, right] = Split(root, value);  // NOLINT
-    root = Merge(left, Merge(to_add, right));
-  }
-
-  // returns first value in a tree which is:
-  // >= value if reverse_order = false
-  // <= value if reverse_order = true
-  int LowerBound(int value, bool reverse_order = false) {
-    if (!reverse_order) {
-      auto[left, right] = Split(root, value);  // NOLINT
-      int ans = GetMin(right);
-      root = Merge(left, right);
-      return ans;
-    }
-    auto[left, right] = Split(root, value + 1);  // NOLINT
-    int ans = GetMax(left);
-    root = Merge(left, right);
-    return ans;
-  }
-
-  // returns first value in a tree which is:
-  // > value if reverse_order = false
-  // < value if reverse_order = true
-  int UpperBound(int value, bool reverse_order = false) {
-    if (!reverse_order) {
-      auto[left, right] = Split(root, value + 1);  // NOLINT
-      int ans = GetMin(right);
-      root = Merge(left, right);
-      return ans;
-    }
-    auto[left, right] = Split(root, value);  // NOLINT
-    int ans = GetMax(left);
-    root = Merge(left, right);
-    return ans;
-  }
-
-  void Remove(int value) {
-    auto[left, temp_right] = Split(root, value);         // NOLINT
-    auto[middle, right] = Split(temp_right, value + 1);  // NOLINT
-    root = Merge(left, right);
-    delete middle;
-  }
-
-  int KthStatistics(Node* root, int k) {
-    if (root == nullptr) {
-      return kNoValue;
-    }
-    if (k == 1 && root->left == nullptr) {
-      return root->value;
-    }
-    int size_left = (root->left == nullptr ? 0 : root->left->size);
-    if (k <= size_left) {
-      return KthStatistics(root->left, k);
-    }
-    if (k == size_left + 1) {
-      return root->value;
-    }
-    return KthStatistics(root->right, k - size_left - 1);
-  }
-
-  int KthStatistics(int k) {
-    int size = 0;
-    if (root != nullptr) {
-      size = root->size;
-    }
-    if (!(0 < k && k <= size)) {
-      return kNoValue;
-    }
-    return KthStatistics(root, k);
-  }
-
-  long long GetSum(int l, int r) {
-    auto[less_l, more_eq_l] = Split(root, l);     // NOLINT
-    auto[l_r, more_r] = Split(more_eq_l, r + 1);  // NOLINT
-    long long ans = 0;
-    if (l_r != nullptr) {
-      ans = l_r->sum;
-    }
-    root = Merge(less_l, l_r);
-    root = Merge(root, more_r);
-    return ans;
-  }
-
-  bool Contains(Node* root, int value) {
-    if (root == nullptr) {
-      return false;
-    }
-    if (root->value == value) {
-      return true;
-    }
-    if (root->value > value) {
-      return Contains(root->left, value);
-    }
-    return Contains(root->right, value);
-  }
-
-  bool Contains(int value) { return Contains(root, value); }
-
-  void ClearTree(Node* root) {
-    if (root == nullptr) {
-      return;
-    }
-    ClearTree(root->left);
-    ClearTree(root->right);
-    delete root;
-  }
-
-  int Size() {
-    if (root == nullptr) {
-      return 0;
-    }
-    return root->size;
-  }
-
-  // returns a[i] (in 0-numeration)
-  int GetKth(Node* root, int index) {
-    if (root == nullptr) {
-      return kNoValue;
-    }
-    if (root->left == nullptr && index == 0) {
-      return root->value;
-    }
-    int size_left = (root->left == 0 ? 0 : root->left->size);
-    if (index < size_left) {
-      return GetKth(root->left, index);
-    }
-    if (index == size_left) {
-      return root->value;
-    }
-    return GetKth(root->right, index - size_left - 1);
-  }
-
-  // returns a[i] (in 0-numeration)
-  int Get(int index) {
-    if (!(0 <= index && index < this->Size())) {
-      return kNoValue;
-    }
-    return GetKth(root, index);
-  }
-
-  ~DescartesTree() { ClearTree(root); }
-};
+}
 
 int main() {
-  Init();
-
-  DescartesTree a;
-
-  std::string cmd;
-  while (std::cin >> cmd) {
-    if (cmd == "insert") {
-      int v;
-      std::cin >> v;
-      a.Add(v);
-    } else if (cmd == "delete") {
-      int v;
-      std::cin >> v;
-      a.Remove(v);
-    } else if (cmd == "exists") {
-      int v;
-      std::cin >> v;
-      if (a.Contains(v)) {
-        std::cout << "true\n";
-      } else {
-        std::cout << "false\n";
-      }
-    } else if (cmd == "next") {
-      int v;
-      std::cin >> v;
-      int ans = a.LowerBound(v + 1);
-      if (ans == DescartesTree::kNoValue) {
-        std::cout << "none\n";
-      } else {
-        std::cout << ans << '\n';
-      }
-    } else if (cmd == "prev") {
-      int v;
-      std::cin >> v;
-      int ans = a.LowerBound(v - 1, true);
-      if (ans == DescartesTree::kNoValue) {
-        std::cout << "none\n";
-      } else {
-        std::cout << ans << '\n';
-      }
-    } else if (cmd == "kth") {
-      int k;
-      std::cin >> k;
-      int ans = a.Get(k);
-      if (ans == DescartesTree::kNoValue) {
-        std::cout << "none\n";
-      } else {
-        std::cout << ans << '\n';
-      }
-    }
+  ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
+  cout.tie(nullptr);
+  ll t = 1;
+  // cin >> t;
+  // cout << fixed << setprecision(10);
+  
+  while (t--) {
+    solve();
+    // cout << solve() << endl;
+    // if (solve())
+    //    cout << "Yes" << endl;
+    // else
+    //    cout << "No" << endl;
   }
 
   return 0;
