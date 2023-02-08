@@ -22,63 +22,55 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-bool possible(std::vector<int>& a, std::vector<int>& b) {
-  for (int i = 1; i < a.size(); ++i) {
-    if (!(a[i] > a[i - 1])) {
-      return false;
-    }
+void output_test() {
+  freopen("test.txt", "r", stdin);
+  ll n; cin >> n;
+  cout << n << " ";
+  for (int i = 0; i < n; ++i) {
+    string s; cin >> s;
+    cout << s << " ";
   }
-  if (a.size() == 0) {
-    return true;
-  }
-  int p = 0;
-  for (int i = 0; i < b.size(); ++i) {
-    if (b[i] == a[p]) {
-      ++p;
-    }
-    if (p == a.size()) {
-      return true;
-    }
-  }
-  return false;
 }
 
 void solve() {
-  int n;
-  std::cin >> n;
-  int m;
-  std::cin >> m;
+  ll n; cin >> n;
+  vector<string> a(n);
 
-  std::vector<int> a(n);
   for (int i = 0; i < n; ++i) {
-    std::cin >> a[i];
+    cin >> a[i];
   }
 
-  std::vector<int> b(m);
-  for (int i = 0; i < m; ++i) {
-    std::cin >> b[i];
-  }
+  freopen("incorrect_answer.txt", "r", stdin);
 
-  std::vector<int> best;
-
-  for (int i = 0; i < (1 << n); ++i) {
-    std::vector<int> cur_seq;
-    for (int t = n - 1; t >= 0; --t) {
-      bool temp = (i >> t) & 1;
-      if (temp) {
-        cur_seq.push_back(a[t]);
+  ll k; cin >> k;
+  for (int i = 0; i < k; ++i) {
+    ll u, v;
+    char s1, s2;
+    cin >> u >> s1 >> v >> s2;
+    --u; --v;
+    for (int j = 0; j < 3; ++j) {
+      if (a[u][j] == s1) {
+        a[u][j] = s2;
+        break;
       }
     }
-    std::vector<int> seq;
-    for (int j = cur_seq.size() - 1; j >= 0; --j) {
-      seq.push_back(cur_seq[j]);
-    }
-    if (possible(seq, b) && seq.size() > best.size()) {
-      best = seq;
+    for (int j = 0; j < 3; ++j) {
+      if (a[v][j] == s2) {
+        a[v][j] = s1;
+        break;
+      }
     }
   }
 
-  std::cout << best.size() << "\n";
+
+  // freopen("log.txt", "a", stdout);
+  for (int i = 0; i < n; ++i) {
+    sort(a[i].begin(), a[i].end());
+    if (a[i] != "inw") {
+      output_test();
+      return;
+    }
+  }
 
 }
 

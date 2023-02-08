@@ -1,6 +1,8 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+using ll = long long;
+
 std::random_device rd;
 std::mt19937 gen(rd());
 
@@ -35,25 +37,22 @@ bool is_prime(int n){
 int main() {
   std::mt19937 mt(time(nullptr)); 
 
-  int n = random(2, 5);
+  int size = 7;
+
+  int n = random(size, size);
   cout << n << "\n";
+  int m = random(size, size);
+  cout << m << "\n";
 
-  for (int i = 3; i <= n; ++i) {
-    int t = random(1, 3);
-    cout << t << ' ';
-    for (int j = 0; j < t; ++j) {
-      cout << random(1, n) << " ";
-    }
-    cout << '\n';
+  for (int i = 0; i < n; ++i) {
+    std::cout << random(0, 5) << " ";
   }
-
-  int q = random(2, 3);
-
-  cout << q << '\n';
-
-  for (int i = 0; i < q; ++i) {
-    cout << random(0, 10) << " " << random(0, 10) << " " << random(1, n) << '\n';
+  std::cout << "\n";
+  
+  for (int i = 0; i < m; ++i) {
+    std::cout << random(0, 5) << " ";
   }
+  std::cout << "\n";
   
   return 0;
 }

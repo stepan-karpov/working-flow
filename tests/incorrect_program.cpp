@@ -1,130 +1,120 @@
-#include <bits/stdc++.h>
-using namespace std;
-// #pragma GCC optimize("unroll-loops")
-// #pragma GCC optimize("Ofast")
-// #pragma GCC optimize("no-stack-protector")
-// #pragma GCC target("sse,sse2,sse3,ssse3,popcnt,abm,mmx,avx,tune=native")
-// #pragma GCC optimize("fast-math")
-// #pragma GCC optimize(2)
-// #pragma GCC optimize("Ofast","inline","-ffast-math")
-// #pragma GCC optimize "-O3"
+#include <algorithm>
+#include <iostream>
+#include <vector>
 
-using ll = long long;
-using pll = pair<ll, ll>;
-using pii = pair<int, int>;
-using vll = vector<ll>;
-using vvll = vector<vll>;
-
-void topological_sort(vector<set<ll>>& E, set<pll>& in,
-                      vll& in_accordance, vvll& nums, vector<pll>& a,
-                      vector<bool>& handled) {
-  if (in.size() == 0) { return; }
-
-  pll temp = *in.begin();
-  if (temp.first != 0) { return; }
-
-  ll current_vertex = temp.second;
-  handled[current_vertex] = true;
-  in.erase(temp);
-
-  for (int i = 0; i < nums[current_vertex].size(); ++i) {
-    ll cur_v = nums[current_vertex][i];
-    if (!handled[cur_v]) {
-      handled[current_vertex] = false;
-      return;
-    }
-    a[current_vertex].first += a[cur_v].first;
-    a[current_vertex].second += a[cur_v].second;
-  }
-
-  for (ll cur_v : E[current_vertex]) {
-    ll current_in = in_accordance[cur_v];
-    in.erase({current_in, cur_v});
-    in.insert({current_in - 1, cur_v});
-    --in_accordance[cur_v];
-  }
-  
-  topological_sort(E, in, in_accordance, nums, a, handled);
+void Init() {
+  std::ios_base::sync_with_stdio(false);
+  std::cin.tie(nullptr);
+  std::cout.tie(nullptr);
 }
 
-void solve() {
-  ll n; cin >> n;
-  vvll nums(n + 1);
-  vector<pll> a(n + 1, {0, 0});
-  a[1] = {1, 0};
-  a[2] = {0, 1};
+const int INF = 1e9 + 1;
 
-  vll in_accordance(n + 1, 0);
-  set<pll> in;
-  vector<set<ll>> E(n + 1);
+struct Node {
+  int sequence = 1;
+  int last_max = -INF;
+  int prev_max = -INF;
+  Node(int sequence, int last_max, int prev_max)
+       : sequence(sequence), last_max(last_max), prev_max(prev_max) {}
+};
 
-  for (int i = 3; i <= n; ++i) {
-    ll k; cin >> k;
-    for (int j = 0; j < k; ++j) {
-      ll current_prev; cin >> current_prev;
-      nums[i].push_back(current_prev);
-      E[current_prev].insert(i);
+void Init(int n, int m, std::vector<int>& a, std::vector<int>& b,
+          std::vector<std::vector<Node>>& dp) {
+  if (a[0] == b[0]) {
+    dp[0][0] = {1, a[0], -INF};
+  } else {
+    dp[0][0] = {0, -INF, -INF};
+  }
+
+  for (int i = 1; i < n; ++i) {
+    dp[i][0] = dp[i - 1][0];
+    if (a[i] == b[0]) {
+      dp[i][0] = {1, a[i], -INF};
+    }
+  }
+  
+  for (int i = 1; i < m; ++i) {
+    dp[0][i] = dp[0][i - 1];
+    if (a[0] == b[i]) {
+      dp[0][i] = {1, a[0], -INF};
     }
   }
 
-  for (int i = 1; i <= n; ++i) {
-    for (ll cur_v : E[i]) {
-      ++in_accordance[cur_v];
-    }
-  }
-
-  for (int i = 1; i <= n; ++i) {
-    in.insert({in_accordance[i], i});
-  }
-
-  vector<bool> handled(n + 1, false);
-
-  topological_sort(E, in, in_accordance, nums, a, handled);
-
-  // for (int i = 1; i <= n; ++i) {
-  //   if (!handled[i]) {
-  //     cout << '0';
-  //   } else {
-  //     cout << '1';
-  //   }
-  // }
-  // cout << '\n';
-  // cout << '\n';
-  // cout << '\n';
-
-  ll q; cin >> q;
-
-  for (int i = 0; i < q; ++i) {
-    ll x, y, s; cin >> x >> y >> s;
-    if (!handled[s]) {
-      cout << '0';
-      continue;
-    }
-    if (a[s].first <= x && a[s].second <= y) {
-      cout << '1';
-    } else {
-      cout << '0';
-    }
-  }
-  cout << '\n';
 }
 
 int main() {
-  ios_base::sync_with_stdio(false);
-  cin.tie(nullptr);
-  cout.tie(nullptr);
-  ll t = 1;
-  // cin >> t;
-  // cout << fixed << setprecision(10);
-  
-  while (t--) {
-    solve();
-    // cout << solve() << endl;
-    // if (solve())
-    //    cout << "Yes" << endl;
-    // else
-    //    cout << "No" << endl;
+  Init();
+  int n, m;
+  std::cin >> n >> m;
+
+  std::vector<int> a(n);
+  std::vector<int> b(m);
+
+  for (int i = 0; i < n; ++i) {
+    std::cin >> a[i];
   }
+  for (int i = 0; i < m; ++i) {
+    std::cin >> b[i];
+  }
+
+  std::vector<std::vector<Node>> dp(n, std::vector<Node>(m, {0, 0, 0}));
+
+  Init(n, m, a, b, dp);
+
+  for (int i = 1; i < n; ++i) {
+    for (int j = 1; j < m; ++j) {
+      dp[i][j] = dp[i - 1][j - 1];
+      if (a[i] == b[j]) {
+        int last_ans = dp[i - 1][j - 1].sequence;
+        int last_max = dp[i - 1][j - 1].last_max;
+        int prev_max = dp[i - 1][j - 1].prev_max;
+        if (last_max < a[i]) {
+          dp[i][j] = {last_ans + 1, a[i], last_max};
+        } else if (prev_max < a[i]) {
+          std::vector<int> temp = {last_max, a[i], prev_max};
+          std::sort(temp.begin(), temp.end());
+          dp[i][j].sequence = last_ans;
+          dp[i][j].last_max = temp[1];
+          dp[i][j].prev_max = temp[0];
+        }
+      }
+      if (dp[i - 1][j].sequence > dp[i][j].sequence) {
+        dp[i][j] = dp[i - 1][j];
+      } else if (dp[i - 1][j].sequence == dp[i][j].sequence) {
+        std::vector<int> temp;
+        temp.push_back(dp[i - 1][j].last_max);
+        temp.push_back(dp[i][j].last_max);
+        temp.push_back(std::min(dp[i][j].prev_max, dp[i - 1][j].prev_max));
+        std::sort(temp.begin(), temp.end());
+        dp[i][j].last_max = temp[1];
+        dp[i][j].prev_max = temp[0];
+      }
+      if (dp[i][j - 1].sequence > dp[i][j].sequence) {
+        dp[i][j] = dp[i][j - 1];
+      } else if (dp[i][j - 1].sequence == dp[i][j].sequence) {
+        std::vector<int> temp;
+        temp.push_back(dp[i][j - 1].last_max);
+        temp.push_back(dp[i][j].last_max);
+        temp.push_back(std::min(dp[i][j].prev_max, dp[i][j - 1].prev_max));
+        std::sort(temp.begin(), temp.end());
+        dp[i][j].last_max = temp[1];
+        dp[i][j].prev_max = temp[0];
+      }
+    }
+  }
+
+
+  int answer = 0;
+
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < m; ++j) {
+      std::cout << dp[i][j].sequence << "," << dp[i][j].last_max << "  ";
+      answer = std::max(answer, dp[i][j].sequence);
+    }
+    std::cout << "\n";
+  }
+
+  std::cout << answer << "\n";
 
   return 0;
 }
