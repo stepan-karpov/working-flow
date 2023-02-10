@@ -43,42 +43,37 @@ bool possible(std::vector<int>& a, std::vector<int>& b) {
   return false;
 }
 
+
+
 void solve() {
   int n;
   std::cin >> n;
-  int m;
-  std::cin >> m;
 
   std::vector<int> a(n);
   for (int i = 0; i < n; ++i) {
     std::cin >> a[i];
   }
 
-  std::vector<int> b(m);
-  for (int i = 0; i < m; ++i) {
-    std::cin >> b[i];
-  }
-
-  std::vector<int> best;
+  set<vector<ll>> ans;
 
   for (int i = 0; i < (1 << n); ++i) {
-    std::vector<int> cur_seq;
-    for (int t = n - 1; t >= 0; --t) {
-      bool temp = (i >> t) & 1;
-      if (temp) {
-        cur_seq.push_back(a[t]);
+    vll temp2;
+    for (int j = n - 1; j >= 0; --j) {
+      bool t = (i >> j) & 1;
+      if (t) {
+        temp2.push_back(a[j]);
       }
     }
-    std::vector<int> seq;
-    for (int j = cur_seq.size() - 1; j >= 0; --j) {
-      seq.push_back(cur_seq[j]);
+    vll temp;
+    for (int j = temp2.size() - 1; j >= 0; --j) {
+      temp.push_back(temp2[j]);
     }
-    if (possible(seq, b) && seq.size() > best.size()) {
-      best = seq;
+    if (temp.size() != 0) {
+      ans.insert(temp);
     }
   }
 
-  std::cout << best.size() << "\n";
+  std::cout << ans.size() << "\n";
 
 }
 

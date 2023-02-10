@@ -1,4 +1,7 @@
+#include <algorithm>
 #include <iostream>
+#include <iterator>
+#include <list>
 #include <vector>
 
 void Init() {
@@ -7,91 +10,87 @@ void Init() {
   std::cout.tie(nullptr);
 }
 
-int main() {
-  Init();
-  // std::string s1, s2;
-  // std::cin >> s1 >> s2;
+std::list<int>::iterator getNext(std::list<int>& list, std::list<int>::iterator it) {
+  ++it;
+  if (it == list.end()) {
+    it = list.begin();
+  }
+  return it;
+} 
 
-  // int n = s1.size();
-  // int m = s2.size();
+void output(std::list<int>& to_output) {
+  auto it = to_output.begin();
+  while (it != to_output.end()) {
+    std::cout << *it << " ";
+    ++it;
+  }
+  std::cout << "\n";
+}
 
-  int n;
-  std::cin >> n;
-  std::vector<int> s1(n);
+void fill(std::list<int>& to_fill, int start, int n) {
+  auto it = to_fill.begin();
+  
+  for (int i = 0; i < start; ++i) {
+    ++it;
+  }
+
+  int p = 0;
+
   for (int i = 0; i < n; ++i) {
-    std::cin >> s1[i];
+    *it = p;
+    it = getNext(to_fill, it);
+    p += 2;
   }
-  int m;
-  std::cin >> m;
-  std::vector<int> s2(m);
-  for (int i = 0; i < m; ++i) {
-    std::cin >> s2[i];
-  }
+}
 
-  std::vector<std::vector<int>> dp(m, std::vector<int>(n, 0));
-  std::vector<std::vector<std::pair<int, int>>> parents(m, std::vector<std::pair<int, int>>(n));
+std::list<int>::iterator getStart(std::list<int>& list) {
+  auto it = list.begin();
 
-  dp[0][0] = int(s1[0] == s2[0]);
-  parents[0][0] = {-1, -1};
-
-  for (int i = 1; i < n; ++i) {
-    dp[0][i] = dp[0][i - 1];
-    parents[0][i] = {0, i - 1};
-    if (s2[0] == s1[i]) {
-      dp[0][i] = 1;
+  for (int i = 0; i < int(list.size()); ++i) {
+    int current_value = *it;
+    auto next_it = getNext(list, it);
+    int next_value = *next_it;
+    if (current_value > next_value) {
+      return next_it;
     }
+    it = next_it;
   }
 
-  for (int i = 1; i < m; ++i) {
-    dp[i][0] = dp[i - 1][0];
-    parents[i][0] = {i - 1, 0};
-    if (s1[0] == s2[i]) {
-      dp[i][0] = 1;
+  return list.begin();
+}
+
+void insertValue(std::list<int>& list, std::list<int>::iterator start,
+                 int value) {
+  auto it = start;
+  for (int i = 0; i < (list.size()); ++i) {
+    auto next = getNext(list, it);
+    if (*it == value) {
+      list.insert(next, value);
+      return;
     }
-  }
-
-  for (int i = 1; i < m; ++i) {
-    for (int j = 1; j < n; ++j) {
-      dp[i][j] = dp[i - 1][j - 1];
-      parents[i][j] = {i - 1, j - 1};
-      if (s2[i] == s1[j]) {
-        dp[i][j] = dp[i - 1][j - 1] + 1;
-        parents[i][j] = {i - 1, j - 1};
-      } else {
-        if (dp[i - 1][j] > dp[i][j]) {
-          dp[i][j] = dp[i - 1][j];
-          parents[i][j] = {i - 1, j};
-        }
-        if (dp[i][j - 1] > dp[i][j]) {
-          dp[i][j] = dp[i][j - 1];
-          parents[i][j] = {i, j - 1};
-        }
-      }
+    if (*it < value && value < *next) {
+      list.insert(next, value);
+      return;
     }
+    it = next;
   }
+  list.insert(it, value);
+}
 
-  int i = m - 1;
-  int j = n - 1;
+int main() {
+  srand(time(NULL));
+  Init();
+  
+  int n = 10;
 
-  std::vector<int> sequence1;
-  std::vector<int> sequence2;
+  std::list<int> a;
+  a.resize(n);
 
-  while (!(i == -1 && j == -1)) {
-    int parent_i = parents[i][j].first;
-    int parent_j = parents[i][j].second;
-    if (parent_i != -1 && parent_j != -1 && dp[i][j] > dp[parent_i][parent_j]) {
-      sequence1.push_back(i);
-      sequence2.push_back(j);
-    }
-    i = parent_i;
-    j = parent_j;
-  }
-
-  // std::cout << dp[m - 1][n - 1] << "\n";
-
-  for (int i = int(sequence1.size()) - 1; i >= 0; --i) {
-    std::cout << s2[sequence1[i]] << " ";
-  }
+  fill(a, rand() % n, n);
+  output(a);
+  auto start = getStart(a);
+  insertValue(a, start, 7);
+  output(a);
 
   return 0;
 }

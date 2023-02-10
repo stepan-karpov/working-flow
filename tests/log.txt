@@ -1,311 +1,628 @@
-0 test is ok
-10 test is ok
-20 test is ok
-30 test is ok
-40 test is ok
-50 test is ok
-60 test is ok
-70 test is ok
-80 test is ok
-90 test is ok
-100 test is ok
-110 test is ok
-120 test is ok
-130 test is ok
-140 test is ok
-150 test is ok
-160 test is ok
-170 test is ok
-180 test is ok
-190 test is ok
-200 test is ok
-210 test is ok
-220 test is ok
-230 test is ok
-240 test is ok
-250 test is ok
-260 test is ok
-270 test is ok
-280 test is ok
-290 test is ok
-300 test is ok
-310 test is ok
-320 test is ok
-330 test is ok
-340 test is ok
-350 test is ok
-360 test is ok
-370 test is ok
-380 test is ok
-390 test is ok
-400 test is ok
-410 test is ok
-420 test is ok
-430 test is ok
-440 test is ok
-450 test is ok
-460 test is ok
-470 test is ok
-480 test is ok
-490 test is ok
-500 test is ok
-510 test is ok
-520 test is ok
-530 test is ok
-540 test is ok
-550 test is ok
-560 test is ok
-570 test is ok
-580 test is ok
-590 test is ok
-600 test is ok
-610 test is ok
-620 test is ok
-630 test is ok
-640 test is ok
-650 test is ok
-660 test is ok
-670 test is ok
-680 test is ok
-690 test is ok
-700 test is ok
-710 test is ok
-720 test is ok
-730 test is ok
-740 test is ok
-750 test is ok
-760 test is ok
-770 test is ok
-780 test is ok
-790 test is ok
-800 test is ok
-810 test is ok
-820 test is ok
-830 test is ok
-840 test is ok
-850 test is ok
-860 test is ok
-870 test is ok
-880 test is ok
-890 test is ok
-900 test is ok
-910 test is ok
-920 test is ok
-930 test is ok
-940 test is ok
-950 test is ok
-960 test is ok
-970 test is ok
-980 test is ok
-990 test is ok
-1000 test is ok
-1010 test is ok
-1020 test is ok
-1030 test is ok
-1040 test is ok
-1050 test is ok
-1060 test is ok
-1070 test is ok
-1080 test is ok
-1090 test is ok
-1100 test is ok
-1110 test is ok
-1120 test is ok
-1130 test is ok
-1140 test is ok
-1150 test is ok
-1160 test is ok
-1170 test is ok
-1180 test is ok
-1190 test is ok
-1200 test is ok
-1210 test is ok
-1220 test is ok
-1230 test is ok
-1240 test is ok
-1250 test is ok
-1260 test is ok
-1270 test is ok
-1280 test is ok
-1290 test is ok
-1300 test is ok
-1310 test is ok
-1320 test is ok
-1330 test is ok
-1340 test is ok
-1350 test is ok
-1360 test is ok
-1370 test is ok
-1380 test is ok
-1390 test is ok
-1400 test is ok
-1410 test is ok
-1420 test is ok
-1430 test is ok
-1440 test is ok
-1450 test is ok
-1460 test is ok
-1470 test is ok
-1480 test is ok
-1490 test is ok
-1500 test is ok
-1510 test is ok
-1520 test is ok
-1530 test is ok
-1540 test is ok
 Warning: test is incorrect
 ======== test ========
-7 7 3 4 1 3 4 5 4 3 4 1 3 3 4 2
+4 0 3 0 0
 ======================
 right answer is: 
-3
+9
 =====================
 your answer is: 
-2
+11
 
-1550 test is ok
-1560 test is ok
-1570 test is ok
-1580 test is ok
-1590 test is ok
-1600 test is ok
-1610 test is ok
-1620 test is ok
-1630 test is ok
-1640 test is ok
-1650 test is ok
-1660 test is ok
-1670 test is ok
-1680 test is ok
-1690 test is ok
-1700 test is ok
-1710 test is ok
-1720 test is ok
-1730 test is ok
-1740 test is ok
-1750 test is ok
-1760 test is ok
-1770 test is ok
-1780 test is ok
-1790 test is ok
-1800 test is ok
-1810 test is ok
-1820 test is ok
-1830 test is ok
-1840 test is ok
-1850 test is ok
-1860 test is ok
-1870 test is ok
-1880 test is ok
-1890 test is ok
-1900 test is ok
-1910 test is ok
-1920 test is ok
-1930 test is ok
-1940 test is ok
-1950 test is ok
-1960 test is ok
-1970 test is ok
-1980 test is ok
-1990 test is ok
-2000 test is ok
-2010 test is ok
-2020 test is ok
-2030 test is ok
-2040 test is ok
-2050 test is ok
-2060 test is ok
-2070 test is ok
-2080 test is ok
-2090 test is ok
-2100 test is ok
-2110 test is ok
-2120 test is ok
-2130 test is ok
-2140 test is ok
-2150 test is ok
-2160 test is ok
-2170 test is ok
-2180 test is ok
-2190 test is ok
-2200 test is ok
-2210 test is ok
-2220 test is ok
-2230 test is ok
-2240 test is ok
-2250 test is ok
-2260 test is ok
-2270 test is ok
-2280 test is ok
-2290 test is ok
-2300 test is ok
-2310 test is ok
-2320 test is ok
-2330 test is ok
-2340 test is ok
-2350 test is ok
-2360 test is ok
-2370 test is ok
-2380 test is ok
-2390 test is ok
-2400 test is ok
-2410 test is ok
-2420 test is ok
-2430 test is ok
-2440 test is ok
-2450 test is ok
-2460 test is ok
-2470 test is ok
-2480 test is ok
-2490 test is ok
-2500 test is ok
-2510 test is ok
-2520 test is ok
-2530 test is ok
-2540 test is ok
-2550 test is ok
-2560 test is ok
-2570 test is ok
-2580 test is ok
-2590 test is ok
-2600 test is ok
-2610 test is ok
-2620 test is ok
-2630 test is ok
-2640 test is ok
-2650 test is ok
-2660 test is ok
-2670 test is ok
-2680 test is ok
-2690 test is ok
-2700 test is ok
-2710 test is ok
-2720 test is ok
-2730 test is ok
-2740 test is ok
-2750 test is ok
-2760 test is ok
-2770 test is ok
-2780 test is ok
-2790 test is ok
-2800 test is ok
-2810 test is ok
-2820 test is ok
-2830 test is ok
-2840 test is ok
-2850 test is ok
-2860 test is ok
-2870 test is ok
-2880 test is ok
-2890 test is ok
-2900 test is ok
-2910 test is ok
-2920 test is ok
-2930 test is ok
-2940 test is ok
-2950 test is ok
-2960 test is ok
-2970 test is ok
-2980 test is ok
-2990 test is ok
-3000 test is ok
+Warning: test is incorrect
+======== test ========
+4 4 5 5 1
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+13
+
+Warning: test is incorrect
+======== test ========
+4 3 1 1 0
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+13
+
+Warning: test is incorrect
+======== test ========
+4 0 1 0 0
+======================
+right answer is: 
+9
+=====================
+your answer is: 
+11
+
+Warning: test is incorrect
+======== test ========
+4 2 4 2 4
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+12
+
+Warning: test is incorrect
+======== test ========
+4 3 0 0 0
+======================
+right answer is: 
+7
+=====================
+your answer is: 
+11
+
+Warning: test is incorrect
+======== test ========
+4 2 5 5 5
+======================
+right answer is: 
+7
+=====================
+your answer is: 
+11
+
+Warning: test is incorrect
+======== test ========
+4 0 4 4 5
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+13
+
+Warning: test is incorrect
+======== test ========
+4 0 1 2 1
+======================
+right answer is: 
+13
+=====================
+your answer is: 
+14
+
+Warning: test is incorrect
+======== test ========
+4 0 1 2 2
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+14
+
+Warning: test is incorrect
+======== test ========
+4 1 5 1 5
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+12
+
+20 test is ok
+Warning: test is incorrect
+======== test ========
+4 5 3 3 2
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+13
+
+Warning: test is incorrect
+======== test ========
+4 1 3 3 1
+======================
+right answer is: 
+10
+=====================
+your answer is: 
+12
+
+Warning: test is incorrect
+======== test ========
+4 5 1 0 0
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+14
+
+Warning: test is incorrect
+======== test ========
+4 1 5 4 4
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+14
+
+Warning: test is incorrect
+======== test ========
+4 4 2 0 2
+======================
+right answer is: 
+13
+=====================
+your answer is: 
+14
+
+Warning: test is incorrect
+======== test ========
+4 4 5 5 2
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+13
+
+Warning: test is incorrect
+======== test ========
+4 5 2 2 5
+======================
+right answer is: 
+10
+=====================
+your answer is: 
+12
+
+Warning: test is incorrect
+======== test ========
+4 4 1 5 1
+======================
+right answer is: 
+13
+=====================
+your answer is: 
+14
+
+Warning: test is incorrect
+======== test ========
+4 2 1 2 1
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+12
+
+40 test is ok
+Warning: test is incorrect
+======== test ========
+4 2 3 2 2
+======================
+right answer is: 
+9
+=====================
+your answer is: 
+11
+
+Warning: test is incorrect
+======== test ========
+4 4 1 2 2
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+14
+
+Warning: test is incorrect
+======== test ========
+4 0 0 1 1
+======================
+right answer is: 
+8
+=====================
+your answer is: 
+10
+
+Warning: test is incorrect
+======== test ========
+4 0 1 0 0
+======================
+right answer is: 
+9
+=====================
+your answer is: 
+11
+
+Warning: test is incorrect
+======== test ========
+4 1 5 5 0
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+13
+
+50 test is ok
+Warning: test is incorrect
+======== test ========
+4 2 0 5 0
+======================
+right answer is: 
+13
+=====================
+your answer is: 
+14
+
+Warning: test is incorrect
+======== test ========
+4 4 5 0 5
+======================
+right answer is: 
+13
+=====================
+your answer is: 
+14
+
+Warning: test is incorrect
+======== test ========
+4 2 5 3 5
+======================
+right answer is: 
+13
+=====================
+your answer is: 
+14
+
+Warning: test is incorrect
+======== test ========
+4 0 3 2 3
+======================
+right answer is: 
+13
+=====================
+your answer is: 
+14
+
+Warning: test is incorrect
+======== test ========
+4 0 3 3 2
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+13
+
+Warning: test is incorrect
+======== test ========
+4 5 2 2 2
+======================
+right answer is: 
+7
+=====================
+your answer is: 
+11
+
+Warning: test is incorrect
+======== test ========
+4 0 1 2 1
+======================
+right answer is: 
+13
+=====================
+your answer is: 
+14
+
+Warning: test is incorrect
+======== test ========
+4 3 5 4 5
+======================
+right answer is: 
+13
+=====================
+your answer is: 
+14
+
+Warning: test is incorrect
+======== test ========
+4 1 5 3 3
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+14
+
+70 test is ok
+Warning: test is incorrect
+======== test ========
+4 0 1 4 1
+======================
+right answer is: 
+13
+=====================
+your answer is: 
+14
+
+Warning: test is incorrect
+======== test ========
+4 4 0 4 0
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+12
+
+Warning: test is incorrect
+======== test ========
+4 0 4 0 4
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+12
+
+Warning: test is incorrect
+======== test ========
+4 0 4 4 0
+======================
+right answer is: 
+10
+=====================
+your answer is: 
+12
+
+80 test is ok
+Warning: test is incorrect
+======== test ========
+4 2 1 1 4
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+13
+
+Warning: test is incorrect
+======== test ========
+4 3 0 3 3
+======================
+right answer is: 
+9
+=====================
+your answer is: 
+11
+
+Warning: test is incorrect
+======== test ========
+4 3 4 4 2
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+13
+
+Warning: test is incorrect
+======== test ========
+4 1 5 0 0
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+14
+
+Warning: test is incorrect
+======== test ========
+4 1 0 1 1
+======================
+right answer is: 
+9
+=====================
+your answer is: 
+11
+
+100 test is ok
+Warning: test is incorrect
+======== test ========
+4 0 2 4 2
+======================
+right answer is: 
+13
+=====================
+your answer is: 
+14
+
+Warning: test is incorrect
+======== test ========
+4 2 3 2 2
+======================
+right answer is: 
+9
+=====================
+your answer is: 
+11
+
+Warning: test is incorrect
+======== test ========
+4 1 0 0 5
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+13
+
+Warning: test is incorrect
+======== test ========
+4 4 5 4 4
+======================
+right answer is: 
+9
+=====================
+your answer is: 
+11
+
+110 test is ok
+Warning: test is incorrect
+======== test ========
+4 0 1 0 1
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+12
+
+Warning: test is incorrect
+======== test ========
+4 5 1 5 1
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+12
+
+Warning: test is incorrect
+======== test ========
+4 0 1 4 1
+======================
+right answer is: 
+13
+=====================
+your answer is: 
+14
+
+Warning: test is incorrect
+======== test ========
+4 1 5 5 0
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+13
+
+Warning: test is incorrect
+======== test ========
+4 2 4 4 5
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+13
+
+Warning: test is incorrect
+======== test ========
+4 5 0 0 5
+======================
+right answer is: 
+10
+=====================
+your answer is: 
+12
+
+130 test is ok
+Warning: test is incorrect
+======== test ========
+4 2 4 5 5
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+14
+
+Warning: test is incorrect
+======== test ========
+4 3 0 4 0
+======================
+right answer is: 
+13
+=====================
+your answer is: 
+14
+
+Warning: test is incorrect
+======== test ========
+4 2 4 2 4
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+12
+
+Warning: test is incorrect
+======== test ========
+4 2 5 2 5
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+12
+
+Warning: test is incorrect
+======== test ========
+4 0 5 2 2
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+14
+
+Warning: test is incorrect
+======== test ========
+4 2 4 4 0
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+13
+
+Warning: test is incorrect
+======== test ========
+4 1 5 5 4
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+13
+
+Warning: test is incorrect
+======== test ========
+4 0 2 1 1
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+14
+
+Warning: test is incorrect
+======== test ========
+4 5 4 0 0
+======================
+right answer is: 
+11
+=====================
+your answer is: 
+14
+
