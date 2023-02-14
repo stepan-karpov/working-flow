@@ -37,17 +37,25 @@ bool is_prime(int n){
 int main() {
   std::mt19937 mt(time(nullptr)); 
 
-  int size = 4;
 
-  int n = random(size, size);
-  cout << n << "\n";
-  // int m = random(size, size);
-  // cout << m << "\n";
+  int n = random(1, 5);
+  cout << n << " ";
+  int m = random(1, n);
+  cout << m << "\n";
+
+  vector<int> sequence;
 
   for (int i = 0; i < n; ++i) {
-    std::cout << random(0, 5) << " ";
+    sequence.push_back(random(0, 100));
+  }
+
+  sort(sequence.begin(), sequence.end());
+
+  for (int i = 0; i < n; ++i) {
+    std::cout << sequence[i] << " ";
   }
   std::cout << "\n";
+
   
   // for (int i = 0; i < m; ++i) {
   //   std::cout << random(0, 5) << " ";

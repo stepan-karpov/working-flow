@@ -1,96 +1,61 @@
-#include <algorithm>
-#include <iostream>
-#include <iterator>
-#include <list>
-#include <vector>
+#include <bits/stdc++.h>
+using namespace std;
 
-void Init() {
-  std::ios_base::sync_with_stdio(false);
+void Unsync() {
   std::cin.tie(nullptr);
   std::cout.tie(nullptr);
+  std::ios::sync_with_stdio(false);
 }
 
-std::list<int>::iterator getNext(std::list<int>& list, std::list<int>::iterator it) {
-  ++it;
-  if (it == list.end()) {
-    it = list.begin();
+void Solve(int m, int n, vector<int> a) {
+  vector<int> ans = {1000000000, -1, -1};
+  vector<int> pref(n + 1, 0);
+  for (int i = 1; i <= n; ++i) {
+    pref[i] = a[i] + pref[i - 1];
   }
-  return it;
-} 
-
-void output(std::list<int>& to_output) {
-  auto it = to_output.begin();
-  while (it != to_output.end()) {
-    std::cout << *it << " ";
-    ++it;
+  vector<vector<int>> dp(m + 1, vector<int>(n + 1, 1000000000));
+  vector<vector<int>> prev(m + 1, vector<int>(n + 1, -1));
+  for (int i = 1; i <= n; ++i) {
+    dp[1][i] = (a[i] * i - pref[i]) + (pref[n] - pref[i] - (n - i) * a[i]);
+    ans = min(ans, {dp[1][i], 1, i});
   }
-  std::cout << "\n";
-}
-
-void fill(std::list<int>& to_fill, int start, int n) {
-  auto it = to_fill.begin();
-  
-  for (int i = 0; i < start; ++i) {
-    ++it;
-  }
-
-  int p = 0;
-
-  for (int i = 0; i < n; ++i) {
-    *it = p;
-    it = getNext(to_fill, it);
-    p += 2;
-  }
-}
-
-std::list<int>::iterator getStart(std::list<int>& list) {
-  auto it = list.begin();
-
-  for (int i = 0; i < int(list.size()); ++i) {
-    int current_value = *it;
-    auto next_it = getNext(list, it);
-    int next_value = *next_it;
-    if (current_value > next_value) {
-      return next_it;
+  for (int q = 2; q <= m; ++q) {
+    for (int i = q; i <= n; ++i) {
+      for (int j = i - 1; j >= 1; --j) {
+        int mid = (a[i] + a[j]) / 2;
+        int midx = (upper_bound(a.begin(), a.end(), mid) - a.begin());
+        int s0 = (pref[n] - pref[midx - 1]) - (n - midx + 1) * a[j];
+        int s3n = (pref[n] - pref[i - 1]) - (n - i + 1) * a[i];
+        int s2n = (i - midx + 1) * a[i] - (pref[i] - pref[midx - 1]);
+        int curp = dp[q - 1][j] - s0 + s3n + s2n;
+        if (dp[q][i] > curp) {
+          prev[q][i] = j;
+          dp[q][i] = curp;
+          ans = min(ans, {dp[q][i], q, i});
+        }
+      }
     }
-    it = next_it;
   }
-
-  return list.begin();
-}
-
-void insertValue(std::list<int>& list, std::list<int>::iterator start,
-                 int value) {
-  auto it = start;
-  for (int i = 0; i < (list.size()); ++i) {
-    auto next = getNext(list, it);
-    if (*it == value) {
-      list.insert(next, value);
-      return;
-    }
-    if (*it < value && value < *next) {
-      list.insert(next, value);
-      return;
-    }
-    it = next;
+  cout << ans[0] << "\n";
+  vector<int> path;
+  while (ans[2] != -1) {
+    path.push_back(a[ans[2]]);
+    ans[2] = prev[ans[1]][ans[2]];
+    --ans[1];
   }
-  list.insert(it, value);
+  sort(path.begin(), path.end());
+  for (int i : path) {
+    cout << i << " ";
+  }
 }
 
 int main() {
-  srand(time(NULL));
-  Init();
-  
-  int n = 10;
-
-  std::list<int> a;
-  a.resize(n);
-
-  fill(a, rand() % n, n);
-  output(a);
-  auto start = getStart(a);
-  insertValue(a, start, 7);
-  output(a);
-
-  return 0;
+  Unsync();
+  int n, m;
+  cin >> n >> m;
+  vector<int> a(n + 1);
+  for (int i = 1; i <= n; ++i) {
+    cin >> a[i];
+  }
+  Solve(m, n, a);
 }

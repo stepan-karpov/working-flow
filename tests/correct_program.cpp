@@ -22,58 +22,81 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-bool possible(std::vector<int>& a, std::vector<int>& b) {
-  for (int i = 1; i < a.size(); ++i) {
-    if (!(a[i] > a[i - 1])) {
-      return false;
-    }
+void output(vll& a) {
+  for (int i = 0; i < a.size(); ++i) {
+    std::cout << a[i] << " ";
   }
-  if (a.size() == 0) {
-    return true;
-  }
-  int p = 0;
-  for (int i = 0; i < b.size(); ++i) {
-    if (b[i] == a[p]) {
-      ++p;
-    }
-    if (p == a.size()) {
-      return true;
-    }
-  }
-  return false;
+  std::cout << "\n";
 }
 
-
-
-void solve() {
-  int n;
-  std::cin >> n;
-
-  std::vector<int> a(n);
-  for (int i = 0; i < n; ++i) {
-    std::cin >> a[i];
+ll findAnswer(vll& cur_prefix, ll m) {
+  if (cur_prefix.size() < m) {
+    return INF;
   }
-
-  set<vector<ll>> ans;
-
+  ll n = cur_prefix.size();
+  ll answer = INF;
   for (int i = 0; i < (1 << n); ++i) {
-    vll temp2;
+    vll cur_subset;
     for (int j = n - 1; j >= 0; --j) {
       bool t = (i >> j) & 1;
       if (t) {
-        temp2.push_back(a[j]);
+        cur_subset.push_back(cur_prefix[j]);
       }
     }
-    vll temp;
-    for (int j = temp2.size() - 1; j >= 0; --j) {
-      temp.push_back(temp2[j]);
+    if (cur_subset.size() != m) {
+      continue;
     }
-    if (temp.size() != 0) {
-      ans.insert(temp);
+    ll current_answer = 0;
+    for (int j = 0; j < n; ++j) {
+      ll best = 1e9;
+      for (int k = 0; k < cur_subset.size(); ++k) {
+        best = min(best, abs(cur_prefix[j] - cur_subset[k]));
+      }
+      current_answer += best;
+    }
+    answer = min(answer, current_answer);
+  }
+  return answer;
+}
+
+void solve() {
+  ll n, m; cin >> n >> m;
+  vll a(n + 1);
+  for (int i = 1; i <= n; ++i) {
+    cin >> a[i];
+  }
+
+  // vll temp = {1, 2};
+  // findAnswer(temp, 1);
+
+  vvll dp(m + 1, vll(n + 1, INF));
+
+  for (int i = 1; i <= m; ++i) {
+    for (int r = 1; r <= n; ++r) {
+      vll cur_prefix;
+      for (int k = 1; k <= r; ++k) {
+        cur_prefix.push_back(a[k]);
+      }
+      dp[i][r] = findAnswer(cur_prefix, i);
     }
   }
 
-  std::cout << ans.size() << "\n";
+  for (int i = 0; i <= m; ++i) {
+    for (int j = 0; j <= n; ++j) {
+      if (dp[i][j] == INF) {
+        std::cout << "i  " << " ";
+      } else {
+        std::cout << dp[i][j] << " ";
+        if (dp[i][j] < 10) {
+          std::cout << " ";
+        }
+        if (dp[i][j] < 100) {
+          std::cout << " ";
+        }
+      }
+    }
+    std::cout << "\n";
+  }
 
 }
 
