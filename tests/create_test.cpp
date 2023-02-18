@@ -38,10 +38,10 @@ int main() {
   std::mt19937 mt(time(nullptr)); 
 
 
-  int n = random(1, 5);
-  cout << n << " ";
-  int m = random(1, n);
-  cout << m << "\n";
+  int n = random(1, 10);
+  cout << n << "\n";
+  // int m = random(1, n);
+  // cout << m << "\n";
 
   vector<int> sequence;
 
@@ -49,7 +49,7 @@ int main() {
     sequence.push_back(random(0, 100));
   }
 
-  sort(sequence.begin(), sequence.end());
+  // sort(sequence.begin(), sequence.end());
 
   for (int i = 0; i < n; ++i) {
     std::cout << sequence[i] << " ";

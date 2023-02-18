@@ -9,16 +9,6 @@
 80 test is ok
 90 test is ok
 100 test is ok
-Warning: test is incorrect
-======== test ========
-5 3 1 14 85 90 98
-======================
-right answer is: 
-13
-=====================
-your answer is: 
-18
-
 110 test is ok
 120 test is ok
 130 test is ok
@@ -26,16 +16,7 @@ your answer is:
 150 test is ok
 160 test is ok
 170 test is ok
-Warning: test is incorrect
-======== test ========
-5 3 7 45 75 79 86
-======================
-right answer is: 
-11
-=====================
-your answer is: 
-15
-
+180 test is ok
 190 test is ok
 200 test is ok
 210 test is ok
@@ -46,3 +27,71 @@ your answer is:
 260 test is ok
 270 test is ok
 280 test is ok
+290 test is ok
+300 test is ok
+310 test is ok
+320 test is ok
+330 test is ok
+340 test is ok
+350 test is ok
+360 test is ok
+370 test is ok
+380 test is ok
+390 test is ok
+400 test is ok
+410 test is ok
+420 test is ok
+430 test is ok
+440 test is ok
+450 test is ok
+460 test is ok
+470 test is ok
+480 test is ok
+490 test is ok
+500 test is ok
+510 test is ok
+520 test is ok
+530 test is ok
+540 test is ok
+550 test is ok
+560 test is ok
+570 test is ok
+580 test is ok
+590 test is ok
+600 test is ok
+610 test is ok
+620 test is ok
+630 test is ok
+640 test is ok
+650 test is ok
+660 test is ok
+670 test is ok
+680 test is ok
+690 test is ok
+700 test is ok
+710 test is ok
+720 test is ok
+730 test is ok
+740 test is ok
+750 test is ok
+760 test is ok
+770 test is ok
+780 test is ok
+790 test is ok
+800 test is ok
+810 test is ok
+820 test is ok
+830 test is ok
+840 test is ok
+850 test is ok
+860 test is ok
+870 test is ok
+880 test is ok
+890 test is ok
+900 test is ok
+910 test is ok
+920 test is ok
+930 test is ok
+940 test is ok
+950 test is ok
+960 test is ok

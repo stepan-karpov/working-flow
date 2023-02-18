@@ -63,7 +63,7 @@ void test2() {
 
 void test3() {
     String s("aaa");
-    for (int i = 0; i < 500'000; ++i) {
+    for (long long i = 0; i < 500'000; ++i) {
         s.push_back('a');
     }
     {
@@ -76,7 +76,7 @@ void test3() {
     assert(s[500'000] == 'a');
 
     String ss = s;
-    for (int i = 0; i < 500'000; ++i) {
+    for (long long i = 0; i < 500'000; ++i) {
         s.pop_back();
     }
 
@@ -87,7 +87,7 @@ void test3() {
     assert(ss.length() == 3);
     assert(ss[2] == 'a');
 
-    for (int i = 0; i < 500'000; ++i) {
+    for (long long i = 0; i < 500'000; ++i) {
         const String sss(1000, 'a');
         String sz = sss;
         s += sz.back();
@@ -103,7 +103,7 @@ void test3() {
     assert(s.length() == 500'203);
     assert(s.back() == 'c');
 
-    for (int i = 0; i < 150; ++i) {
+    for (long long i = 0; i < 150; ++i) {
         s.pop_back();
     }
     assert(s.back() == 'b');
@@ -196,7 +196,7 @@ void test6() {
     }
 }
 
-int number_of_new = 0;  // NOLINT
+long long number_of_new = 0;  // NOLINT
 
 void* operator new(std::size_t size) {
     ++number_of_new;
@@ -357,7 +357,7 @@ void test_comparisons() {
     }
 }
 
-int main() {
+long long main() {
     test1();
     std::cerr << "Test 1 (basic) passed." << std::endl;
 

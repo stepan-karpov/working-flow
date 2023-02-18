@@ -7,7 +7,7 @@ void Init() {
   std::cout.tie(nullptr);
 }
 
-const long long MOD = 1e9 + 7;
+const long long kMod = 1e9 + 7;
 
 int main() {
   Init();
@@ -21,7 +21,7 @@ int main() {
     for (int j = 0; j < 6; ++j) {
       long long left = (j - 1 + 6) % 6;
       long long right = (j + 1) % 6;
-      temp[j] = a[j] + a[left] + a[right] % MOD;
+      temp[j] = a[j] + a[left] + a[right] % kMod;
     }
     a = temp;
   }

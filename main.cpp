@@ -1,61 +1,97 @@
-#include <bits/stdc++.h>
-using namespace std;
+#include <iostream>
+#include <random>
+#include <chrono>
 
-void Unsync() {
-  std::cin.tie(nullptr);
-  std::cout.tie(nullptr);
-  std::ios::sync_with_stdio(false);
+int BinarySearch(int s, int* arr, int begin, int end) {
+    if (s < arr[(begin + end) / 2]) {
+        end = (begin + end) / 2;
+        BinarySearch(s, arr, begin, end);
+    }
+
+    if (s > arr[(begin + end) / 2]) {
+        begin = (begin + end) / 2;
+        BinarySearch(s, arr, begin, end);
+    }
+
+    if (s == arr[(begin + end) / 2]) {
+        return 0;
+    }
 }
 
-void Solve(int m, int n, vector<int> a) {
-  vector<int> ans = {1000000000, -1, -1};
-  vector<int> pref(n + 1, 0);
-  for (int i = 1; i <= n; ++i) {
-    pref[i] = a[i] + pref[i - 1];
-  }
-  vector<vector<int>> dp(m + 1, vector<int>(n + 1, 1000000000));
-  vector<vector<int>> prev(m + 1, vector<int>(n + 1, -1));
-  for (int i = 1; i <= n; ++i) {
-    dp[1][i] = (a[i] * i - pref[i]) + (pref[n] - pref[i] - (n - i) * a[i]);
-    ans = min(ans, {dp[1][i], 1, i});
-  }
-  for (int q = 2; q <= m; ++q) {
-    for (int i = q; i <= n; ++i) {
-      for (int j = i - 1; j >= 1; --j) {
-        int mid = (a[i] + a[j]) / 2;
-        int midx = (upper_bound(a.begin(), a.end(), mid) - a.begin());
-        int s0 = (pref[n] - pref[midx - 1]) - (n - midx + 1) * a[j];
-        int s3n = (pref[n] - pref[i - 1]) - (n - i + 1) * a[i];
-        int s2n = (i - midx + 1) * a[i] - (pref[i] - pref[midx - 1]);
-        int curp = dp[q - 1][j] - s0 + s3n + s2n;
-        if (dp[q][i] > curp) {
-          prev[q][i] = j;
-          dp[q][i] = curp;
-          ans = min(ans, {dp[q][i], q, i});
-        }
-      }
+void FillWithRandomValues(int n, int* arr) {
+    for (int i = 0; i < n; ++i) {
+        arr[i] = rand() % 1'000'000 + 1; // random value from [1, 1e6]
     }
-  }
-  cout << ans[0] << "\n";
-  vector<int> path;
-  while (ans[2] != -1) {
-    path.push_back(a[ans[2]]);
-    ans[2] = prev[ans[1]][ans[2]];
-    --ans[1];
-  }
-  sort(path.begin(), path.end());
-  for (int i : path) {
-    cout << i << " ";
-  }
+}
+
+void QuickSort(int n, int* arr) {
+    if (n <= 1) {
+        return;
+    }
+    int pivot = arr[0];
+
+    int* less = new int[n];
+    int* more = new int[n];
+    int equals = 0;
+    int p1 = 0, p2 = 0;
+
+    for (int i = 0; i < n; ++i) {
+        if (arr[i] == pivot) {
+            ++equals;
+        } else if (arr[i] < pivot) {
+            less[p1] = arr[i];
+            ++p1;
+        } else {
+            more[p2] = arr[i];
+            ++p2;
+        }
+    }
+
+    // for (int i = 0; i < p1; ++i) {
+    //     std::cout << less[i] << " ";
+    // }
+    // std::cout << "\n\n";
+    // for (int i = 0; i < p2; ++i) {
+    //     std::cout << more[i] << " ";
+    // }
+    // std::cout << "\n\n";
+
+    // QuickSort(p1, less);
+    // QuickSort(p2, more);
+
+    int cur_p = 0;
+
+    for (int i = 0; i < p1; ++i) {
+        arr[cur_p] = less[i];
+        ++cur_p;
+    }
+    for (int i = 0; i < equals; ++i) {
+        arr[cur_p] = pivot;
+        ++cur_p;
+    }
+    for (int i = 0; i < p2; ++i) {
+        arr[cur_p] = more[i];
+        ++cur_p;
+    }
 }
 
 int main() {
-  Unsync();
-  int n, m;
-  cin >> n >> m;
-  vector<int> a(n + 1);
-  for (int i = 1; i <= n; ++i) {
-    cin >> a[i];
-  }
-  Solve(m, n, a);
+    srand(time(NULL));
+    int n;
+    std::cin >> n;
+    int s;
+    int* arr = new int[10];
+    FillWithRandomValues(10, arr);
+    for (int i = 0; i < 10; ++i) {
+        std::cout << arr[i] << " ";
+    }
+    std::cout << "\n\n\n\n\n\n";
+    QuickSort(10, arr);
+    std::cout << "ok\n";
+    std::cout << '\n';
+    for (int i = 0; i < 10; ++i) {
+        std::cout << arr[i] << " ";
+    }
+    // s = BinarySearch(n, arr, 0, 9);
+    // std::cout << s;
 }
