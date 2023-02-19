@@ -1,0 +1,3 @@
+/Users/stepan/Desktop/Code/working-flow/cmake/build/CMakeFiles/exec.dir
+/Users/stepan/Desktop/Code/working-flow/cmake/build/CMakeFiles/edit_cache.dir
+/Users/stepan/Desktop/Code/working-flow/cmake/build/CMakeFiles/rebuild_cache.dir
