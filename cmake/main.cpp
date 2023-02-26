@@ -1,10 +1,10 @@
 #include <iostream>
-#include "include/print.hpp"
+#include "includes/print.hpp"
 
 int main() {
-  std::cout << "Hello world" << "\n";
-  std::string temp = "anc";
-  print(temp);
-  std::cout << temp << "\n";
-  return 0;
+  int x = 123;
+  int y = 234;
+
+  std::cout << add(x, y) << "\n";
+  std::cout << sub(x, y) << "\n";
 }

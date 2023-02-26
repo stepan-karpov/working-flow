@@ -1,14 +1,10 @@
-0   i   i   i   i   i   i   i   i   i   i   
-i   0   1   2   6   10  16  21  37  74  117 
-i   i   0   1   2   3   5   9   21  37  43  
-i   i   i   0   1   2   3   5   9   21  27  
-i   i   i   i   0   1   2   3   5   9   15  
-i   i   i   i   i   0   1   2   3   5   9
-
-
-i   i   i   i   i   i   i   i   i   i   i   
-i   0   1   2   6   10  16  21  37  74  117 
-i   i   0   1   2   3   5   9   21  37  43  
-i   i   i   0   1   2   3   5   9   21  27  
-i   i   i   i   0   1   2   3   5   9   15  
-i   i   i   i   i   0   1   2   3   5   9  
+alpha_I alpha_II alpha_III alpha_IV alpha_V alpha_VI alpha_VII alpha_VIII alpha_IX alpha_X alpha_XI alpha_XII alpha_XII alpha_XIV alpha_XV alpha_XVI alpha_XVII alpha_XVIII alpha_XIX alpha_XX alpha_XXI alpha_XXII alpha_XXII alpha_XXIV alpha_XXV alpha_XXVI alpha_XXVII alpha_XXVIII alpha_XXIX alpha_XXX
+beta_I beta_II beta_III beta_IV beta_V beta_VI beta_VII beta_VIII beta_IX beta_X beta_XI beta_XII beta_XII beta_XIV beta_XV beta_XVI beta_XVII beta_XVIII beta_XIX beta_XX beta_XXI beta_XXII beta_XXII beta_XXIV beta_XXV beta_XXVI beta_XXVII beta_XXVIII beta_XXIX beta_XXX
+gamma_I gamma_II gamma_III gamma_IV gamma_V gamma_VI gamma_VII gamma_VIII gamma_IX gamma_X gamma_XI gamma_XII gamma_XII gamma_XIV gamma_XV gamma_XVI gamma_XVII gamma_XVIII gamma_XIX gamma_XX gamma_XXI gamma_XXII gamma_XXII gamma_XXIV gamma_XXV gamma_XXVI gamma_XXVII gamma_XXVIII gamma_XXIX gamma_XXX
+delta_I delta_II delta_III delta_IV delta_V delta_VI delta_VII delta_VIII delta_IX delta_X delta_XI delta_XII delta_XII delta_XIV delta_XV delta_XVI delta_XVII delta_XVIII delta_XIX delta_XX delta_XXI delta_XXII delta_XXII delta_XXIV delta_XXV delta_XXVI delta_XXVII delta_XXVIII delta_XXIX delta_XXX
+epsilon_I epsilon_II epsilon_III epsilon_IV epsilon_V epsilon_VI epsilon_VII epsilon_VIII epsilon_IX epsilon_X epsilon_XI epsilon_XII epsilon_XII epsilon_XIV epsilon_XV epsilon_XVI epsilon_XVII epsilon_XVIII epsilon_XIX epsilon_XX epsilon_XXI epsilon_XXII epsilon_XXII epsilon_XXIV epsilon_XXV epsilon_XXVI epsilon_XXVII epsilon_XXVIII epsilon_XXIX epsilon_XXX
+zeta_I zeta_II zeta_III zeta_IV zeta_V zeta_VI zeta_VII zeta_VIII zeta_IX zeta_X zeta_XI zeta_XII zeta_XII zeta_XIV zeta_XV zeta_XVI zeta_XVII zeta_XVIII zeta_XIX zeta_XX zeta_XXI zeta_XXII zeta_XXII zeta_XXIV zeta_XXV zeta_XXVI zeta_XXVII zeta_XXVIII zeta_XXIX zeta_XXX
+eta_I eta_II eta_III eta_IV eta_V eta_VI eta_VII eta_VIII eta_IX eta_X eta_XI eta_XII eta_XII eta_XIV eta_XV eta_XVI eta_XVII eta_XVIII eta_XIX eta_XX eta_XXI eta_XXII eta_XXII eta_XXIV eta_XXV eta_XXVI eta_XXVII eta_XXVIII eta_XXIX eta_XXX
+theta_I theta_II theta_III theta_IV theta_V theta_VI theta_VII theta_VIII theta_IX theta_X theta_XI theta_XII theta_XII theta_XIV theta_XV theta_XVI theta_XVII theta_XVIII theta_XIX theta_XX theta_XXI theta_XXII theta_XXII theta_XXIV theta_XXV theta_XXVI theta_XXVII theta_XXVIII theta_XXIX theta_XXX
+iota_I iota_II iota_III iota_IV iota_V iota_VI iota_VII iota_VIII iota_IX iota_X iota_XI iota_XII iota_XII iota_XIV iota_XV iota_XVI iota_XVII iota_XVIII iota_XIX iota_XX iota_XXI iota_XXII iota_XXII iota_XXIV iota_XXV iota_XXVI iota_XXVII iota_XXVIII iota_XXIX iota_XXX
+kappa_I kappa_II kappa_III kappa_IV kappa_V kappa_VI kappa_VII kappa_VIII kappa_IX kappa_X kappa_XI kappa_XII kappa_XII kappa_XIV kappa_XV kappa_XVI kappa_XVII kappa_XVIII kappa_XIX kappa_XX kappa_XXI kappa_XXII kappa_XXII kappa_XXIV kappa_XXV kappa_XXVI kappa_XXVII kappa_XXVIII kappa_XXIX kappa_XXX
