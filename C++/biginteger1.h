@@ -26,8 +26,8 @@ class BigInteger {
  private:
   std::vector<int> digits_;
   short sign_ = 1;
-  static const int BASE_ = 1'000'000'000;
-  static const int MAX_DIGITS_ = 9; // 9 is log10(BASE_)
+  static const int kBase = 1'000'000'000;
+  static const int kMaxdigits = 9; // 9 is log10(BASE_)
   // 1 is positive or 0
   // -1 is negative
 
@@ -72,8 +72,8 @@ class BigInteger {
     int in_mind = 0;
     for (int i = 0; i < int(digits_.size()); ++i) {
       digits_[i] += in_mind;
-      in_mind = digits_[i] / BASE_;
-      digits_[i] %= BASE_;
+      in_mind = digits_[i] / kBase;
+      digits_[i] %= kBase;
     }
     this->DeleteLeadingZeros();
     return *this;
@@ -90,7 +90,7 @@ class BigInteger {
         }
         --digits_[j];
         for (int k = i; k < j; ++k) {
-          digits_[k] += BASE_ - 1;
+          digits_[k] += kBase - 1;
         }
         ++digits_[i];
         digits_[i] -= addition.digits_[i];
@@ -122,8 +122,8 @@ class BigInteger {
     sign_ = (x >= 0 ? 1 : -1);
     x = abs(x);
     while (x != 0) {
-      digits_.push_back(x % BASE_);
-      x /= BASE_;
+      digits_.push_back(x % kBase);
+      x /= kBase;
     }
   }
 
@@ -217,8 +217,8 @@ class BigInteger {
       long long in_mind = 0;
       for (int j = 0; j < v1 + v2 + 2; ++j) {
         answer[j] += in_mind;
-        in_mind = answer[j] / BASE_;
-        answer[j] %= BASE_;
+        in_mind = answer[j] / kBase;
+        answer[j] %= kBase;
       }
     }
     digits_.resize(v1 + v2 + 2);
@@ -252,7 +252,7 @@ class BigInteger {
       answer.push_back(min_mult);
       t -= max_value;
       if (i >= 0) {
-        t *= BASE_;
+        t *= kBase;
         t += digits_[i];
       }
     }
@@ -324,7 +324,7 @@ class BigInteger {
   explicit operator long long() const {
     long long x = 0;
     for (int i = int(digits_.size()) - 1; i >= 0; --i) {
-      x *= BASE_;
+      x *= kBase;
       x += digits_[i];
     }
     if (sign_ == -1) {
@@ -458,7 +458,7 @@ std::ostream& operator<<(std::ostream& output, const BigInteger& value) {
   for (int i = int(value.digits_.size()) - 1; i >= 0; --i) {
     std::string cur_digit = std::to_string(value.digits_[i]);
     if (i != int(value.digits_.size()) - 1) {
-      while (int(cur_digit.size()) < BigInteger::MAX_DIGITS_) {
+      while (int(cur_digit.size()) < BigInteger::kMaxdigits) {
         cur_digit = "0" + cur_digit;
       }
     }
@@ -479,7 +479,7 @@ std::istream& operator>>(std::istream& input, BigInteger& value) {
   value.digits_.clear();
   std::string cur_digit = "";
   for (int i = int(s.size()) - 1; i >= (s[0] == '-'); --i) {
-    if (int(cur_digit.size()) == BigInteger::MAX_DIGITS_) {
+    if (int(cur_digit.size()) == BigInteger::kMaxdigits) {
       std::reverse(cur_digit.begin(), cur_digit.end());
       value.digits_.push_back(stoi(cur_digit));
       cur_digit = s[i];

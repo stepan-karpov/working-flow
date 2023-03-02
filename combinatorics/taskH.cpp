@@ -2,7 +2,7 @@
 #include <vector>
 #include <algorithm>
 
-const long long kMod = 998'244'353;
+const long long mod = 998'244'353;
 const long long SIZE = 1100;
 
 void Init() {
@@ -35,7 +35,7 @@ int main() {
   std::vector<long long> sum;
 
   for (long long i = 0; i < SIZE; ++i) {
-    sum.push_back((p[i] + q[i]) % kMod);  
+    sum.push_back((p[i] + q[i]) % mod);  
   }
   while (!sum.empty() && sum[sum.size() - 1] == 0) {
     sum.pop_back();
@@ -45,7 +45,7 @@ int main() {
   for (long long i = 0; i < SIZE; ++i) {
     for (long long j = 0; j <= i; ++j) {
       mult[i] += p[j] * q[i - j];
-      mult[i] %= kMod;
+      mult[i] %= mod;
     }
   }
   while (!mult.empty() && mult[mult.size() - 1] == 0) {
@@ -69,15 +69,15 @@ int main() {
   std::cout << '\n';
 
   std::vector<long long> div(SIZE + 1);
-  div[0] = p[0] % kMod;
+  div[0] = p[0] % mod;
 
   for (long long i = 1; i < 1000; ++i) {
-    div[i] = p[i] + kMod;
+    div[i] = p[i] + mod;
     for (int j = i - 1; j >= 0; --j) {
       long long delta = div[j] * q[i - j];
-      delta %= kMod;
+      delta %= mod;
       div[i] -= delta;
-      div[i] = (div[i] + 2 * kMod) % kMod;
+      div[i] = (div[i] + 2 * mod) % mod;
     }
   }
 

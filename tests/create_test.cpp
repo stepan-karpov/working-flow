@@ -38,29 +38,8 @@ int main() {
   std::mt19937 mt(time(nullptr)); 
 
 
-  int n = random(1, 10);
-  cout << n << "\n";
-  // int m = random(1, n);
-  // cout << m << "\n";
+  std::cout << CreateString(4) << "\n";
+  std::cout << CreateString(4) << "\n";
 
-  vector<int> sequence;
-
-  for (int i = 0; i < n; ++i) {
-    sequence.push_back(random(0, 100));
-  }
-
-  // sort(sequence.begin(), sequence.end());
-
-  for (int i = 0; i < n; ++i) {
-    std::cout << sequence[i] << " ";
-  }
-  std::cout << "\n";
-
-  
-  // for (int i = 0; i < m; ++i) {
-  //   std::cout << random(0, 5) << " ";
-  // }
-  // std::cout << "\n";
-  
   return 0;
 }

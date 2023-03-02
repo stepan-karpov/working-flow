@@ -1,50 +1,107 @@
-#include <algorithm>
-#include <iostream>
-#include <vector>
+#include <bits/stdc++.h>
+using namespace std;
+// #pragma GCC optimize("unroll-loops")
+// #pragma GCC optimize("Ofast")
+// #pragma GCC optimize("no-stack-protector")
+// #pragma GCC target("sse,sse2,sse3,ssse3,popcnt,abm,mmx,avx,tune=native")
+// #pragma GCC optimize("fast-math")
+// #pragma GCC optimize(2)
+// #pragma GCC optimize("Ofast","inline","-ffast-math")
+// #pragma GCC optimize "-O3"
 
-void Init() {
-  std::ios_base::sync_with_stdio(false);
-  std::cin.tie(nullptr);
-  std::cout.tie(nullptr);
-}
+using ll = long long;
+using pll = pair<ll, ll>;
+using pii = pair<int, int>;
+using vll = vector<ll>;
+using vvll = vector<vll>;
+using ld = long double;
 
-bool VertexInMask(int mask, int u) { return (((mask >> u) & 1) != 0); }
+const ll INF = 1e16;
+const ld EPS = 1e-8;
+const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
-int main() {
-  Init();
-  int n;
-  std::cin >> n;
+// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-  std::vector<std::string> a(n);
+string createTemplate(string a, string b) {
+  
+  int p = 0;
+  string ans;
 
-  for (int i = 0; i < n; ++i) {
-    std::cin >> a[i];
+  for (int i = 0; i < a.size(); ++i) {
+    while (p < b.size() && b[p] != a[i]) {
+      if (ans.empty() || ans[ans.size() - 1] != '*') {
+        ans += '*';
+      }
+      ++p;
+    }
+    if (p >= b.size()) {
+      if (ans.empty() || ans[ans.size() - 1] != '*') {
+        ans += '*';
+      }
+      continue;
+    } else {
+      ans += b[p];
+    }
+    ++p;
   }
 
-  std::vector<int> dp((1 << n), 0);
+  return ans;
+}
 
-  for (int mask = 0; mask < (1 << n); ++mask) {
-    for (int u = 0; u < n; ++u) {
-      if (!VertexInMask(mask, u)) {
-        continue;
-      }
-      for (int v = 0; v < n; ++v) {
-        if (!VertexInMask(mask, v) || u == v) {
-          continue;
-        }
-        if (a[u][v] == 'N') {
-          continue;
-        }
-        int new_mask = mask;
-        new_mask ^= (1 << u);
-        new_mask ^= (1 << v);
-        int new_value = dp[new_mask] + 2;
-        dp[mask] = std::max(dp[mask], new_value);
-      }
+bool fits(string s) {
+  int cnt_star = 0;
+  int cnt_not_star = 0;
+
+
+  for (int i = 0; i < s.size(); ++i) {
+    if (s[i] == '*') {
+      ++cnt_star;
+    } else {
+      ++cnt_not_star;
     }
   }
 
-  std::cout << dp[(1 << n) - 1] << "\n";
+  if (cnt_star <= cnt_not_star) {
+    return 1;
+  }
+  return 0;
+}
+
+void solve() {
+  string a, b;
+  cin >> a >> b;
+
+  string t1 = createTemplate(a, b);
+  if (fits(t1)) {
+    cout << "YES\n";
+    cout << t1 << '\n';
+    return;
+  }
+  string t2 = createTemplate(a, b);
+  if (fits(t2)) {
+    cout << "YES\n";
+    cout << t2 << '\n';
+    return;
+  }
+  cout << "NO\n";
+}
+
+int main() {
+  ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
+  cout.tie(nullptr);
+  ll t = 1;
+  // cin >> t;
+  // cout << fixed << setprecision(10);
+  
+  while (t--) {
+    solve();
+    // cout << solve() << endl;
+    // if (solve())
+    //    cout << "Yes" << endl;
+    // else
+    //    cout << "No" << endl;
+  }
 
   return 0;
 }

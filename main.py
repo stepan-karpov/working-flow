@@ -1,12 +1,18 @@
-num = int(input())
+f = ""
 
-found = 0
-i = 0
+for i in range(1, 1000):
+  if (i % 3 == 0):
+    f += "F"
+  if (i % 5 == 0):
+    f += "B"
 
-while (True):
-  i += 1
-  if (str(i).count("3") == 3):
-    found += 1
-  if (found == num):
-    print(i)
-    break
+t = int(input())
+
+for i in range(0, t):
+  n = int(input())
+  s = input()
+
+  if (f.count(s) == 0):
+    print("NO")
+  else:
+    print("YES")

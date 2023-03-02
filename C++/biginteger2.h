@@ -41,7 +41,7 @@ class BigInteger {
     return static_cast<int>(arr.size());
   }
  
-  void normalise() {
+  void Normalise() {
     int new_size = getSize();
     for (int i = getSize() - 1; i >= 0; --i) {
       if (arr[i] == 0) {
@@ -247,7 +247,7 @@ class BigInteger {
           arr[i + 1]++;
         }
       }
-      normalise();
+      Normalise();
     }
     if (cmp_wo_sign(0) == 0) {
       sign = 1;
@@ -287,7 +287,7 @@ class BigInteger {
         }
       }
  
-      normalise();
+      Normalise();
       if (cmp_wo_sign(0) == 0) {
         sign = 1;
       }
@@ -309,7 +309,7 @@ class BigInteger {
       arr[i] = cur / other;
       carry = cur % other;
     }
-    normalise();
+    Normalise();
  
     return *this;
   }
@@ -351,7 +351,7 @@ class BigInteger {
         res.arr[i + 1] += p_to_next;
       }
     }
-    res.normalise();
+    res.Normalise();
  
     return res;
   }
@@ -365,7 +365,7 @@ class BigInteger {
     for (int i = getSize() - 1; i >= 0; --i) {
       curr.rShift();
       curr.arr[0] = arr[i];
-      curr.normalise();
+      curr.Normalise();
  
       int x = 0, l = 0, r = BASE;
       while (l <= r) {
@@ -385,7 +385,7 @@ class BigInteger {
     }
  
     res.sign = (sign != right.sign) ? -1 : 1;
-    res.normalise();
+    res.Normalise();
     return res;
   }
  

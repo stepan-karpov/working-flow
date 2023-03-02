@@ -275,13 +275,13 @@ class BigInteger {
     return *this;
   }
 
-  size_t getSize() {
+  size_t GetSize() {
     return digits_.size();
   }
 
-  void normalise() {
-    int new_size = getSize();
-    for (int i = getSize() - 1; i >= 0; --i) {
+  void Normalise() {
+    int new_size = GetSize();
+    for (int i = GetSize() - 1; i >= 0; --i) {
       if (digits_[i] == 0) {
         new_size = i;
       } else {
@@ -293,12 +293,12 @@ class BigInteger {
 
   BigInteger& operator/=(const int other) {
     long long carry = 0;
-    for (int i = getSize() - 1; i >= 0; --i) {
+    for (int i = GetSize() - 1; i >= 0; --i) {
       long long cur = digits_[i] + carry * 1ll * BASE_;
       digits_[i] = cur / other;
       carry = cur % other;
     }
-    normalise();
+    Normalise();
     return *this;
   }
 
