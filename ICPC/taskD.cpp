@@ -22,74 +22,54 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-bool possible(vector<pair<ll, pll>>& a, ll need) {
-  priority_queue<pll> q;
-
-  ll p = 0;
-
-  for (int cur_cell = 0; cur_cell <= 1'000'00; ++cur_cell) {
-    while (p < a.size() && a[p].second.first <= cur_cell) {
-      pll new_p = {0, -a[p].second.second};
-      q.push(new_p);
-      ++p;
-    }
-    while (!q.empty() && (-q.top().first >= need || -q.top().second < cur_cell)) {
-      if (-q.top().first < need) {
-        return false;
-      }
-      q.pop();
-    }
-    if (q.empty()) { continue; }
-    pll temp = q.top();
-    --temp.first;
-    q.pop();
-    q.push(temp);
-  }
-
-  return true;
+ll FindHeight(ll osn, ll s) {
+  return (s - 1) / osn + 1;
 }
 
-ll binarySearch(vector<pair<ll, pll>>& a) {
-  ll l = -1;
-  ll r = 1e6 + 1;
+ll TernarySearch(ll s) {
+  ll l = 0;
+  ll r = 2e18;
 
-  while (r - l > 1) {
-    ll m = (l + r) / 2;
-    if (possible(a, m)) {
-      l = m;
+  while (r - l > 2) {
+    ll m1 = l + (r - l) / 3;
+    ll m2 = r - (r - l) / 3;
+    
+    ll h1 = FindHeight(m1, s);
+    ll h2 = FindHeight(m2, s);
+
+    if (m1 + h1 < m2 + h2) {
+      r = m2;
     } else {
-      r = m;
+      l = m1;
     }
   }
 
-  return l;
+  ll min_value = 1e18;
+  ll ans = l;
+
+  for (int i = -10; i <= 10; ++i) {
+    if (l + i <= 0) {
+      continue;
+    }
+    ll h = FindHeight(l + i, s);
+    if (h + l + i < min_value) {
+      min_value = h + l + i;
+      ans = l + i;
+    }
+  }
+
+  return ans;
 }
 
 void solve() {
-  ll n; cin >> n;
-
-  vector<pair<ll, pll>> a(n);
-
-  for (int i = 0; i < n; ++i) {
-    cin >> a[i].second.first;
-    cin >> a[i].second.second;
+  ll s; cin >> s;
+  if (s == 0) {
+    cout << "0\n";
+    return;
   }
+  ll osn = TernarySearch(s);
 
-
-  sort(a.begin(), a.end());
-
-  // ll t = binarySearch(a) * n;
-  // cout << t << "\n";
-  // cout << "\n\n\n";
-
-  // cout << possible(a, 0) << "\n";
-  // cout << possible(a, 1) << "\n";
-  cout << possible(a, 2) << "\n";
-  cout << possible(a, 3) << "\n";
-  cout << possible(a, 4) << "\n";
-  cout << possible(a, 5) << "\n";
-
-  
+  std::cout << osn + FindHeight(osn, s) << "\n";
 
 }
 

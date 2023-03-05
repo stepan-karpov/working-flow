@@ -1,167 +1,109 @@
-#include <iostream>
-#include <vector>
+#include <bits/stdc++.h>
+using namespace std;
+// #pragma GCC optimize("unroll-loops")
+// #pragma GCC optimize("Ofast")
+// #pragma GCC optimize("no-stack-protector")
+// #pragma GCC target("sse,sse2,sse3,ssse3,popcnt,abm,mmx,avx,tune=native")
+// #pragma GCC optimize("fast-math")
+// #pragma GCC optimize(2)
+// #pragma GCC optimize("Ofast","inline","-ffast-math")
+// #pragma GCC optimize "-O3"
 
-void Init() {
-  std::ios_base::sync_with_stdio(false);
-  std::cin.tie(nullptr);
-  std::cout.tie(nullptr);
-}
+using ll = long long;
+using pll = pair<ll, ll>;
+using pii = pair<int, int>;
+using vll = vector<ll>;
+using vvll = vector<vll>;
+using ld = long double;
 
-void InitializeBorders(std::vector<std::vector<int>>& dp,
-                       std::vector<std::vector<std::pair<int, int>>>& parents,
-                       std::string& s1, std::string& s2) {
-  int n = s1.size();
-  int m = s2.size();
+const ll INF = 1e16;
+const ld EPS = 1e-8;
+const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
-  dp[0][0] = int(s1[0] == s2[0]);
-  parents[0][0] = {-1, -1};
+// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-  for (int i = 1; i < n; ++i) {
-    dp[0][i] = dp[0][i - 1];
-    parents[0][i] = {0, i - 1};
-    if (s2[0] == s1[i]) {
-      dp[0][i] = 1;
+ll FindMin(set<ll>& not_used, vvll& E, ll i) {
+  ll min_value = INF;
+
+  for (auto ind : not_used) {
+    if (E[ind][i] < min_value) {
+      min_value = E[ind][i];
     }
   }
 
-  for (int i = 1; i < m; ++i) {
-    dp[i][0] = dp[i - 1][0];
-    parents[i][0] = {i - 1, 0};
-    if (s1[0] == s2[i]) {
-      dp[i][0] = 1;
-    }
-  }
-}
-
-void RestoreAnswers(std::vector<int>& sequence1, std::vector<int>& sequence2,
-                    std::vector<std::vector<std::pair<int, int>>>& parents,
-                    std::vector<std::vector<int>>& dp) {
-  int i = dp.size() - 1;
-  int j = dp[0].size() - 1;
-
-  while (!(i == -1 && j == -1)) {
-    int parent_i = parents[i][j].first;
-    int parent_j = parents[i][j].second;
-    if (parent_i != -1 && parent_j != -1 && dp[i][j] > dp[parent_i][parent_j]) {
-      sequence1.push_back(i);
-      sequence2.push_back(j);
-    }
-    i = parent_i;
-    j = parent_j;
-  }
-
-  if (dp[0][0] == 1) {
-    sequence1.push_back(0);
-    sequence2.push_back(0);
-  }
+  return min_value;
 }
 
 void solve() {
-  std::string s1, s2;
-  std::cin >> s1 >> s2;
+  ll n; cin >> n;
+  vvll E(n, vll(n, -INF));
 
-  int n = s1.size();
-  int m = s2.size();
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j <= i; ++j) {
+      cin >> E[i][j];
+    }
+  }
 
-  std::vector<std::vector<int>> dp(m, std::vector<int>(n, 0));
-  std::vector<std::vector<std::pair<int, int>>> parents(
-      m, std::vector<std::pair<int, int>>(n));
+  set<ll> not_used;
+  for (int i = 0; i < n; ++i) {
+    not_used.insert(i);
+  }
 
-  InitializeBorders(dp, parents, s1, s2);
+  ll i = 0;
+  vll seq;
 
-  for (int i = 1; i < m; ++i) {
-    for (int j = 1; j < n; ++j) {
-      dp[i][j] = dp[i - 1][j - 1];
-      parents[i][j] = {i - 1, j - 1};
-      if (s2[i] == s1[j]) {
-        dp[i][j] = dp[i - 1][j - 1] + 1;
-        parents[i][j] = {i - 1, j - 1};
-      } else {
-        if (dp[i - 1][j] > dp[i][j]) {
-          dp[i][j] = dp[i - 1][j];
-          parents[i][j] = {i - 1, j};
+  while (i < n) {
+    ll min_value = FindMin(not_used, E, i);
+    set<ll> cand;
+    for (auto ind : not_used) {
+      if (E[ind][i] == min_value) {
+        cand.insert(ind);
+      }
+    }
+    int delta = 0;
+    while (cand.size() > 1) {
+      ++delta;
+      ll min_value2 = FindMin(cand, E, i + delta);
+      set<ll> new_cand;
+      for (auto p : cand) {
+        if (E[p][i + delta] == min_value2) {
+          new_cand.insert(p);
         }
-        if (dp[i][j - 1] > dp[i][j]) {
-          dp[i][j] = dp[i][j - 1];
-          parents[i][j] = {i, j - 1};
-        }
       }
+      cand = new_cand;
     }
+    seq.push_back(*cand.begin());
+    not_used.erase(*cand.begin());
+    i = *cand.begin() + 1;
   }
 
-  std::vector<int> sequence1;
-  std::vector<int> sequence2;
-
-  RestoreAnswers(sequence1, sequence2, parents, dp);
-
-  std::string common;
-
-  for (int i = int(sequence1.size()) - 1; i >= 0; --i) {
-    common += s2[sequence1[i]];
+  for (auto p : not_used) {
+    seq.push_back(p);
   }
 
-  std::string templ;
-
-  int p1 = 0;
-  int p2 = 0;
-  int p = 0;
-
-  while (p < common.size() && p1 < s1.size() && p2 < s2.size()) {
-    while (p1 < s1.size() && s1[p1] != common[p]) {
-      if (templ.empty() || templ[templ.size() - 1] != '*') {
-        templ += "*";
-      }
-      ++p1;
-    }
-    while (p2 < s2.size() && s2[p2] != common[p]) {
-      if (templ.empty() || templ[templ.size() - 1] != '*') {
-        templ += "*";
-      }
-      ++p2;
-    }
-    templ += common[p];
-    ++p1; ++p2; ++p;
-  }
-  if (p1 < s1.size()) {
-    if (templ.empty() || templ[templ.size() - 1] != '*') {
-      templ += "*";
-    }
-  }
-  if (p2 < s2.size()) {
-    if (templ.empty() || templ[templ.size() - 1] != '*') {
-      templ += "*";
-    }
+  for (int i = seq.size() - 1; i >= 0; --i) {
+    std::cout << seq[i] + 1 << " ";
   }
 
-  int cnt_star = 0;
-  int cnt_not_star = 0;
 
-  for (int i = 0; i < templ.size(); ++i) {
-    if (templ[i] == '*') {
-      ++cnt_star;
-    } else {
-      ++cnt_not_star;
-    }
-  }
-
-  if (cnt_star <= cnt_not_star) {
-    std::cout << "YES\n";
-    // std::cout << templ << "\n";
-  } else {
-    std::cout << "NO\n";
-  }
 }
 
 int main() {
-  Init();
-
-  int t = 1;
-  // std::cin >> t;
-
-
-  for (int i = 0; i < t; ++i) {
-    solve();
-  }
+  ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
+  cout.tie(nullptr);
+  ll t = 1;
+  // cin >> t;
+  // cout << fixed << setprecision(10);
   
+  while (t--) {
+    solve();
+    // cout << solve() << endl;
+    // if (solve())
+    //    cout << "Yes" << endl;
+    // else
+    //    cout << "No" << endl;
+  }
+
   return 0;
 }

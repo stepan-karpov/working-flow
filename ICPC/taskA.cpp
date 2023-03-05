@@ -22,8 +22,63 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
+struct Edge {
+  ll u, w, is_cap;
+  Edge(ll u, ll w, ll is_cap) : w(w), is_cap(is_cap) {}
+};
+
 void solve() {
-  
+  ll n, m, k;
+  cin >> n >> m >> k;
+
+  vector<vector<Edge>> E(n);
+
+  for (int i = 0; i < m; ++i) {
+    ll u, v; cin >> u >> v;
+    --u; --v;
+    ll w, f; cin >> w >> f;
+    E[u].push_back({v, w, f});
+    E[v].push_back({u, w, f});
+  }
+
+  vector<pll> times(k);
+
+  for (int i = 0; i < k; ++i) {
+    ll t1, t2; cin >> t1 >> t2;
+    times[i] = {t1, t2};
+  }
+
+  ll start, end, start_time;
+  cin >> start >> end >> start_time;
+
+  --start; --end;
+
+  vll d(n, INF);
+  d[start] = start_time;
+
+  set<pll> q;
+  q.insert({d[start], start});
+
+  while (!q.empty()) {
+    ll cur_vertex = q.begin()->second;
+    q.erase(q.begin());
+
+    for (int i = 0; i < E[cur_vertex].size(); ++i) {
+      ll next_vertex = E[cur_vertex][i].u;
+      ll new_dist = d[cur_vertex] + E[cur_vertex][i].w;
+      if (new_dist < d[next_vertex]) {
+        q.erase({d[next_vertex], next_vertex});
+        d[next_vertex] = new_dist;
+        q.insert({d[next_vertex], next_vertex});
+      }
+    }
+  }
+
+  std::cout << d[end] << "\n";
+
+
+
+
 }
 
 int main() {
@@ -35,15 +90,13 @@ int main() {
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    //solve();
+    solve();
     // cout << solve() << endl;
     // if (solve())
     //    cout << "Yes" << endl;
     // else
     //    cout << "No" << endl;
   }
-  std::string a = "askjdakls";
 
-  std::cout << a.find("------@@@-----");
   return 0;
 }

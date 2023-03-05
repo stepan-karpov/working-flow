@@ -16,74 +16,124 @@ using vll = vector<ll>;
 using vvll = vector<vll>;
 using ld = long double;
 
-const ll INF = 1e16;
+const ll INF = 1e18 * 2;
 const ld EPS = 1e-8;
 const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-string createTemplate(string a, string b) {
-  
-  int p = 0;
-  string ans;
+struct Edge {
+  ll u, c;
+  Edge(ll u, ll c) : u(u), c(c) {}
+};
 
-  for (int i = 0; i < a.size(); ++i) {
-    while (p < b.size() && b[p] != a[i]) {
-      if (ans.empty() || ans[ans.size() - 1] != '*') {
-        ans += '*';
-      }
-      ++p;
-    }
-    if (p >= b.size()) {
-      if (ans.empty() || ans[ans.size() - 1] != '*') {
-        ans += '*';
-      }
+struct printer {
+  ll prepare, work;
+  printer(ll prepare, ll work)
+      : prepare(prepare), work(work) {}
+};
+
+bool possible(vector<printer>& pr, ll k, ll v, ll time) {
+  vll printed;
+  ll n = pr.size();
+
+  for (int i = 0; i < n; ++i) {
+    if (time <= pr[i].prepare) {
       continue;
-    } else {
-      ans += b[p];
     }
-    ++p;
+    ll delta = time - pr[i].prepare;
+    printed.push_back(delta / pr[i].work);
   }
 
-  return ans;
-}
+  sort(printed.begin(), printed.end());
 
-bool fits(string s) {
-  int cnt_star = 0;
-  int cnt_not_star = 0;
-
-
-  for (int i = 0; i < s.size(); ++i) {
-    if (s[i] == '*') {
-      ++cnt_star;
-    } else {
-      ++cnt_not_star;
+  int taken = 0;
+  ll sum = 0;
+  for (int i = printed.size() - 1; i >= 0; --i) {
+    if (taken > k) {
+      break;
     }
+    ++taken;
+    sum += printed[i];
   }
 
-  if (cnt_star <= cnt_not_star) {
-    return 1;
-  }
-  return 0;
+  return (sum >= v);
+
 }
 
 void solve() {
-  string a, b;
-  cin >> a >> b;
+  ll n, m, k;
+  cin >> n >> m >> k;
 
-  string t1 = createTemplate(a, b);
-  if (fits(t1)) {
-    cout << "YES\n";
-    cout << t1 << '\n';
-    return;
+  vector<vector<Edge>> E(n);
+
+  for (int i = 0; i < m; ++i) {
+    ll u, v; cin >> u >> v;
+    --u; --v;
+    ll c; cin >> c;
+    E[u].push_back({v, c});
+    E[v].push_back({u, c});
   }
-  string t2 = createTemplate(a, b);
-  if (fits(t2)) {
-    cout << "YES\n";
-    cout << t2 << '\n';
-    return;
+
+  vll d(n, INF);
+ 
+  d[0] = 0;
+ 
+  set<pll> q;
+  q.insert({d[0], 0});
+ 
+  while (!q.empty()) {
+    ll cur_vertex = q.begin()->second;
+    q.erase(q.begin());
+ 
+    for (int i = 0; i < E[cur_vertex].size(); ++i) {
+      ll next_vertex = E[cur_vertex][i].u;
+      ll new_dist = d[cur_vertex] + E[cur_vertex][i].c;
+      if (new_dist < d[next_vertex]) {
+        q.erase({d[next_vertex], next_vertex});
+        d[next_vertex] = new_dist;
+        q.insert({d[next_vertex], next_vertex});
+      }
+    }
   }
-  cout << "NO\n";
+
+  ll s; cin >> s;
+
+  vector<printer> pr;
+
+  for (int i = 0; i < s; ++i) {
+    ll v, hot, print;
+    cin >> v >> hot >> print;
+    --v;
+    if (d[v] == INF) {
+      continue;
+    }
+    pr.push_back({hot + d[v], print});
+  }
+
+  ll v; cin >> v;
+
+  n = pr.size();
+
+  ll l = -1;
+  ll r = INF;
+
+  while (r - l > 1) {
+    ll m = (l + r) / 2;
+    if (possible(pr, k, v, m)) {
+      r = m;
+    } else {
+      l = m;
+    }
+  }
+
+  std::cout << r << "\n";
+
+  // for (int i = 0; i < n; ++i) {
+  //   std::cout << pr[i].prepare << " " << pr[i].work << "\n";
+  // }
+
+
 }
 
 int main() {

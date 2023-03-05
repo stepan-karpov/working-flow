@@ -22,52 +22,16 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-int n;
-
-vector<int> min(vector<int> &a, vector<int>& b) {
-  for (int i = 0; i < n; ++i) {
-    if (a[i] < b[i]) {
-      return a;
-    } else if (a[i] > b[i]) {
-      return b;
-    }
-  }
-  return a;
-}
-
 void solve() {
+  int n;
   cin >> n;
-  vector<int> pos(n);
-  for (int i = 0; i < n; ++i) {
-    pos[i] = i + 1;
-  }
-  vector<vector<int>> v(n);
-  for (int i = 0; i < n; ++i) {
-    v[i].resize(i + 1);
-    for (int& j : v[i]) cin >> j;
-  }
-  vector<int> ans(n, INF);
-  do {
-    int last = 0;
-    vector<int> cur(n);
-    for (int i = 0; i < n; ++i) {
-      int ind = pos[i] - 1;
-      for (int j = last; j < v[ind].size(); ++j) {
-        cur[j] = v[ind][j];
-        last++;
-      }
-    }
-    ans = min(ans, cur);
-  } while(next_permutation(pos.begin(), pos.end()));
-  for (int i : ans) {
-    cout << i << ' ';
-  }
+  
 }
 
 int main() {
-  ios_base::sync_with_stdio(false);
-  cin.tie(nullptr);
-  cout.tie(nullptr);
+  // ios_base::sync_with_stdio(false);
+  // cin.tie(nullptr);
+  // cout.tie(nullptr);
   ll t = 1;
   // cin >> t;
   // cout << fixed << setprecision(10);
