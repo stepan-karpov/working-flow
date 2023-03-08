@@ -1,14 +1,14 @@
 #!/bin/bash
 cd /Users/stepan/Desktop/Code/working-flow/tests/
-g++ -std=c++17 create_test.cpp -o create_test.cppWithExt
-g++ -std=c++17 correct_program.cpp -o correct_program.cppWithExt
+g++ -std=c++17 create_test.cpp -o create_test.trash
+g++ -std=c++17 correct_program.cpp -o correct_program.trash
 javac incorrect_program.java
 
 > log.txt
 
 for (( counter=0;  counter<=3000; counter++ )); do
-  ./create_test.cppWithExt > test.txt
-  ./correct_program.cppWithExt < test.txt > right_answer.txt
+  ./create_test.trash > test.txt
+  ./correct_program.trash < test.txt > right_answer.txt
   java incorrect_program < test.txt > incorrect_answer.txt
   content1=`cat right_answer.txt`
   content2=`cat incorrect_answer.txt`

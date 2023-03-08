@@ -9,12 +9,11 @@ using namespace std;
 // #pragma GCC optimize("Ofast","inline","-ffast-math")
 // #pragma GCC optimize "-O3"
 
-using ll = long long;
-using pll = pair<ll, ll>;
-using pii = pair<int, int>;
-using vll = vector<ll>;
-using vvll = vector<vll>;
-using ld = long double;
+typedef long long ll;
+typedef pair<ll, ll> pll;
+typedef vector<ll> vll;
+typedef vector<vll> vvll;
+typedef long double ld;
 
 const ll INF = 1e16;
 const ld EPS = 1e-8;
@@ -50,21 +49,7 @@ void backtrack(vll current, vll& a, vll& b) {
 
 void solve() {
   ll n; cin >> n;
-
-  vll a(n);
-  vll b(n);
-
-  for (int i = 0; i < n; ++i) {
-    cin >> a[i];
-  }
-  for (int i = 0; i < n; ++i) {
-    cin >> b[i];
-  }
-
-  sort(a.begin(), a.end());
-  backtrack({}, a, b);
-
-  cout << ans << "\n";
+  cout << n + 1 << "\n";
 }
 
 int main() {
