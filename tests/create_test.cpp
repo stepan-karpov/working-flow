@@ -38,16 +38,18 @@ int main() {
   std::mt19937 mt(time(nullptr)); 
 
 
-  ll n = random(4, 6);
+  ll n = random(1, 7);
 
   std::cout << n << '\n';
 
   for (int i = 0; i < n; ++i) {
-    for (int j = 0; j <= i; ++j) {
-      std::cout << random(0, 1e9) << " ";
-    }
-    std::cout << "\n";
+    std::cout << random(0, 1000) << ' ';
   }
+  std::cout << "\n";
+  for (int i = 0; i < n; ++i) {
+    std::cout << random(0, 1000) << ' ';
+  }
+  std::cout << "\n";
 
 
   return 0;

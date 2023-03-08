@@ -22,70 +22,55 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-ll FindMin(set<ll>& not_used, vvll& E, ll i) {
-  ll min_value = INF;
+ll ans = 1e9;
 
-  for (auto ind : not_used) {
-    if (E[ind][i] < min_value) {
-      min_value = E[ind][i];
+void backtrack(vll current, vll& a, vll& b) {
+  if (current.size() == b.size()) {
+    ll sum = 0;
+    for (int i = 0; i < a.size(); ++i) {
+      sum += abs(a[i] - b[current[i]]);
     }
+    ans = min(ans, sum);
   }
-
-  return min_value;
-}
-
-void solve() {
-  ll n; cin >> n;
-  vvll E(n, vll(n, -INF));
-
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j <= i; ++j) {
-      cin >> E[i][j];
-    }
-  }
-
   set<ll> not_used;
-  for (int i = 0; i < n; ++i) {
+  for (int i = 0; i < b.size(); ++i) {
     not_used.insert(i);
   }
-
-  ll i = 0;
-  vll seq;
-
-  while (i < n) {
-    ll min_value = FindMin(not_used, E, i);
-    set<ll> cand;
-    for (auto ind : not_used) {
-      if (E[ind][i] == min_value) {
-        cand.insert(ind);
-      }
-    }
-    int delta = 0;
-    while (cand.size() > 1) {
-      ++delta;
-      ll min_value2 = FindMin(cand, E, i + delta);
-      set<ll> new_cand;
-      for (auto p : cand) {
-        if (E[p][i + delta] == min_value2) {
-          new_cand.insert(p);
-        }
-      }
-      cand = new_cand;
-    }
-    seq.push_back(*cand.begin());
-    not_used.erase(*cand.begin());
-    i = *cand.begin() + 1;
+  for (int i = 0; i < current.size(); ++i) {
+    not_used.erase(current[i]);
   }
 
   for (auto p : not_used) {
-    seq.push_back(p);
+    current.push_back(p);
+    backtrack(current, a, b);
+    current.pop_back();
+  }
+}
+
+
+void solve() {
+  ll n; cin >> n;
+
+  vll a(n);
+  vll b(n);
+
+  for (int i = 0; i < n; ++i) {
+    cin >> a[i];
+  }
+  for (int i = 0; i < n; ++i) {
+    cin >> b[i];
   }
 
-  for (int i = seq.size() - 1; i >= 0; --i) {
-    std::cout << seq[i] + 1 << " ";
+  sort(a.begin(), a.end());
+  sort(b.begin(), b.end());
+
+  ll sum = 0;
+
+  for (int i = 0; i < n; ++i) {
+    sum += abs(a[i] - b[i]);
   }
 
-
+  cout << sum << "\n";
 }
 
 int main() {

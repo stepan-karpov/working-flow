@@ -1,157 +1,83 @@
-#include <bits/stdc++.h>
-using namespace std;
-// #pragma GCC optimize("unroll-loops")
-// #pragma GCC optimize("Ofast")
-// #pragma GCC optimize("no-stack-protector")
-// #pragma GCC target("sse,sse2,sse3,ssse3,popcnt,abm,mmx,avx,tune=native")
-// #pragma GCC optimize("fast-math")
-// #pragma GCC optimize(2)
-// #pragma GCC optimize("Ofast","inline","-ffast-math")
-// #pragma GCC optimize "-O3"
+#include <iostream>
+#include <map>
+#include <vector>
 
-using ll = long long;
-using pll = pair<ll, ll>;
-using pii = pair<int, int>;
-using vll = vector<ll>;
-using vvll = vector<vll>;
-using ld = long double;
-
-const ll INF = 1e18 * 2;
-const ld EPS = 1e-8;
-const string ALPH = "abcdefghijklmnopqrstuvwxyz";
-
-// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
-
-struct Edge {
-  ll u, c;
-  Edge(ll u, ll c) : u(u), c(c) {}
-};
-
-struct printer {
-  ll prepare, work;
-  printer(ll prepare, ll work)
-      : prepare(prepare), work(work) {}
-};
-
-bool possible(vector<printer>& pr, ll k, ll v, ll time) {
-  vll printed;
-  ll n = pr.size();
-
-  for (int i = 0; i < n; ++i) {
-    if (time <= pr[i].prepare) {
-      continue;
-    }
-    ll delta = time - pr[i].prepare;
-    printed.push_back(delta / pr[i].work);
-  }
-
-  sort(printed.begin(), printed.end());
-
-  int taken = 0;
-  ll sum = 0;
-  for (int i = printed.size() - 1; i >= 0; --i) {
-    if (taken > k) {
-      break;
-    }
-    ++taken;
-    sum += printed[i];
-  }
-
-  return (sum >= v);
-
+void Init() {
+  std::ios_base::sync_with_stdio(false);
+  std::cin.tie(nullptr);
+  std::cout.tie(nullptr);
 }
 
-void solve() {
-  ll n, m, k;
-  cin >> n >> m >> k;
+void Input(int n, std::vector<long long>& e) {
+  for (int i = 0; i < n; ++i) {
+    std::string s;
+    std::cin >> s;
+    for (int j = 0; j < n; ++j) {
+      if (s[j] == '1') {
+        e[i] |= (1ll << j);
+      }
+    }
+  }
+}
 
-  vector<vector<Edge>> E(n);
+void Precalc(std::map<int, int>& log) {
+  for (int i = 0; i < 26; ++i) {
+    log[(1ll << i)] = i;
+  }
+}
 
-  for (int i = 0; i < m; ++i) {
-    ll u, v; cin >> u >> v;
-    --u; --v;
-    ll c; cin >> c;
-    E[u].push_back({v, c});
-    E[v].push_back({u, c});
+int main() {
+  Init();
+  std::map<int, int> log2;
+  Precalc(log2);
+  int n;
+  std::cin >> n;
+
+  std::vector<long long> e(n + (n % 2), 0);
+
+  Input(n, e);
+
+  long long ans = 1 - (n % 2);
+  n += (n % 2);
+
+  int n1 = n / 2;
+
+  std::vector<int> is_click1((1 << n1), 0);
+  std::vector<int> is_click2((1 << n1), 0);
+  std::vector<int> f((1 << n1), 0);
+
+  is_click1[0] = (1 << n1) - 1;
+  is_click2[0] = (1 << n1) - 1;
+
+  for (int mask = 1; mask < (1 << n1); ++mask) {
+    int neig1 = (e[log2[(mask & -mask)]] ^ (mask & -mask));
+    int neig2 = (e[log2[(mask & -mask)] + n1] & ((1 << n1) - 1));
+
+    is_click1[mask] = is_click1[mask ^ (mask & -mask)] & neig1;
+    is_click2[mask] = is_click2[mask ^ (mask & -mask)] & neig2;
+
+    if ((is_click1[mask] & mask) == mask) {
+      f[mask] = 1;
+    }
   }
 
-  vll d(n, INF);
- 
-  d[0] = 0;
- 
-  set<pll> q;
-  q.insert({d[0], 0});
- 
-  while (!q.empty()) {
-    ll cur_vertex = q.begin()->second;
-    q.erase(q.begin());
- 
-    for (int i = 0; i < E[cur_vertex].size(); ++i) {
-      ll next_vertex = E[cur_vertex][i].u;
-      ll new_dist = d[cur_vertex] + E[cur_vertex][i].c;
-      if (new_dist < d[next_vertex]) {
-        q.erase({d[next_vertex], next_vertex});
-        d[next_vertex] = new_dist;
-        q.insert({d[next_vertex], next_vertex});
+  // SOS dp from cf
+  for (int i = 0; i < n1; ++i) {
+    for (int mask = 0; mask < (1 << n1); ++mask) {
+      if ((mask & (1 << i)) != 0) {
+        f[mask] += f[mask ^ (1 << i)];
       }
     }
   }
 
-  ll s; cin >> s;
+  ans += f[(1 << n1) - 1];
 
-  vector<printer> pr;
-
-  for (int i = 0; i < s; ++i) {
-    ll v, hot, print;
-    cin >> v >> hot >> print;
-    --v;
-    if (d[v] == INF) {
-      continue;
-    }
-    pr.push_back({hot + d[v], print});
-  }
-
-  ll v; cin >> v;
-
-  n = pr.size();
-
-  ll l = -1;
-  ll r = INF;
-
-  while (r - l > 1) {
-    ll m = (l + r) / 2;
-    if (possible(pr, k, v, m)) {
-      r = m;
-    } else {
-      l = m;
+  for (int mask = 1; mask < (1 << n1); ++mask) {
+    int neig = ((e[log2[(mask & -mask)] + n1] >> n1) ^ (mask & -mask));
+    is_click1[mask] = is_click1[mask ^ (mask & -mask)] & neig;
+    if ((is_click1[mask] & mask) == mask) {
+      ans += f[is_click2[mask]] + 1ll;
     }
   }
-
-  std::cout << r << "\n";
-
-  // for (int i = 0; i < n; ++i) {
-  //   std::cout << pr[i].prepare << " " << pr[i].work << "\n";
-  // }
-
-
-}
-
-int main() {
-  ios_base::sync_with_stdio(false);
-  cin.tie(nullptr);
-  cout.tie(nullptr);
-  ll t = 1;
-  // cin >> t;
-  // cout << fixed << setprecision(10);
-  
-  while (t--) {
-    solve();
-    // cout << solve() << endl;
-    // if (solve())
-    //    cout << "Yes" << endl;
-    // else
-    //    cout << "No" << endl;
-  }
-
-  return 0;
+  std::cout << ans << "\n";
 }

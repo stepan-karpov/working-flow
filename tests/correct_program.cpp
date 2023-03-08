@@ -22,46 +22,49 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-int n;
+ll ans = 1e18;
 
-vector<int> min(vector<int> &a, vector<int>& b) {
-  for (int i = 0; i < n; ++i) {
-    if (a[i] < b[i]) {
-      return a;
-    } else if (a[i] > b[i]) {
-      return b;
+void backtrack(vll current, vll& a, vll& b) {
+  if (current.size() == b.size()) {
+    ll sum = 0;
+    for (int i = 0; i < a.size(); ++i) {
+      sum += abs(a[i] - b[current[i]]);
     }
+    ans = min(ans, sum);
   }
-  return a;
+  set<ll> not_used;
+  for (int i = 0; i < b.size(); ++i) {
+    not_used.insert(i);
+  }
+  for (int i = 0; i < current.size(); ++i) {
+    not_used.erase(current[i]);
+  }
+
+  for (auto p : not_used) {
+    current.push_back(p);
+    backtrack(current, a, b);
+    current.pop_back();
+  }
 }
 
+
 void solve() {
-  cin >> n;
-  vector<int> pos(n);
+  ll n; cin >> n;
+
+  vll a(n);
+  vll b(n);
+
   for (int i = 0; i < n; ++i) {
-    pos[i] = i + 1;
+    cin >> a[i];
   }
-  vector<vector<int>> v(n);
   for (int i = 0; i < n; ++i) {
-    v[i].resize(i + 1);
-    for (int& j : v[i]) cin >> j;
+    cin >> b[i];
   }
-  vector<int> ans(n, INF);
-  do {
-    int last = 0;
-    vector<int> cur(n);
-    for (int i = 0; i < n; ++i) {
-      int ind = pos[i] - 1;
-      for (int j = last; j < v[ind].size(); ++j) {
-        cur[j] = v[ind][j];
-        last++;
-      }
-    }
-    ans = min(ans, cur);
-  } while(next_permutation(pos.begin(), pos.end()));
-  for (int i : ans) {
-    cout << i << ' ';
-  }
+
+  sort(a.begin(), a.end());
+  backtrack({}, a, b);
+
+  cout << ans << "\n";
 }
 
 int main() {
