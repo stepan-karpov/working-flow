@@ -7,5 +7,7 @@
 *.class
 *.tmp
 *.tempCodeRunnerFile*
+*.trash
+tempCodeRunnerFile*
 tempCodeRunnerFile.py
 tempCodeRunnerFile.cpp
