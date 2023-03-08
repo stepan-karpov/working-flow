@@ -6,6 +6,6 @@
 *.DS_Store
 *.class
 *.tmp
-*.tempCodeRunnerFile
+*.tempCodeRunnerFile*
 tempCodeRunnerFile.py
 tempCodeRunnerFile.cpp
