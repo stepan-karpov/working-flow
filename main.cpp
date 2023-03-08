@@ -19,14 +19,18 @@ const ll INF = 1e16;
 const ld EPS = 1e-8;
 const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
-// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100s
+// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
+
+const ll MOD = 1e9 + 7;
 
 void solve() {
-  int n; cin >> n;
-  cout << "hey";
-  for (int i = 0; i < 100; ++i) {
-    cout << "hey" << i << "\n";
+  ll n;
+  ll res = 0;
+  for (ll i = 0; i < 1e9; ++i) {
+    res += i;
+    res %= MOD;
   }
+  cout << res << "\n";
 }
 
 int main() {
