@@ -9,21 +9,24 @@ using namespace std;
 // #pragma GCC optimize("Ofast","inline","-ffast-math")
 // #pragma GCC optimize "-O3"
 
-using ll = long long;
-using pll = pair<ll, ll>;
-using pii = pair<int, int>;
-using vll = vector<ll>;
-using vvll = vector<vll>;
-using ld = long double;
+typedef long long ll;
+typedef pair<ll, ll> pll;
+typedef vector<ll> vll;
+typedef vector<vll> vvll;
+typedef long double ld;
 
 const ll INF = 1e16;
 const ld EPS = 1e-8;
 const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
-// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
+// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100s
 
 void solve() {
-  cout << "hello world" << "\n";
+  int n; cin >> n;
+  cout << "hey";
+  for (int i = 0; i < 100; ++i) {
+    cout << "hey" << i << "\n";
+  }
 }
 
 int main() {
