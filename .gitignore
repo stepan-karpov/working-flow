@@ -4,5 +4,6 @@
 *.cppWithExt
 *.cppWithExt********
 *.DS_Store
+*.class
 tempCodeRunnerFile.py
 tempCodeRunnerFile.cpp
