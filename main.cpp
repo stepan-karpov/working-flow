@@ -26,7 +26,7 @@ const ll MOD = 1e9 + 7;
 void solve() {
   ll n;
   ll res = 0;
-  for (ll i = 0; i < 1e9; ++i) {
+  for (ll i = 0; i < 1e0; ++i) {
     res += i;
     res %= MOD;
   }
