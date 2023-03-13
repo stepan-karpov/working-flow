@@ -1,3 +1,5 @@
-value = 5 ** 5
+from math import sqrt
 
-print(value % 7)
+for i in range(1, 100):
+    x = sqrt(i) + ((-1) ** i) / sqrt(i) / 2
+    print(x)
