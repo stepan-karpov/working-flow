@@ -13,7 +13,7 @@ int random(long long low, long long high) {
 }
 
 std::string CreateString(int size) {
-  const std::string ALPH = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const std::string ALPH = "abcd";
   std::string ans = "";
 
   for (int i = 0; i < size; ++i) {
@@ -38,9 +38,20 @@ int main() {
   std::mt19937 mt(time(nullptr)); 
 
 
-  ll n = random(1, 1e9);
+  ll n = random(1, 5);
+  ll m = random(0, n * (n - 1) / 2);
 
-  cout << n << "\n";
+  std::cout << n << " " << m << "\n";
+
+  for (int i = 0; i < m; ++i) {
+    std::cout << random(1, n) << " " << random(1, n) << "\n";
+  }
+
+
+
+  // for (int i = 0; i < n; ++i) {
+  //   std::cout << random(0, 1000) << " ";
+  // }
 
   return 0;
 }

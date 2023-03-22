@@ -1,12 +1,12 @@
 #!/bin/bash
-cd /Users/stepan/Desktop/Code/working-flow/tests/
+cd /Users/stepan/Desktop/working-flow/tests/
 g++ -std=c++17 create_test.cpp -o create_test.trash
 g++ -std=c++17 correct_program.cpp -o correct_program.trash
 g++ -std=c++17 incorrect_program.cpp -o incorrect_program.trash
 
 > log.txt
 
-for (( counter=0;  counter<=3000; counter++ )); do
+for (( counter=0;  counter<=10000; counter++ )); do
   ./create_test.trash > test.txt
   ./correct_program.trash < test.txt > right_answer.txt
   ./incorrect_program.trash < test.txt > incorrect_answer.txt

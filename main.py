@@ -1,5 +1,3 @@
-from math import sqrt
+v = 2 ** 53
 
-for i in range(1, 100):
-    x = sqrt(i) + ((-1) ** i) / sqrt(i) / 2
-    print(x)
+print(v % 107)
