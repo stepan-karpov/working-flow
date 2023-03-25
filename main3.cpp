@@ -1,85 +1,111 @@
-#include <iostream>
-#include <map>
-#include <vector>
+#include <bits/stdc++.h>
+using namespace std;
+// #pragma GCC optimize("unroll-loops")
+// #pragma GCC optimize("Ofast")
+// #pragma GCC optimize("no-stack-protector")
+// #pragma GCC target("sse,sse2,sse3,ssse3,popcnt,abm,mmx,avx,tune=native")
+// #pragma GCC optimize("fast-math")
+// #pragma GCC optimize(2)
+// #pragma GCC optimize("Ofast","inline","-ffast-math")
+// #pragma GCC optimize "-O3"
 
-void Init() {
-  std::ios_base::sync_with_stdio(false);
-  std::cin.tie(nullptr);
-  std::cout.tie(nullptr);
+typedef long long ll;
+typedef pair<ll, ll> pll;
+typedef vector<ll> vll;
+typedef vector<vll> vvll;
+typedef long double ld;
+
+const ll INF = 1e16;
+const ld EPS = 1e-8;
+const string ALPH = "abcdefghijklmnopqrstuvwxyz";
+
+// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
+
+struct Node {
+  ll x, y, num;
+  Node(ll x, ll y, ll num) : x(x), y(y), num(num) {}
+};
+
+bool comp(Node a, Node b) {
+  if (a.x < b.x) {
+    return true;
+  } else if (a.x == b.x) {
+    return a.y > b.y;
+  }
+  return false;
 }
 
-void Input(int n, std::vector<long long>& e) {
-  for (int i = 0; i < n; ++i) {
-    std::string s;
-    std::cin >> s;
-    for (int j = 0; j < n; ++j) {
-      if (s[j] == '1') {
-        e[i] |= (1ll << j);
-      }
+bool comp2(Node a, Node b) {
+  if (a.x > b.x) {
+    return true;
+  } else if (a.x == b.x) {
+    return a.y > b.y;
+  }
+  return false;
+}
+
+void solve() {
+  int n, h; cin >> n >> h;
+  vector<Node> p;
+  vector<Node> m;
+  for (ll i = 0; i < n; ++i) {
+    ll x, y, num = i;
+    cin >> x >> y;
+    if (y - x >= 0) {
+      p.push_back({x, y, num});
+    } else {
+      m.push_back({x, y, num});
     }
   }
-}
 
-void Precalc(std::map<int, int>& log) {
-  for (int i = 0; i < 26; ++i) {
-    log[(1ll << i)] = i;
+  sort(p.begin(), p.end(), comp);
+  sort(m.begin(), m.end(), comp2);
+
+  for (ll i = 0; i < p.size(); ++i) {
+    if (h - p[i].x <= 0) {
+      std::cout << "NIE\n";
+      return;
+    }
+    h -= p[i].x;
+    h += p[i].y;
   }
+
+  for (int i = 0; i < m.size(); ++i) {
+    if (h - m[i].x <= 0) {
+      std::cout << "NIE\n";
+      return;
+    }
+    h -= m[i].x;
+    h += m[i].y;
+  }
+
+  cout << "TAK\n";
+
+  // for (int i = 0; i < p.size(); ++i) {
+  //   cout << p[i].num + 1 << " ";
+  // }
+  // for (int i = 0; i < m.size(); ++i) {
+  //   cout << m[i].num + 1 << " ";
+  // }
+  // cout << "\n";
 }
 
 int main() {
-  Init();
-  std::map<int, int> log2;
-  Precalc(log2);
-  int n;
-  std::cin >> n;
-
-  std::vector<long long> e(n + (n % 2), 0);
-
-  Input(n, e);
-
-  long long ans = 1 - (n % 2);
-  n += (n % 2);
-
-  int n1 = n / 2;
-
-  std::vector<int> is_click1((1 << n1), 0);
-  std::vector<int> is_click2((1 << n1), 0);
-  std::vector<int> f((1 << n1), 0);
-
-  is_click1[0] = (1 << n1) - 1;
-  is_click2[0] = (1 << n1) - 1;
-
-
-  // solving before MITM 
-  for (int mask = 1; mask < (1 << n1); ++mask) {
-    int neig1 = (e[log2[(mask & -mask)]] ^ (mask & -mask));
-    int neig2 = (e[log2[(mask & -mask)] + n1] & ((1 << n1) - 1));
-
-    is_click1[mask] = is_click1[mask ^ (mask & -mask)] & neig1;
-    is_click2[mask] = is_click2[mask ^ (mask & -mask)] & neig2;
-
-    if ((is_click1[mask] & mask) == mask) {
-      f[mask] = 1;
-    }
+  ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
+  cout.tie(nullptr);
+  ll t = 1;
+  // cin >> t;
+  // cout << fixed << setprecision(10);
+  
+  while (t--) {
+    solve();
+    // cout << solve() << endl;
+    // if (solve())
+    //    cout << "Yes" << endl;
+    // else
+    //    cout << "No" << endl;
   }
 
-  // SOS dp from cf
-  for (int i = 0; i < n1; ++i) {
-    for (int mask = 0; mask < (1 << n1); ++mask) {
-      if ((mask & (1 << i)) != 0) {
-        f[mask] += f[mask ^ (1 << i)];
-      }
-    }
-  }
-
-  ans += f[(1 << n1) - 1];
-
-  for (int mask = 1; mask < (1 << n1); ++mask) {
-    int neig = ((e[log2[(mask & -mask)] + n1] >> n1) ^ (mask & -mask));
-    is_click1[mask] = is_click1[mask ^ (mask & -mask)] & neig;
-    if ((is_click1[mask] & mask) == mask) {
-      ans += f[is_click2[mask]] + 1ll;
-    }
-  }
-  std::cout << ans << "\n";
+  return 0;
 }

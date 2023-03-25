@@ -39,12 +39,16 @@ int main() {
 
 
   ll n = random(1, 5);
-  ll m = random(0, n * (n - 1) / 2);
+  ll m = random(0, n * 2);
 
   std::cout << n << " " << m << "\n";
 
-  for (int i = 0; i < m; ++i) {
-    std::cout << random(1, n) << " " << random(1, n) << "\n";
+  std::set<std::pair<int, int>> used;
+
+  for (int i = 0; i < n; ++i) {
+    int u = random(1, n);
+    int v = random(1, n);
+    std::cout << u << " " << v << "\n";
   }
 
 

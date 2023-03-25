@@ -1,103 +1,105 @@
-#include <algorithm>
-#include <iostream>
-#include <map>
-#include <set>
-#include <vector>
+#include <bits/stdc++.h>
+using namespace std;
+// #pragma GCC optimize("unroll-loops")
+// #pragma GCC optimize("Ofast")
+// #pragma GCC optimize("no-stack-protector")
+// #pragma GCC target("sse,sse2,sse3,ssse3,popcnt,abm,mmx,avx,tune=native")
+// #pragma GCC optimize("fast-math")
+// #pragma GCC optimize(2)
+// #pragma GCC optimize("Ofast","inline","-ffast-math")
+// #pragma GCC optimize "-O3"
 
-void Init() {
-  std::ios_base::sync_with_stdio(false);
-  std::cin.tie(nullptr);
-  std::cout.tie(nullptr);
+typedef long long ll;
+typedef pair<ll, ll> pll;
+typedef vector<ll> vll;
+typedef vector<vll> vvll;
+typedef long double ld;
+
+const ll INF = 1e16;
+const ld EPS = 1e-8;
+const string ALPH = "abcdefghijklmnopqrstuvwxyz";
+
+// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
+
+void make_set (int v, vll& parent, vll& rank) {
+	parent[v] = v;
+	rank[v] = 0;
+}
+ 
+int find_set (int v, vll& parent, vll& rank) {
+	if (v == parent[v])
+		return v;
+	return parent[v] = find_set(parent[v], parent, rank);
+}
+ 
+void union_sets (int a, int b, vll& parent, vll& rank) {
+	a = find_set(a, parent, rank);
+	b = find_set(b, parent, rank);
+	if (a != b) {
+		if (rank[a] < rank[b])
+			swap (a, b);
+		parent[b] = a;
+		if (rank[a] == rank[b])
+			++rank[a];
+	}
 }
 
-struct Graph {
-  int n, m;
-  std::vector<std::vector<std::pair<int, int>>> g;
-  std::vector<bool> used;
-  std::vector<int> tin;
-  std::vector<int> ret;
-  std::set<std::pair<int, int>> single;
-  std::set<std::pair<int, int>> doubled;
-  std::vector<bool> is_bridge;
-  int timer = 0;
+void solve() {
+  ll n; cin >> n;
+  vvll E(n + 1);
+  vector<pair<ll, pll>> edges;
+  vll comp(n + 1);
+  vll rank(n + 1);
 
-  void InputGraph() {
-    std::cin >> n >> m;
-    g.assign(n, std::vector<std::pair<int, int>>());
-    used.assign(n, false);
-    tin.assign(n, -1);
-    ret.assign(n, 0);
-    is_bridge.assign(m, false);
-    for (int i = 0; i < m; ++i) {
-      int u, v;
-      std::cin >> u >> v;
-      --u;
-      --v;
-      if (single.find({std::min(u, v), std::max(v, u)}) != single.end()) {
-        doubled.insert({std::min(u, v), std::max(v, u)});
-      }
-      single.insert({std::min(u, v), std::max(v, u)});
-      g[u].push_back({v, i});
-      g[v].push_back({u, i});
+  for (int i = 0; i <= n; ++i) {
+    make_set(i, comp, rank);
+  }
+
+  ll added = 0;
+  ll sum = 0;
+
+  for (ll i = 0; i < n; ++i) {
+    for (ll j = i + 1; j <= n; ++j) {
+      ll x; cin >> x;
+      edges.push_back({x, {i, j}});
+    }
+  }
+  sort(edges.begin(), edges.end());
+  auto it = edges.begin();
+  while (added < n) {
+    ll u = it->second.first;
+    ll v = it->second.second;
+    ll w = it->first;
+    ++it;
+    if (find_set(u, comp, rank) != find_set(v, comp, rank)) {
+      union_sets(u, v, comp, rank);
+      sum += w;
+      ++added;
     }
   }
 
-  void DfsForBridges(int current_vertex, int parent) {
-    tin[current_vertex] = timer++;
-    ret[current_vertex] = tin[current_vertex];
-    used[current_vertex] = true;
-    for (size_t i = 0; i < g[current_vertex].size(); ++i) {
-      int to = g[current_vertex][i].first;
-      int num = g[current_vertex][i].second;
-      if (to == parent) {
-        continue;
-      }
-      if (used[to]) {
-        ret[current_vertex] = std::min(ret[current_vertex], tin[to]);
-      } else {
-        DfsForBridges(to, current_vertex);
-        ret[current_vertex] = std::min(ret[current_vertex], ret[to]);
-        if (ret[to] == tin[to]) {
-          is_bridge[num] = true;
-        }
-      }
-    }
-  }
+  
 
-  void FindBridges() {
-    for (int i = 0; i < n; ++i) {
-      if (!used[i]) {
-        DfsForBridges(i, -1);
-      }
-    }
-  }
+  cout << sum << "\n";
 
-  void OutputBridges() {
-    std::set<int> ans;
-    for (int i = 0; i < n; ++i) {
-      for (size_t j = 0; j < g[i].size(); ++j) {
-        int u = i;
-        int v = g[i][j].first;
-        int num = g[i][j].second;
-        if (is_bridge[num] &&
-            doubled.find({std::min(u, v), std::max(v, u)}) == doubled.end()) {
-          ans.insert(num);
-        }
-      }
-    }
-    std::cout << ans.size() << "\n";
-    for (auto el : ans) {
-      std::cout << el + 1 << " ";
-    }
-    std::cout << "\n";
-  }
-};
+}
 
 int main() {
-  Init();
-  Graph g;
-  g.InputGraph();
-  g.FindBridges();
-  g.OutputBridges();
+  ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
+  cout.tie(nullptr);
+  ll t = 1;
+  // cin >> t;
+  // cout << fixed << setprecision(10);
+  
+  while (t--) {
+    solve();
+    // cout << solve() << endl;
+    // if (solve())
+    //    cout << "Yes" << endl;
+    // else
+    //    cout << "No" << endl;
+  }
+
   return 0;
 }

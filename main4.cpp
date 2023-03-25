@@ -21,31 +21,40 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-ll ans = -INF;
-
-void checkBinPow(ll l, ll r, vvll& E, ll sum) {
-  if (r - l <= 1) {
-    ans = max(ans, sum);
-    return;
-  }
-  ll m = (l + r) / 2;
-  checkBinPow(l, m, E, sum + E[l][m - 1]);
-  checkBinPow(m, r, E, sum + E[l][m - 1]);
-
-}
+struct Node {
+  int w1, w2, h1, h2;
+};
 
 void solve() {
   ll n; cin >> n;
-  vvll E(n, vll(n, 0));
+  vector<Node> a(n);
+
   for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n - i; ++j) {
-      cin >> E[i][j];
+    cin >> a[i].w1 >> a[i].w2 >> a[i].h1 >> a[i].h2;
+  }
+
+  int mw1 = a[0].w1;
+  int mw2 = a[0].w2;
+  int mh1 = a[0].h1;
+  int mh2 = a[0].h2;
+
+  for (int i = 0; i < n; ++i) {
+    mw1 = min(mw1, a[i].w1);
+    mw2 = max(mw2, a[i].w2);
+    mh1 = min(mh1, a[i].h1);
+    mh2 = max(mh2, a[i].h2);
+  }
+
+  for (int i = 0; i < n; ++i) {
+    if (a[i].w1 == mw1 && a[i].w2 == mw2 &&
+        a[i].h1 == mh1 && a[i].h2 == mh2) {
+      cout << "TAK\n";
+      return;
     }
   }
 
-  checkBinPow(0, n, E, E[0][n - 1]);
+  cout << "NIE\n";
 
-  cout << ans << "\n";
 
 }
 
@@ -54,7 +63,7 @@ int main() {
   cin.tie(nullptr);
   cout.tie(nullptr);
   ll t = 1;
-  // cin >> t;
+  cin >> t;
   // cout << fixed << setprecision(10);
   
   while (t--) {

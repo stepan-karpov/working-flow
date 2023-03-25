@@ -1,149 +1,85 @@
-#include <algorithm>
-#include <cassert>
-#include <iostream>
-#include <list>
-#include <optional>
-#include <vector>
+#include <bits/stdc++.h>
+using namespace std;
+// #pragma GCC optimize("unroll-loops")
+// #pragma GCC optimize("Ofast")
+// #pragma GCC optimize("no-stack-protector")
+// #pragma GCC target("sse,sse2,sse3,ssse3,popcnt,abm,mmx,avx,tune=native")
+// #pragma GCC optimize("fast-math")
+// #pragma GCC optimize(2)
+// #pragma GCC optimize("Ofast","inline","-ffast-math")
+// #pragma GCC optimize "-O3"
 
-#include <set>
+typedef long long ll;
+typedef pair<ll, ll> pll;
+typedef vector<ll> vll;
+typedef vector<vll> vvll;
+typedef long double ld;
 
-#include <unordered_map>
+const ll INF = 1e16;
+const ld EPS = 1e-8;
+const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
-using std::cin, std::cout, std::optional, std::min, std::endl, std::pair,
-    std::max, std::vector, std::set, std::swap, std::unordered_map;
+// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-struct WeightedEdge {
-  int to;
-  int64_t cost;
-  WeightedEdge() = default;
-  WeightedEdge(int a1, int64_t a2) {
-    to = a1;
-    cost = a2;
-  }
-};
+bool tak = false;
 
-bool operator<(const WeightedEdge& ft_edge, const WeightedEdge& sc_edge) {
-  if (ft_edge.cost != sc_edge.cost) {
-    return ft_edge.cost < sc_edge.cost;
-  }
-  return ft_edge.to < sc_edge.to;
-}
-
-struct Data {
-  int pred, height, min_depth;
-  bool used;
-  Data() {
-    pred = -1;
-    height = -1;
-    min_depth = -1;
-    used = false;
-  };
-};
-
-struct Dest {
-  int to, num;
-  Dest() = default;
-  Dest(int to_i, int num_i) {
-    to = to_i;
-    num = num_i;
-  }
-};
-
-struct Edge {
-  int from, to, num;
-  Edge() = default;
-  Edge(int from_i, int to_i, int num_i) {
-    from = from_i;
-    to = to_i;
-    num = num_i;
-  }
-};
-
-struct Graph {
-  static const int64_t max_vertexes = 2 * 1e6;
-  int num_vertexes;
-  int num_edges;
-  vector<Data> data;
-  vector<vector<Dest>> adj_list;
-  set<Edge> bridges;
-  Graph(int num_vertexes_i, int num_edges_i,
-        const vector<vector<Dest>>& adj_list_i) {
-    num_vertexes = num_vertexes_i;
-    num_edges = num_edges_i;
-    adj_list = adj_list_i;
-    data.resize(num_vertexes);
-  }
-};
-
-bool operator<(const Edge& ft_edge, const Edge& sc_edge) {
-  return ft_edge.num < sc_edge.num;
-}
-
-void DFS(Graph& graph, int vertex, int pred = -1) {
-  graph.data[vertex].used = true;
-  if (pred == -1) {
-    graph.data[vertex].height = graph.data[vertex].min_depth = 0;
+void check(vll cur, ll n, vector<pll>& a, ll h) {
+  if (cur.size() == a.size()) {
+    for (int i = 0; i < cur.size(); ++i) {
+      h -= a[cur[i]].first;
+      if (h <= 0) {
+        return;
+      }
+      h += a[cur[i]].second;
+    }
+    tak = true;
   } else {
-    graph.data[vertex].height = graph.data[pred].height + 1;
-    graph.data[vertex].min_depth = graph.data[pred].height + 1;
-  }
-  for (auto & [ to, num ] : graph.adj_list[vertex]) {
-    if (to == pred) {
-      continue;
+    set<ll> nu;
+    for (int i = 0; i < a.size(); ++i) {
+      nu.insert(i);
     }
-    if (graph.data[to].used) {
-      graph.data[vertex].min_depth =
-          min(graph.data[vertex].min_depth, graph.data[to].height);
-    } else {
-      DFS(graph, to, vertex);
-      graph.data[vertex].min_depth =
-          min(graph.data[vertex].min_depth, graph.data[to].min_depth);
-      if (graph.data[vertex].height < graph.data[to].min_depth) {
-        graph.bridges.emplace(vertex, to, num);
-      }
+    for (int i = 0; i < cur.size(); ++i) {
+      nu.erase(cur[i]);
+    }
+    for (auto el : nu) {
+      cur.push_back(el);
+      check(cur, n, a, h);
+      cur.pop_back();
     }
   }
 }
 
-void Solve() {
-  int num_vertexes, num_edges;
-  cin >> num_vertexes >> num_edges;
-  vector<vector<Dest>> adj_list(num_vertexes);
-  for (int from, to, i = 0; i < num_edges; ++i) {
-    cin >> from >> to;
-    --from;
-    --to;
-    adj_list[from].emplace_back(to, i + 1);
-    adj_list[to].emplace_back(from, i + 1);
+void solve() {
+  ll n, h; cin >> n >> h;
+  vector<pll> a(n);
+  for (int i = 0; i < n; ++i) {
+    cin >> a[i].first >> a[i].second;
   }
-  Graph graph(num_vertexes, num_edges, adj_list);
-  for (int vertex = 0; vertex < num_vertexes; ++vertex) {
-    if (!graph.data[vertex].used) {
-      DFS(graph, vertex);
-    }
-  }
-  vector<int> ans;
-  for (auto & [ from, to, num ] : graph.bridges) {
-    int counter = 0;
-    for (auto& dest : graph.adj_list[from]) {
-      if (to == dest.to) {
-        counter++;
-      }
-    }
-    if (counter == 1) {
-      ans.emplace_back(num);
-    }
-  }
-  cout << ans.size() << endl;
-  for (auto& i : ans) {
-    cout << i << " ";
+
+  check({}, n, a, h);
+  if (tak) {
+    cout << "TAK\n";
+  } else {
+    cout << "NIE\n";
   }
 }
 
-signed main() {
-  std::ios_base::sync_with_stdio(false);
+int main() {
+  ios_base::sync_with_stdio(false);
   cin.tie(nullptr);
   cout.tie(nullptr);
-  Solve();
+  ll t = 1;
+  // cin >> t;
+  // cout << fixed << setprecision(10);
+  
+  while (t--) {
+    solve();
+    // cout << solve() << endl;
+    // if (solve())
+    //    cout << "Yes" << endl;
+    // else
+    //    cout << "No" << endl;
+  }
+
   return 0;
 }
