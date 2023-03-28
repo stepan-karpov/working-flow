@@ -9,12 +9,11 @@ using namespace std;
 // #pragma GCC optimize("Ofast","inline","-ffast-math")
 // #pragma GCC optimize "-O3"
 
-using ll = long long;
-using pll = pair<ll, ll>;
-using pii = pair<int, int>;
-using vll = vector<ll>;
-using vvll = vector<vll>;
-using ld = long double;
+typedef long long ll;
+typedef pair<ll, ll> pll;
+typedef vector<ll> vll;
+typedef vector<vll> vvll;
+typedef long double ld;
 
 const ll INF = 1e16;
 const ld EPS = 1e-8;
@@ -22,63 +21,33 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-struct Edge {
-  ll u, w, is_cap;
-  Edge(ll u, ll w, ll is_cap) : w(w), is_cap(is_cap) {}
-};
+ll getSum(int l, int r, vll& prefix_sum) {
+  ll sum = prefix_sum[r];
+  if (l != 0) {
+    sum -= prefix_sum[l - 1];
+  }
+  return sum;
+}
 
 void solve() {
-  ll n, m, k;
-  cin >> n >> m >> k;
+  ll n, c, k; cin >> n >> c >> k;
 
-  vector<vector<Edge>> E(n);
-
-  for (int i = 0; i < m; ++i) {
-    ll u, v; cin >> u >> v;
-    --u; --v;
-    ll w, f; cin >> w >> f;
-    E[u].push_back({v, w, f});
-    E[v].push_back({u, w, f});
+  vll prefix_sum(n + 1, 0);
+  vll a(n);
+  for (int i = 0; i < n; ++i) {
+    cin >> a[i];
   }
+  prefix_sum[0] = a[0];
 
-  vector<pll> times(k);
-
-  for (int i = 0; i < k; ++i) {
-    ll t1, t2; cin >> t1 >> t2;
-    times[i] = {t1, t2};
+  for (int i = 1; i < n; ++i) {
+    prefix_sum[i] = prefix_sum[i - 1] + a[i];
   }
-
-  ll start, end, start_time;
-  cin >> start >> end >> start_time;
-
-  --start; --end;
-
-  vll d(n, INF);
-  d[start] = start_time;
-
-  set<pll> q;
-  q.insert({d[start], start});
-
-  while (!q.empty()) {
-    ll cur_vertex = q.begin()->second;
-    q.erase(q.begin());
-
-    for (int i = 0; i < E[cur_vertex].size(); ++i) {
-      ll next_vertex = E[cur_vertex][i].u;
-      ll new_dist = d[cur_vertex] + E[cur_vertex][i].w;
-      if (new_dist < d[next_vertex]) {
-        q.erase({d[next_vertex], next_vertex});
-        d[next_vertex] = new_dist;
-        q.insert({d[next_vertex], next_vertex});
-      }
-    }
+  if (n <= k) {
+    cout << getSum(0, n - 1, prefix_sum) << "\n";
   }
-
-  std::cout << d[end] << "\n";
-
-
-
-
+  for (int i = 0; i < min(c, n - k + 1); ++i) {
+    std::cout << i << " " << i + k << "\n";
+  }
 }
 
 int main() {

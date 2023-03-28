@@ -1,85 +1,51 @@
-#include <bits/stdc++.h>
+#include <algorithm>
+#include <iostream>
+#include <vector>
+#include <queue>
+
+#define int long long
 using namespace std;
-// #pragma GCC optimize("unroll-loops")
-// #pragma GCC optimize("Ofast")
-// #pragma GCC optimize("no-stack-protector")
-// #pragma GCC target("sse,sse2,sse3,ssse3,popcnt,abm,mmx,avx,tune=native")
-// #pragma GCC optimize("fast-math")
-// #pragma GCC optimize(2)
-// #pragma GCC optimize("Ofast","inline","-ffast-math")
-// #pragma GCC optimize "-O3"
+using pii = pair<int, int>;
 
-typedef long long ll;
-typedef pair<ll, ll> pll;
-typedef vector<ll> vll;
-typedef vector<vll> vvll;
-typedef long double ld;
-
-const ll INF = 1e16;
-const ld EPS = 1e-8;
-const string ALPH = "abcdefghijklmnopqrstuvwxyz";
-
-// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
-
-bool tak = false;
-
-void check(vll cur, ll n, vector<pll>& a, ll h) {
-  if (cur.size() == a.size()) {
-    for (int i = 0; i < cur.size(); ++i) {
-      h -= a[cur[i]].first;
-      if (h <= 0) {
-        return;
+signed main() {
+  int n, m;
+  cin >> n >> m;
+  vector<int> a(n);
+  vector<pii> b(m);
+  for (int &i : a) cin >> i;
+  for (int i = 0; i < m; ++i) {
+    cin >> b[i].first;
+    b[i].second = i;
+  }
+  sort(b.begin(), b.end());
+  queue<int> empt;
+  vector<int> ans(m);
+  for (int i = 0; i < m; ++i) {
+    if (empt.size() == 0) {
+      int first = 1e18;
+      for (int j = 0; j < n; ++j) {
+        if (a[j] != -1) {
+          if (first > ((b[i].first + a[j] - 1) / a[j]) * a[j]) {
+            first = ((b[i].first + a[j] - 1) / a[j]) * a[j];
+          }
+        }
       }
-      h += a[cur[i]].second;
-    }
-    tak = true;
-  } else {
-    set<ll> nu;
-    for (int i = 0; i < a.size(); ++i) {
-      nu.insert(i);
-    }
-    for (int i = 0; i < cur.size(); ++i) {
-      nu.erase(cur[i]);
-    }
-    for (auto el : nu) {
-      cur.push_back(el);
-      check(cur, n, a, h);
-      cur.pop_back();
+      for (int j = 0; j < n; ++j) {
+        if (a[j] != -1) {
+          if (((b[i].first + a[j] - 1) / a[j]) * a[j] == first) {
+            empt.push(j);
+            a[j] = -1;
+          }
+        }
+      } 
+      ans[b[i].second] = first;
+      empt.pop();
+    } else {
+      ans[b[i].second] = b[i].first;
+      empt.pop();
     }
   }
-}
-
-void solve() {
-  ll n, h; cin >> n >> h;
-  vector<pll> a(n);
-  for (int i = 0; i < n; ++i) {
-    cin >> a[i].first >> a[i].second;
-  }
-
-  check({}, n, a, h);
-  if (tak) {
-    cout << "TAK\n";
-  } else {
-    cout << "NIE\n";
-  }
-}
-
-int main() {
-  ios_base::sync_with_stdio(false);
-  cin.tie(nullptr);
-  cout.tie(nullptr);
-  ll t = 1;
-  // cin >> t;
-  // cout << fixed << setprecision(10);
-  
-  while (t--) {
-    solve();
-    // cout << solve() << endl;
-    // if (solve())
-    //    cout << "Yes" << endl;
-    // else
-    //    cout << "No" << endl;
-  }
-
+  for (int i : ans) cout << i << ' ';
+  cout << '\n';
   return 0;
-}
+} 

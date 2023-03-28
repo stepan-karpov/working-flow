@@ -1,10 +1,7 @@
 #include <algorithm>
 #include <iostream>
+#include <map>
 #include <vector>
-
-namespace constants {
-  const long long kMod = 1'000'000'007;
-}
 
 void Init() {
   std::ios_base::sync_with_stdio(false);
@@ -12,99 +9,108 @@ void Init() {
   std::cout.tie(nullptr);
 }
 
-bool MaskCanOccur(int mask, const std::vector<std::string>& table, int column, int n) {
-  // mask >> 0       == table[0]
-  //        ...
-  // mask >> (n - 1) == table[0]
-  for (int i = 0; i < n; ++i) {
-    bool mybit123 = ((mask >> i) & 1) != 0;
-    if (mybit123 && table[i][column] == '+') {
+struct Node {
+  int x, w;
+  Node(int x, int w) : x(x), w(w) {}
+};
+
+struct Three {
+  int u, v, w;
+  Three(int u, int v, int w) : u(u), v(v), w(w) {}
+};
+
+void Dfs(int current_v, std::vector<bool>& used,
+         std::vector<std::pair<int, int>>& equation,
+         std::vector<std::vector<Node>>& g) {
+  used[current_v] = true;
+
+  int k1 = equation[current_v].first;
+  int b1 = equation[current_v].second;
+
+  for (size_t i = 0; i < g[current_v].size(); ++i) {
+    int next_v = g[current_v][i].x;
+    int current_w = g[current_v][i].w;
+    if (!used[next_v]) {
+      equation[next_v] = {current_w - k1, -b1};
+      Dfs(next_v, used, equation, g);
+    }
+  }
+}
+
+bool CheckX(int x, std::vector<std::pair<int, int>>& equation, int n,
+            std::vector<Three>& c) {
+  std::vector<int> ans(n + 1);
+  std::vector<int> copy(n);
+  for (int i = 1; i <= n; ++i) {
+    int res = equation[i].first + x * equation[i].second;
+    if (!(1 <= res && res <= n)) {
       return false;
     }
-    if (!mybit123 && table[i][column] == '-') {
+    ans[i] = res;
+    copy[i - 1] = res;
+  }
+  for (int i = 0; i < int(c.size()); ++i) {
+    int s = ans[c[i].u] + ans[c[i].v];
+    if (s != c[i].w) {
       return false;
     }
   }
-  return true;
-}
-
-int RestoreMask(int mask, int first, int n) {
-  int old_mask = first;
-  for (int i = 1; i < n; ++i) {
-    int last = (old_mask >> (i - 1)) & 1;
-    int t1 = (mask >> (i - 1)) & 1;
-    int t2 = (mask >> i) & 1;
-    int new_s = 2 - last - t1 - t2;
-    if (new_s == 1) {
-      old_mask |= (1 << i);
-    }
-  }
-  return old_mask;
-}
-
-bool Match(int mask1, int mask2, int n) {
-  for (int i = 0; i < n - 1; ++i) {
-    int t1 = (mask1 >> i) & 1;
-    int t2 = (mask1 >> (i + 1)) & 1;
-    int t3 = (mask2 >> i) & 1;
-    int t4 = (mask2 >> (i + 1)) & 1;
-    if (t1 + t2 + t3 + t4 != 2) {
+  std::sort(copy.begin(), copy.end());
+  for (size_t i = 0; i < copy.size(); ++i) {
+    if (copy[i] != int(i) + 1) {
       return false;
     }
+  }
+  for (int i = 1; i <= n; ++i) {
+    int res = equation[i].first + x * equation[i].second;
+    std::cout << res << " ";
   }
   return true;
 }
 
 int main() {
   Init();
-
   int n, m;
   std::cin >> n >> m;
+  std::vector<std::vector<Node>> g(n + 1);
+  std::vector<Three> c;
 
-  std::vector<std::string> table(n);
-
-  for (int i = 0; i < n; ++i) {
-    std::cin >> table[i];
+  for (int i = 0; i < m; ++i) {
+    int u, v, w;
+    std::cin >> u >> v >> w;
+    g[u].push_back({v, w});
+    g[v].push_back({u, w});
+    c.push_back({u, v, w});
   }
 
-  int maximum_mask = (1 << n);
+  std::vector<bool> used(n + 1, false);
+  std::vector<std::pair<int, int>> equation(n + 1);
 
-  std::vector<std::vector<long long>> dp(
-      m + 1, std::vector<long long>(maximum_mask, 0));
+  equation[1] = {0, 1};
 
-  for (int mask = 0; mask < maximum_mask; ++mask) {
-    if (MaskCanOccur(mask, table, 0, n)) {
-      dp[1][mask] = 1;
+  for (int i = 1; i <= n; ++i) {
+    if (!used[i]) {
+      Dfs(i, used, equation, g);
     }
   }
 
-  for (int i = 2; i <= m; ++i) {
-    for (int mask = 0; mask < maximum_mask; ++mask) {
-      if (!MaskCanOccur(mask, table, i - 1, n)) {
-        continue;
-      }
-      int old_mask1 = RestoreMask(mask, 0, n);
-      int old_mask2 = RestoreMask(mask, 1, n);
-      if (MaskCanOccur(old_mask1, table, i - 2, n) && Match(mask, old_mask1, n)) {
-        dp[i][mask] += dp[i - 1][old_mask1];
-      }
-      if (MaskCanOccur(old_mask2, table, i - 2, n) && Match(mask, old_mask2, n)) {
-        dp[i][mask] += dp[i - 1][old_mask2];
-      }
-      dp[i][mask] %= constants::kMod;
+  int x1 = -1e9;
+  int x2 = 1e9;
+
+  for (int i = 1; i <= n; ++i) {
+    int k = equation[i].first;
+    int b = equation[i].second;
+    if (b == 1) {
+      x1 = std::max(x1, 1 - k);
+    } else {
+      x2 = std::min(x2, k - 1);
     }
   }
 
-  long long answer = 0;
-
-  for (int mask = 0; mask < maximum_mask; ++mask) {
-    if (MaskCanOccur(mask, table, m - 1, n)) {
-      answer += dp[m][mask];
-      answer %= constants::kMod;
-    }
+  if (CheckX(x1, equation, n, c)) {
+    return 0;
   }
-
-  std::cout << answer << "\n";
+  CheckX(x2, equation, n, c);
 
   return 0;
 }

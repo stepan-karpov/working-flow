@@ -39,19 +39,31 @@ int main() {
 
 
   ll n = random(1, 5);
-  ll m = random(0, n * 2);
+  ll m = random(1, n);
 
   std::cout << n << " " << m << "\n";
 
-  std::set<std::pair<int, int>> used;
 
   for (int i = 0; i < n; ++i) {
-    int u = random(1, n);
-    int v = random(1, n);
-    std::cout << u << " " << v << "\n";
+    std::cout << random(1, 1e5) << " ";
   }
 
+  std::cout << "\n";
+  std::vector<int> u;
+  for (int i = 0; i < m; ++i) {
+    u.push_back(random(1, 1e5));
+  }
+  std::sort(u.begin(), u.end());
 
+  for (int i = 0; i < m; ++i) {
+    std::cout << u[i] << " ";
+  }
+
+  for (int i = 0; i < m - 1; ++i) {
+    if (u[i] > u[i + 1]) {
+      cout << "jopa\n";
+    }
+  }
 
   // for (int i = 0; i < n; ++i) {
   //   std::cout << random(0, 1000) << " ";

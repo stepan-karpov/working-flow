@@ -33,44 +33,36 @@ void output_test() {
 }
 
 void solve() {
-  ll n; cin >> n;
-  vector<string> a(n);
+  // ll n; cin >> n;
+  // vector<string> a(n);
 
-  for (int i = 0; i < n; ++i) {
-    cin >> a[i];
-  }
+  // for (int i = 0; i < n; ++i) {
+  //   cin >> a[i];
+  // }
 
   freopen("incorrect_answer.txt", "r", stdin);
 
-  ll k; cin >> k;
-  for (int i = 0; i < k; ++i) {
-    ll u, v;
-    char s1, s2;
-    cin >> u >> s1 >> v >> s2;
-    --u; --v;
-    for (int j = 0; j < 3; ++j) {
-      if (a[u][j] == s1) {
-        a[u][j] = s2;
-        break;
-      }
-    }
-    for (int j = 0; j < 3; ++j) {
-      if (a[v][j] == s2) {
-        a[v][j] = s1;
-        break;
-      }
-    }
+  ll k;
+  vll a;
+  while (cin >> k) {
+    a.push_back(k);
   }
 
-
-  // freopen("log.txt", "a", stdout);
-  for (int i = 0; i < n; ++i) {
-    sort(a[i].begin(), a[i].end());
-    if (a[i] != "inw") {
+  freopen("log.txt", "a", stdout);
+  for (int i = 0; i < a.size() - 1; ++i) {
+    if (a[i + 1] > a[i]) {
       output_test();
       return;
     }
   }
+
+  // for (int i = 0; i < n; ++i) {
+  //   sort(a[i].begin(), a[i].end());
+  //   if (a[i] != "inw") {
+  //     output_test();
+  //     return;
+  //   }
+  // }
 
 }
 

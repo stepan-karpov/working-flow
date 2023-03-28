@@ -1,70 +1,109 @@
-#include <bits/stdc++.h>
-using namespace std;
-// #pragma GCC optimize("unroll-loops")
-// #pragma GCC optimize("Ofast")
-// #pragma GCC optimize("no-stack-protector")
-// #pragma GCC target("sse,sse2,sse3,ssse3,popcnt,abm,mmx,avx,tune=native")
-// #pragma GCC optimize("fast-math")
-// #pragma GCC optimize(2)
-// #pragma GCC optimize("Ofast","inline","-ffast-math")
-// #pragma GCC optimize "-O3"
+#include <algorithm>
+#include <iostream>
+#include <vector>
 
-typedef long long ll;
-typedef pair<ll, ll> pll;
-typedef vector<ll> vll;
-typedef vector<vll> vvll;
-typedef long double ld;
+struct Var {
+  int coef = 0, b = 0;
+  Var(int coef, int b) : coef(coef), b(b) {}
+  Var() = default;
+};
 
-const ll INF = 1e16;
-const ld EPS = 1e-8;
-const string ALPH = "abcdefghijklmnopqrstuvwxyz";
+struct Edge {
+  int from, to, val;
+  Edge(int from, int to, int val) : from(from), to(to), val(val) {}
+};
 
-// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
+std::vector<std::vector<Edge>> g;
+std::vector<int> used;
+std::vector<Var> t;
 
-ll ans = -INF;
-
-void checkBinPow(ll l, ll r, vvll& E, ll sum) {
-  if (r - l <= 1) {
-    ans = max(ans, sum);
-    return;
-  }
-  ll m = (l + r) / 2;
-  checkBinPow(l, m, E, sum + E[l][m - 1]);
-  checkBinPow(m, r, E, sum + E[l][m - 1]);
-
-}
-
-void solve() {
-  ll n; cin >> n;
-  vvll E(n, vll(n, 0));
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n - i; ++j) {
-      cin >> E[i][j];
+void Dfs(int v) {
+  used[v] = 1;
+  for (Edge e : g[v]) {
+    if (used[e.to] == 0) {
+      t[e.to].coef = -t[v].coef;
+      t[e.to].b = e.val - t[v].b;
+      Dfs(e.to);
     }
   }
-
-  checkBinPow(0, n, E, E[0][n - 1]);
-
-  cout << ans << "\n";
-
 }
 
-int main() {
-  ios_base::sync_with_stdio(false);
-  cin.tie(nullptr);
-  cout.tie(nullptr);
-  ll t = 1;
-  // cin >> t;
-  // cout << fixed << setprecision(10);
-  
-  while (t--) {
-    solve();
-    // cout << solve() << endl;
-    // if (solve())
-    //    cout << "Yes" << endl;
-    // else
-    //    cout << "No" << endl;
-  }
+int n, m;
 
+bool Fill(std::vector<int>& ans, int x) {
+  std::vector<bool> was(n + 1, true);
+  for (int i = 0; i < n; ++i) {
+    if (ans[i] != 0) {
+      return false;
+    }
+    int num = 1 + t[i].coef * x + t[i].b;
+    if (num > n || num < 1) {
+      return false;
+    }
+    if (!was[num]) {
+      return false;
+    }
+    ans[i] = num;
+    was[num] = false;
+  }
+  for (int i = 0; i < n; ++i) {
+    std::cout << ans[i] << ' ';
+  }
+  return true;
+}
+
+signed main() {
+  std::cin >> n >> m;
+  g.resize(n);
+  std::vector<Edge> all;
+  for (int i = 0; i < m; ++i) {
+    int v, u, cost;
+    std::cin >> v >> u >> cost;
+    v--;
+    u--;
+    cost -= 2;
+    g[v].push_back(Edge(v, u, cost));
+    g[u].push_back(Edge(u, v, cost));
+    all.push_back(Edge(v, u, cost));
+  }
+  t.resize(n);
+  used.resize(n);
+  t[0] = Var(1, 0);
+  Dfs(0);
+  int x = 0;
+  for (int i = 0; i < m; ++i) {
+    int l = t[all[i].from].coef;
+    int r = t[all[i].to].coef;
+    if (l == r) {
+      if (l == -1) {
+        x = (t[all[i].from].b + t[all[i].to].b - all[i].val) / 2;
+      } else {
+        x = -(t[all[i].from].b + t[all[i].to].b - all[i].val) / 2;
+      }
+      std::vector<int> ans(n);
+      Fill(ans, x);
+      return 0;
+    }
+  }
+  int mx = -1e9;
+  for (int i = 0; i < n; ++i) {
+    if (t[i].coef == 1) {
+      mx = std::max(t[i].b, mx);
+    }
+  }
+  x = n - 1 - mx;
+  std::vector<int> ans(n);
+  if (Fill(ans, x)) {
+    return 0;
+  }
+  mx = -1e9;
+  for (int i = 0; i < n; ++i) {
+    if (t[i].coef == -1) {
+      mx = std::max(t[i].b, mx);
+    }
+  }
+  x = -(n - 1 - mx);
+  ans.assign(n, 0);
+  Fill(ans, x);
   return 0;
 }

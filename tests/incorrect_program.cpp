@@ -21,66 +21,56 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-void make_set (int v, vll& parent, vll& rank) {
-	parent[v] = v;
-	rank[v] = 0;
-}
- 
-int find_set (int v, vll& parent, vll& rank) {
-	if (v == parent[v])
-		return v;
-	return parent[v] = find_set(parent[v], parent, rank);
-}
- 
-void union_sets (int a, int b, vll& parent, vll& rank) {
-	a = find_set(a, parent, rank);
-	b = find_set(b, parent, rank);
-	if (a != b) {
-		if (rank[a] < rank[b])
-			swap (a, b);
-		parent[b] = a;
-		if (rank[a] == rank[b])
-			++rank[a];
-	}
-}
-
 void solve() {
-  ll n; cin >> n;
-  vvll E(n + 1);
-  vector<pair<ll, pll>> edges;
-  vll comp(n + 1);
-  vll rank(n + 1);
-
-  for (int i = 0; i <= n; ++i) {
-    make_set(i, comp, rank);
+  ll m, n; cin >> n >> m;
+  vll a(n);
+  vll b(m);
+  int MAX = 2 * 1e5 + 100;
+  vector<set<ll>> jopa(MAX + 10);
+  set<ll> used;
+  for (int i = 0; i < n; ++i) {
+    cin >> a[i];
+  }
+  for (int i = 0; i < m; ++i) {
+    cin >> b[i];
   }
 
-  ll added = 0;
-  ll sum = 0;
+  sort(a.begin(), a.end());
 
-  for (ll i = 0; i < n; ++i) {
-    for (ll j = i + 1; j <= n; ++j) {
-      ll x; cin >> x;
-      edges.push_back({x, {i, j}});
-    }
-  }
-  sort(edges.begin(), edges.end());
-  auto it = edges.begin();
-  while (added < n) {
-    ll u = it->second.first;
-    ll v = it->second.second;
-    ll w = it->first;
-    ++it;
-    if (find_set(u, comp, rank) != find_set(v, comp, rank)) {
-      union_sets(u, v, comp, rank);
-      sum += w;
-      ++added;
+  for (int i = 0; i < n; ++i) {
+    for (int j = 1; a[i] * j <= MAX; ++j) {
+      jopa[a[i] * j].insert(i);
+      used.insert(a[i] * j);
     }
   }
 
-  
+  ll last_max = -1e9;
 
-  cout << sum << "\n";
+  int free = 0;
+  for (int i = 0; i < m; ++i) {
+    if (free > 0) {
+      --free;
+      cout << max(last_max, b[i]) << " ";
+      continue;
+    }
+    ll next_ass = *used.lower_bound(b[i]);
+    set<ll> to_delete = jopa[next_ass];
+    free += to_delete.size() - 1;
+    for (ll el : to_delete) {
+      int delete_value = a[el];
+      for (int j = 1; j * delete_value <= MAX; ++j) {
+        if (jopa[delete_value * j].size() == 1 && 
+            jopa[delete_value * j].find(el) != jopa[delete_value * j].end()) {
+          used.erase(a[el] * j);
+        } 
+        jopa[a[el] * j].erase(el);
+      }
+    }
+    cout << next_ass << " ";
+    last_max = max(last_max, next_ass);
+  }
+
+
 
 }
 

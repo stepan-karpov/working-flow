@@ -1,5 +1,0 @@
-4
-1 a@bmail.com.ru 
-2 p+con+test@BMAIL.COM P@bmail.com 
-1 a+b@bmail.com.ru 
-2 ICPC.@bmail.com I.cpc@Bmail.Com 
