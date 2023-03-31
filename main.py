@@ -6,8 +6,6 @@ for line in r.readlines():
   words = line[30:].split()
   for word in words:
     c = word.strip("\n")
-    if (c.lower() != c):
-      continue
     if (word[0] == "."):
       continue
     if (word[-1] == "."):
