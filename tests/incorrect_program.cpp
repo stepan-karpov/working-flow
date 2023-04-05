@@ -20,57 +20,82 @@ const ld EPS = 1e-8;
 const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
+int cnt = 0;
+void Bfs(ll start, vll& table, ll n, ll m, ll s, ll t, vll& p, vll& q, vvll& E) {
+  queue<pll> qu;
 
-void solve() {
-  ll m, n; cin >> n >> m;
-  vll a(n);
-  vll b(m);
-  int MAX = 2 * 1e5 + 100;
-  vector<set<ll>> jopa(MAX + 10);
-  set<ll> used;
-  for (int i = 0; i < n; ++i) {
-    cin >> a[i];
-  }
-  for (int i = 0; i < m; ++i) {
-    cin >> b[i];
-  }
+  qu.push({start, 0});
 
-  sort(a.begin(), a.end());
-
-  for (int i = 0; i < n; ++i) {
-    for (int j = 1; a[i] * j <= MAX; ++j) {
-      jopa[a[i] * j].insert(i);
-      used.insert(a[i] * j);
+  while (!qu.empty()) {
+    cnt++;
+    if (cnt == 30000) {
+      break;
     }
-  }
+    ll cur_v = qu.front().first;
+    ll cur_d = qu.front().second;
+    qu.pop();
 
-  ll last_max = -1e9;
-
-  int free = 0;
-  for (int i = 0; i < m; ++i) {
-    if (free > 0) {
-      --free;
-      cout << max(last_max, b[i]) << " ";
-      continue;
-    }
-    ll next_ass = *used.lower_bound(b[i]);
-    set<ll> to_delete = jopa[next_ass];
-    free += to_delete.size() - 1;
-    for (ll el : to_delete) {
-      int delete_value = a[el];
-      for (int j = 1; j * delete_value <= MAX; ++j) {
-        if (jopa[delete_value * j].size() == 1 && 
-            jopa[delete_value * j].find(el) != jopa[delete_value * j].end()) {
-          used.erase(a[el] * j);
-        } 
-        jopa[a[el] * j].erase(el);
+    table[cur_v] = cur_d;
+    
+    for (int i = 0; i < E[cur_v].size(); ++i) {
+      ll to = E[cur_v][i];
+      if (table[to] == INF) {
+        qu.push({to, cur_d + 1});
       }
     }
-    cout << next_ass << " ";
-    last_max = max(last_max, next_ass);
+  }
+}
+
+void solve() {
+  ll n, m, s, t; cin >> n >> m >> s >> t;
+  vll p(s);
+  vll q(t);
+  for (int i = 0; i < s; ++i) {
+    cin >> p[i];
+    --p[i];
+  }
+  for (int i = 0; i < t; ++i) {
+    cin >> q[i];
+    --q[i];
+  }
+  vvll E(n);
+  for (int i = 0; i < m; ++i) {
+    ll u, v; cin >> u >> v;
+    --u; --v;
+    E[u].push_back(v);
+    E[v].push_back(u);
   }
 
+  vvll table(s, vll(n, INF));
 
+  for (int i = 0; i < s; ++i) {
+    Bfs(p[i], table[i], n, m, s, t, p, q, E);
+  }
+
+  vll shortest_path(s, INF);
+
+  for (int i = 0; i < s; ++i) {
+    for (int j = 0; j < t; ++j) {
+      shortest_path[i] = min(shortest_path[i], table[i][q[j]]);
+    }
+  }
+
+  ll vert_ans = -1;
+  ll col_ans = INF;
+
+  for (int i = 0; i < n; ++i) {
+    ll max_dist = -INF;
+    for (int j = 0; j < s; ++j) {
+      ll cur_dist = min(table[j][i], shortest_path[j]);
+      max_dist = max(max_dist, cur_dist);
+    }
+    if (max_dist <= col_ans) {
+      col_ans = max_dist;
+      vert_ans = i;
+    }
+  }
+
+  cout << vert_ans + 1 << " " << col_ans << "\n";
 
 }
 

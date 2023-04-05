@@ -39,30 +39,36 @@ int main() {
 
 
   ll n = random(1, 5);
-  ll m = random(1, n);
+  ll m = random(n, n * (n + 1) / 2);
+  ll s = random(1, n);
+  ll t = random(1, n);
 
-  std::cout << n << " " << m << "\n";
 
+  cout << n << " " << m;
+  cout << " " << s << " " << t << "\n";
 
-  for (int i = 0; i < n; ++i) {
-    std::cout << random(1, 1e5) << " ";
+  for (int i = 0; i < s; ++i) {
+    cout << random(1, n) << " ";
+  }
+  cout << "\n";
+  for (int i = 0; i < t; ++i) {
+    cout << random(1, n) << " ";
   }
 
-  std::cout << "\n";
-  std::vector<int> u;
+  set<pair<int, int>> q;
+
   for (int i = 0; i < m; ++i) {
-    u.push_back(random(1, 1e5));
-  }
-  std::sort(u.begin(), u.end());
-
-  for (int i = 0; i < m; ++i) {
-    std::cout << u[i] << " ";
-  }
-
-  for (int i = 0; i < m - 1; ++i) {
-    if (u[i] > u[i + 1]) {
-      cout << "jopa\n";
+    int u = random(1, n);
+    int v = random(1, n);
+    if (u < v) {
+      std::swap(u, v);
     }
+    while (u == v || q.find({u, v}) != q.end()) {
+      u = random(1, n);
+      v = random(1, n);
+    }
+    cout << u << " " << v << "\n";
+    q.insert({u, v});
   }
 
   // for (int i = 0; i < n; ++i) {

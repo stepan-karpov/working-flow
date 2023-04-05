@@ -20,74 +20,83 @@ const ld EPS = 1e-8;
 const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
+int cnt = 0;
+void Bfs(ll start, vll& table, ll n, ll m, ll s, ll t, vll& p, vll& q, vvll& E) {
+  queue<pll> qu;
 
-struct Node {
-  ll x, y, num;
-  Node(ll x, ll y, ll num) : x(x), y(y), num(num) {}
-};
+  qu.push({start, 0});
 
-bool comp(Node a, Node b) {
-  if (a.x < b.x) {
-    return true;
-  } else if (a.x == b.x) {
-    return a.y > b.y;
+  while (!qu.empty()) {
+    cnt++;
+    if (cnt == 30000) {
+      break;
+    }
+    ll cur_v = qu.front().first;
+    ll cur_d = qu.front().second;
+    qu.pop();
+
+    table[cur_v] = cur_d;
+    
+    for (int i = 0; i < E[cur_v].size(); ++i) {
+      ll to = E[cur_v][i];
+      if (table[to] == INF) {
+        qu.push({to, cur_d + 1});
+      }
+    }
   }
-  return false;
-}
-
-bool comp2(Node a, Node b) {
-  if (a.x > b.x) {
-    return true;
-  } else if (a.x == b.x) {
-    return a.y > b.y;
-  }
-  return false;
 }
 
 void solve() {
-  int n, h; cin >> n >> h;
-  vector<Node> p;
-  vector<Node> m;
-  for (ll i = 0; i < n; ++i) {
-    ll x, y, num = i;
-    cin >> x >> y;
-    if (y - x >= 0) {
-      p.push_back({x, y, num});
-    } else {
-      m.push_back({x, y, num});
+  ll n, m, s, t; cin >> n >> m >> s >> t;
+  vll p(s);
+  vll q(t);
+  for (int i = 0; i < s; ++i) {
+    cin >> p[i];
+    --p[i];
+  }
+  for (int i = 0; i < t; ++i) {
+    cin >> q[i];
+    --q[i];
+  }
+  vvll E(n);
+  for (int i = 0; i < m; ++i) {
+    ll u, v; cin >> u >> v;
+    --u; --v;
+    E[u].push_back(v);
+    E[v].push_back(u);
+  }
+
+  vvll table(s, vll(n, INF));
+
+  for (int i = 0; i < s; ++i) {
+    Bfs(p[i], table[i], n, m, s, t, p, q, E);
+  }
+
+  vll shortest_path(s, INF);
+
+  for (int i = 0; i < s; ++i) {
+    for (int j = 0; j < t; ++j) {
+      shortest_path[i] = min(shortest_path[i], table[i][q[j]]);
     }
   }
 
-  sort(p.begin(), p.end(), comp);
-  sort(m.begin(), m.end(), comp2);
+  ll vert_ans = -1;
+  ll col_ans = INF;
 
-  for (ll i = 0; i < p.size(); ++i) {
-    if (h - p[i].x <= 0) {
-      std::cout << "NIE\n";
-      return;
+  for (int i = 0; i < n; ++i) {
+    ll max_dist = -INF;
+    for (int j = 0; j < s; ++j) {
+      ll cur_dist = min(table[j][i], shortest_path[j]);
+      max_dist = max(max_dist, cur_dist);
     }
-    h -= p[i].x;
-    h += p[i].y;
+    if (max_dist <= col_ans) {
+      col_ans = max_dist;
+      vert_ans = i;
+    }
   }
 
-  for (int i = 0; i < m.size(); ++i) {
-    if (h - m[i].x <= 0) {
-      std::cout << "NIE\n";
-      return;
-    }
-    h -= m[i].x;
-    h += m[i].y;
-  }
+  cout << vert_ans + 1 << " " << col_ans << "\n";
 
-  cout << "TAK\n";
-
-  // for (int i = 0; i < p.size(); ++i) {
-  //   cout << p[i].num + 1 << " ";
-  // }
-  // for (int i = 0; i < m.size(); ++i) {
-  //   cout << m[i].num + 1 << " ";
-  // }
-  // cout << "\n";
 }
 
 int main() {
