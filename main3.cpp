@@ -46,7 +46,7 @@ void Bfs(ll start, vll& table, ll n, ll m, ll s, ll t, vll& p, vll& q, vvll& E) 
   }
 }
 
-void solve() {
+void Solve() {
   ll n, m, s, t; cin >> n >> m >> s >> t;
   vll p(s);
   vll q(t);
@@ -108,7 +108,7 @@ int main() {
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    solve();
+    Solve();
     // cout << solve() << endl;
     // if (solve())
     //    cout << "Yes" << endl;

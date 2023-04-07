@@ -190,7 +190,7 @@ struct printer {
   }
 };
 
-void solve() {
+void Solve() {
   int n, m, k; cin >> n >> m >> k;
   int start = 0;
   g.resize(n);
@@ -279,6 +279,6 @@ void solve() {
 
 signed main() {
     fastios();
-    solve();
+    Solve();
     return 0;
 }

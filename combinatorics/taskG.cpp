@@ -34,7 +34,7 @@ std::vector<long long> extendedGCD(long long a, long long b) {
   };
 }
 
-void solve() {
+void Solve() {
   long long a, b, n, m;
   cin >> a >> b >> n >> m;
 
@@ -64,7 +64,7 @@ int main() {
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    solve();
+    Solve();
     // cout << solve() << endl;
     // if (solve())
     //    cout << "Yes" << endl;

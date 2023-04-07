@@ -169,7 +169,7 @@ int gcd(int a, int b, int& x, int& y) {
     return d;
 }
 
-void solve() {
+void Solve() {
   int n; cin >> n;
   vector<vector<int>> a(n);
   for (int i = 0; i < n; ++i) {
@@ -218,6 +218,6 @@ void solve() {
 
 signed main() {
     fastios();
-    solve();
+    Solve();
     return 0;
 }

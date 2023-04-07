@@ -29,7 +29,7 @@ ll getSum(int l, int r, vll& prefix_sum) {
   return sum;
 }
 
-void solve() {
+void Solve() {
   ll n, c, k; cin >> n >> c >> k;
 
   vll prefix_sum(n + 1, 0);
@@ -59,7 +59,7 @@ int main() {
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    solve();
+    Solve();
     // cout << solve() << endl;
     // if (solve())
     //    cout << "Yes" << endl;

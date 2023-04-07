@@ -93,7 +93,7 @@ void backtrack(vll a) {
   }
 }
 
-void solve() {
+void Solve() {
   for (int i = 1; i <= n; ++i) {
     sorted.push_back(i);
   }
@@ -114,7 +114,7 @@ int main() {
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    solve();
+    Solve();
     // cout << solve() << endl;
     // if (solve())
     //    cout << "Yes" << endl;

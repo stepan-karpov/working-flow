@@ -53,7 +53,7 @@ bool intersect(pair<pt, pt> p1, pair<pt, pt> p2) {
   return ((vec1 ^ vec0) * (vec2 ^ vec0) <= 0) && ((cev1 ^ cev0) * (cev2 ^ cev0) <= 0);
 }
 
-void solve() {
+void Solve() {
   long long n;
   cin >> n;
   vector<pair<pt, pt>> v;
@@ -86,7 +86,7 @@ int main() {
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    solve();
+    Solve();
     // cout << solve() << endl;
     // if (solve())
     //    cout << "Yes" << endl;

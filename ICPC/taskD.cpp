@@ -61,7 +61,7 @@ ll TernarySearch(ll s) {
   return ans;
 }
 
-void solve() {
+void Solve() {
   ll s; cin >> s;
   if (s == 0) {
     cout << "0\n";
@@ -82,7 +82,7 @@ int main() {
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    solve();
+    Solve();
     // cout << solve() << endl;
     // if (solve())
     //    cout << "Yes" << endl;

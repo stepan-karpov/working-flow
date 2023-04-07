@@ -61,7 +61,7 @@ string possible(ll med, ll n, ll s, vector<pll>& a) {
   return "ok";
 }
 
-void solve() {
+void Solve() {
   ll n, s; cin >> n >> s;
   vector<pll> a(n);
   for (int i = 0; i < n; ++i) {
@@ -94,7 +94,7 @@ int main() {
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    solve();
+    Solve();
     // cout << solve() << endl;
     // if (solve())
     //    cout << "Yes" << endl;

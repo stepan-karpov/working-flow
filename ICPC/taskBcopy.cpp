@@ -27,7 +27,7 @@ struct Node {
   Node(int t, int s, int f) : t(t), s(s), f(f) {}
 };
 
-void solve() {
+void Solve() {
   ll n;
   cin >> n;
 
@@ -124,7 +124,7 @@ int main() {
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    solve();
+    Solve();
     // cout << solve() << endl;
     // if (solve())
     //    cout << "Yes" << endl;

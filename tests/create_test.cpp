@@ -38,37 +38,21 @@ int main() {
   std::mt19937 mt(time(nullptr)); 
 
 
-  ll n = random(1, 5);
-  ll m = random(n, n * (n + 1) / 2);
-  ll s = random(1, n);
-  ll t = random(1, n);
+  ll n = random(2, 2);
 
+  std::cout << n << "\n";
 
-  cout << n << " " << m;
-  cout << " " << s << " " << t << "\n";
-
-  for (int i = 0; i < s; ++i) {
-    cout << random(1, n) << " ";
-  }
-  cout << "\n";
-  for (int i = 0; i < t; ++i) {
-    cout << random(1, n) << " ";
-  }
-
-  set<pair<int, int>> q;
-
-  for (int i = 0; i < m; ++i) {
-    int u = random(1, n);
-    int v = random(1, n);
-    if (u < v) {
-      std::swap(u, v);
+  int c = 10;
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
+      int rand = random(0, 1);
+      if (rand == 0 || i == j) {
+        std::cout << 100'000 << " ";
+      } else {
+        std::cout << random(-c, c - 1) << " ";
+      }
     }
-    while (u == v || q.find({u, v}) != q.end()) {
-      u = random(1, n);
-      v = random(1, n);
-    }
-    cout << u << " " << v << "\n";
-    q.insert({u, v});
+    std::cout << "\n";
   }
 
   // for (int i = 0; i < n; ++i) {

@@ -21,7 +21,7 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-void solve() {
+void Solve() {
   ll m, n; cin >> n >> m;
   vll a(n);
   vll b(m);
@@ -81,7 +81,7 @@ int main() {
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    solve();
+    Solve();
     // cout << solve() << endl;
     // if (solve())
     //    cout << "Yes" << endl;

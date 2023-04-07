@@ -37,7 +37,7 @@ ll binarySearch(ll m, ll need_time) {
   return r;
 }
 
-void solve() {
+void Solve() {
   ll n, m, k;
   cin >> n >> m >> k;
 
@@ -54,7 +54,7 @@ int main() {
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    solve();
+    Solve();
     // cout << solve() << endl;
     // if (solve())
     //    cout << "Yes" << endl;

@@ -68,7 +68,7 @@ struct Node {
   Node(ll d, ll r, ll ind) : d(d), r(r), ind(ind) {}
 };
 
-void solve() {
+void Solve() {
   ll n, m; cin >> n >> m;
 
   SegTree a(m);
@@ -115,7 +115,7 @@ int main() {
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    solve();
+    Solve();
     // cout << solve() << endl;
     // if (solve())
     //    cout << "Yes" << endl;

@@ -85,7 +85,7 @@ vll solve2(ll k, ll n) {
   return ans;
 }
 
-void solve() {
+void Solve() {
   ll k = rand() % 15;
   ll n = rand() % 10 + k;
   backtrack(k, n, {});
@@ -115,7 +115,7 @@ int main() {
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    solve();
+    Solve();
     // cout << solve() << endl;
     // if (solve())
     //    cout << "Yes" << endl;

@@ -50,7 +50,7 @@ bool ok(ll pos_x, ll pos_y, vector<string>& a, ll cur_vec) {
 
 }
 
-void solve() {
+void Solve() {
   ll n, m;
   cin >> n >> m;
   vector<string> a(n);
@@ -120,7 +120,7 @@ int main() {
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    solve();
+    Solve();
     // cout << solve() << endl;
     // if (solve())
     //    cout << "Yes" << endl;

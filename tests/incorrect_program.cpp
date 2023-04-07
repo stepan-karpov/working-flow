@@ -1,120 +1,157 @@
-#include <bits/stdc++.h>
-using namespace std;
-// #pragma GCC optimize("unroll-loops")
-// #pragma GCC optimize("Ofast")
-// #pragma GCC optimize("no-stack-protector")
-// #pragma GCC target("sse,sse2,sse3,ssse3,popcnt,abm,mmx,avx,tune=native")
-// #pragma GCC optimize("fast-math")
-// #pragma GCC optimize(2)
-// #pragma GCC optimize("Ofast","inline","-ffast-math")
-// #pragma GCC optimize "-O3"
+#include <algorithm>
+#include <iostream>
+#include <queue>
+#include <set>
+#include <utility>
+#include <vector>
 
-typedef long long ll;
-typedef pair<ll, ll> pll;
-typedef vector<ll> vll;
-typedef vector<vll> vvll;
-typedef long double ld;
+void Init() {
+  std::ios_base::sync_with_stdio(false);
+  std::cin.tie(nullptr);
+  std::cout.tie(nullptr);
+}
 
-const ll INF = 1e16;
-const ld EPS = 1e-8;
-const string ALPH = "abcdefghijklmnopqrstuvwxyz";
+struct Graph {
+  const long long kKnostantFoo = 1e18;
+  const long long kKnostantFoo2 = 100'000;
+  long long vertex_num;
+  std::vector<std::vector<long long>> graph;
+  std::vector<std::vector<long long>> dp;
+  std::vector<long long> dist;
+  std::vector<int> parent;
 
-// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
-int cnt = 0;
-void Bfs(ll start, vll& table, ll n, ll m, ll s, ll t, vll& p, vll& q, vvll& E) {
-  queue<pll> qu;
-
-  qu.push({start, 0});
-
-  while (!qu.empty()) {
-    cnt++;
-    if (cnt == 30000) {
-      break;
+  Graph(long long vertex_num) : vertex_num(vertex_num) {
+    graph.assign(vertex_num, std::vector(vertex_num, kKnostantFoo));
+    dp.assign(vertex_num, std::vector(vertex_num + 1, kKnostantFoo));
+    parent.assign(vertex_num, -1);
+    dist.assign(vertex_num, kKnostantFoo);
+    for (int i = 0; i < vertex_num; ++i) {
+      dp[i][0] = 0;
     }
-    ll cur_v = qu.front().first;
-    ll cur_d = qu.front().second;
-    qu.pop();
+  }
 
-    table[cur_v] = cur_d;
-    
-    for (int i = 0; i < E[cur_v].size(); ++i) {
-      ll to = E[cur_v][i];
-      if (table[to] == INF) {
-        qu.push({to, cur_d + 1});
+  void InputEdges() {
+    for (int i = 0; i < vertex_num; ++i) {
+      for (int j = 0; j < vertex_num; ++j) {
+        std::cin >> graph[i][j];
+        if (graph[i][j] == kKnostantFoo2) {
+          graph[i][j] = kKnostantFoo;
+        }
       }
     }
   }
+
+  void FordBellman() {
+    for (int k = 1; k <= vertex_num - 1; ++k) {
+      for (int to = 0; to < vertex_num; ++to) {
+        dp[to][k] = dp[to][k - 1];
+        for (int mid = 0; mid < vertex_num; ++mid) {
+          if (graph[mid][to] == kKnostantFoo ||
+              dp[mid][k - 1] == kKnostantFoo) {
+            continue;
+          }
+          if (dp[mid][k - 1] + graph[mid][to] < dp[to][k]) {
+            parent[to] = mid;
+            dp[to][k] = dp[mid][k - 1] + graph[mid][to];
+          }
+        }
+      }
+    }
+
+    for (int to = 0; to < vertex_num; ++to) {
+      long long haha = kKnostantFoo;
+      for (int k = 0; k <= vertex_num - 1; ++k) {
+        haha = std::min(haha, dp[to][k]);
+      }
+      dist[to] = haha;
+    }
+  }
+
+  void Foo() {
+    int k_long_name = vertex_num;
+    for (int to = 0; to < vertex_num; ++to) {
+      dp[to][k_long_name] = dp[to][k_long_name - 1];
+      for (int mid = 0; mid < vertex_num; ++mid) {
+        if (graph[mid][to] == kKnostantFoo ||
+            dp[mid][k_long_name - 1] == kKnostantFoo) {
+          continue;
+        }
+        if (dp[mid][k_long_name - 1] + graph[mid][to] < dp[to][k_long_name]) {
+          parent[to] = mid;
+          dp[to][k_long_name] = dp[mid][k_long_name - 1] + graph[mid][to];
+        }
+      }
+    }
+
+    int start = -1;
+
+    for (int to = 0; to < vertex_num; ++to) {
+      long long haha = dp[to][k_long_name];
+      if (haha < dist[to]) {
+        start = to;
+      }
+    }
+
+    if (start == -1) {
+      std::cout << "NO\n";
+      return;
+    }
+
+    std::cout << "YES\n";
+
+    std::vector<int> ans;
+    std::set<int> added;
+
+    // std::cout << start << "\n";
+
+    ans.push_back(start);
+    added.insert(start);
+
+    int p_long_name = parent[start];
+
+    while (added.find(p_long_name) == added.end()) {
+      ans.push_back(p_long_name);
+      added.insert(p_long_name);
+      p_long_name = parent[p_long_name];
+    }
+    int cnt = 1;
+
+    for (int i = int(ans.size()) - 1; i >= 0; --i) {
+      ++cnt;
+      // std::cout << ans[i] + 1 << " ";
+      if (ans[i] == p_long_name) {
+        break;
+      }
+    }
+
+    std::cout << cnt << "\n";
+
+    std::cout << p_long_name + 1 << " ";
+
+    for (int i = int(ans.size()) - 1; i >= 0; --i) {
+      std::cout << ans[i] + 1 << " ";
+      if (ans[i] == p_long_name) {
+        break;
+      }
+    }
+  }
+};
+
+void Solve() {
+  long long vertex_num;
+  std::cin >> vertex_num;
+  Graph gr(vertex_num);
+  gr.InputEdges();
+  gr.FordBellman();
+  gr.Foo();
 }
 
-void solve() {
-  ll n, m, s, t; cin >> n >> m >> s >> t;
-  vll p(s);
-  vll q(t);
-  for (int i = 0; i < s; ++i) {
-    cin >> p[i];
-    --p[i];
+signed main() {
+  Init();
+  long long temp = 1;
+  while (temp != 0) {
+    Solve();
+    --temp;
   }
-  for (int i = 0; i < t; ++i) {
-    cin >> q[i];
-    --q[i];
-  }
-  vvll E(n);
-  for (int i = 0; i < m; ++i) {
-    ll u, v; cin >> u >> v;
-    --u; --v;
-    E[u].push_back(v);
-    E[v].push_back(u);
-  }
-
-  vvll table(s, vll(n, INF));
-
-  for (int i = 0; i < s; ++i) {
-    Bfs(p[i], table[i], n, m, s, t, p, q, E);
-  }
-
-  vll shortest_path(s, INF);
-
-  for (int i = 0; i < s; ++i) {
-    for (int j = 0; j < t; ++j) {
-      shortest_path[i] = min(shortest_path[i], table[i][q[j]]);
-    }
-  }
-
-  ll vert_ans = -1;
-  ll col_ans = INF;
-
-  for (int i = 0; i < n; ++i) {
-    ll max_dist = -INF;
-    for (int j = 0; j < s; ++j) {
-      ll cur_dist = min(table[j][i], shortest_path[j]);
-      max_dist = max(max_dist, cur_dist);
-    }
-    if (max_dist <= col_ans) {
-      col_ans = max_dist;
-      vert_ans = i;
-    }
-  }
-
-  cout << vert_ans + 1 << " " << col_ans << "\n";
-
-}
-
-int main() {
-  ios_base::sync_with_stdio(false);
-  cin.tie(nullptr);
-  cout.tie(nullptr);
-  ll t = 1;
-  // cin >> t;
-  // cout << fixed << setprecision(10);
-  
-  while (t--) {
-    solve();
-    // cout << solve() << endl;
-    // if (solve())
-    //    cout << "Yes" << endl;
-    // else
-    //    cout << "No" << endl;
-  }
-
   return 0;
 }
