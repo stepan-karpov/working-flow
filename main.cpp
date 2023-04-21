@@ -1,57 +1,94 @@
-#include <bits/stdc++.h>
-using namespace std;
-// #pragma GCC optimize("unroll-loops")
-// #pragma GCC optimize("Ofast")
-// #pragma GCC optimize("no-stack-protector")
-// #pragma GCC target("sse,sse2,sse3,ssse3,popcnt,abm,mmx,avx,tune=native")
-// #pragma GCC optimize("fast-math")
-// #pragma GCC optimize(2)
-// #pragma GCC optimize("Ofast","inline","-ffast-math")
-// #pragma GCC optimize "-O3"
+#include <algorithm>
+#include <iostream>
+#include <vector>
+#include <set>
 
-typedef long long ll;
-typedef pair<ll, ll> pll;
-typedef vector<ll> vll;
-typedef vector<vll> vvll;
-typedef long double ld;
+void Init() {
+  std::ios_base::sync_with_stdio(false);
+  std::cin.tie(nullptr);
+  std::cout.tie(nullptr);
+}
 
-const ll INF = 1e16;
-const ld EPS = 1e-8;
-const string ALPH = "abcdefghijklmnopqrstuvwxyz";
+int U, D, teleport_i, teleport_j;
+int last_deck = 1e3 - 1;
+std::vector<std::vector<std::pair<int, int>>> g;
 
-// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
-
-void solve() {
-  
-  for (int i = 1; i < 33; ++i) {
-    std::cout << i << ": ";
-    int l = i;
-    int r = i;
-    for (int j = 0; j < 5; ++j) {
-      std::cout << l << ".." << r << " ";
-      l *= 2;
-      r *= 2; ++r;
+void InputTeleports(int sss) {
+  std::set<int> used;
+  used.insert(sss);
+  used.insert(last_deck);
+  used.insert(0);
+  int l;
+  std::cin >> l;
+  std::vector<int> cur(1e3 + 1);
+  for (int i = 0; i < l; ++i) {
+    int k;
+    std::cin >> k;
+    for (int j = 0; j < k; ++j) {
+      std::cin >> cur[j];
+      --cur[j];
+      used.insert(cur[j]);
     }
-    std::cout << "\n";
+    for (int j = 0; j < k; ++j) {
+      for (int h = 0; h < k; ++h) {
+        if (j == h) { continue; }
+        g[cur[j]].push_back({cur[h], teleport_i + teleport_j});
+        g[cur[h]].push_back({cur[j], teleport_i + teleport_j});
+      }
+    }
+  }
+  auto it = used.begin();
+  auto end = used.end();
+  --end;
+  --end;
+  while (it != end) {
+    int l1 = *it;
+    ++it;
+    int l2 = *it;
+    --it;
+    g[l1].push_back({l2, U * (l2 - l1)});
+    g[l2].push_back({l1, D * (l2 - l1)});
+    ++it;
   }
 }
 
-int main() {
-  ios_base::sync_with_stdio(false);
-  cin.tie(nullptr);
-  cout.tie(nullptr);
-  ll t = 1;
-  // cin >> t;
-  // cout << fixed << setprecision(10);
-  
-  while (t--) {
-    solve();
-    // cout << solve() << endl;
-    // if (solve())
-    //    cout << "Yes" << endl;
-    // else
-    //    cout << "No" << endl;
+void Dijkstra(int sss) {
+
+  std::vector<int> dist(last_deck + 10, 1e9);
+  std::set<std::pair<int, int>> qu;
+
+  qu.insert({0, 0});
+
+  while(!qu.empty()) {
+    int cur_v = qu.begin()->second;
+    int cur_dist = qu.begin()->first;
+    qu.erase(qu.begin());
+
+    for (size_t i = 0; i < g[cur_v].size(); ++i) {
+      int to = g[cur_v][i].first;
+      int new_dist = cur_dist + g[cur_v][i].second;
+      if (dist[to] > new_dist) {
+        qu.erase({dist[to], to});
+        dist[to] = new_dist;
+        qu.insert({dist[to], to});
+      }
+    }
   }
+
+  std::cout << dist[sss] << "\n";
+
+}
+
+int main() {
+  Init();
+  g.resize(last_deck + 10);
+  int end;
+  std::cin >> end;
+  --end;
+  std::cin >> U >> D >> teleport_i >> teleport_j;
+
+  InputTeleports(end);
+  Dijkstra(end);
 
   return 0;
 }

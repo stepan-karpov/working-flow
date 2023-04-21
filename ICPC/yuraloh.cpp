@@ -179,7 +179,7 @@ struct edge {
   }
 };
 
-vector<vector<edge>> g;
+vector<vector<edge>> gg;
 
 struct printer {
   int v, time, comp_in_minute;
@@ -193,12 +193,12 @@ struct printer {
 void Solve() {
   int n, m, k; cin >> n >> m >> k;
   int start = 0;
-  g.resize(n);
+  gg.resize(n);
   for (int u, v, c, i = 0; i < m; ++i) {
     cin >> u >> v >> c;
     --u; --v;
-    g[u].eb(v, c);
-    g[v].eb(u, c);
+    gg[u].eb(v, c);
+    gg[v].eb(u, c);
   }
   vector<int> cost(n, INF);
   set<pair<int, int>> q;
@@ -208,7 +208,7 @@ void Solve() {
   while (!q.empty()) {
       int v = q.begin() -> sc;
       q.erase(q.begin());
-      for (auto & [to, w] : g[v]) {
+      for (auto & [to, w] : gg[v]) {
           if (cost[to] > cost[v] + w) {
               q.erase({cost[to], to});
               cost[to] = cost[v] + w;
