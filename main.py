@@ -2,33 +2,25 @@ import traceback
 import sys
 import os
 
-def force_load(module_name):
-    # f = open(module_name)
-    f = open(module_name + ".py")
-    lines = f.readlines()
-    ldict = {}
-    to_go = True
-    while (to_go):
-        try:
-            cmd = ''.join(lines)
-            exec(cmd, globals(), ldict)
-            to_go = False
-        except Exception as error:
-            if (len(error.args) != 2):
-                a, b, c = sys.exc_info()
-                lines = lines[(c.tb_next).tb_lineno:]
-            else:
-                del lines[error.args[1][1] - 1]
+a, b, c = map(int, input().split())
 
-    return ldict
+a *= 10 ** (c)
 
-# print(force_load("broken"))
-# print(force_load("broken")['foo'])
+a //= b
 
-# print("123")
+s = str(round((a / (10 ** c)), c))
+ind = -1
+print(s)
+for i in range(len(s)):
+    if (s[i] == '.'):
+        ind = i
+        break
 
-# a = ExtendedList()
-# a.append(1234)
-# a.append(134)
+sz = 0
+for i in range(ind + 1, len(s)):
+    sz+=1
 
-# print(a.R)
+print(s, end='')
+for i in range(c - sz):
+    print(0, end='')
+    
