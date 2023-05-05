@@ -1,26 +1,17 @@
-import traceback
-import sys
-import os
+def C(n, k):
+  fact = 1
+  for i in range(1, n + 1):
+    fact *= i
+  for i in range(1, n - k + 1):
+    fact //= i
+  for i in range(1, k + 1):
+    fact //= i
 
-a, b, c = map(int, input().split())
+  return fact
 
-a *= 10 ** (c)
+def Cat(n):
+  return C(2 * n, n) // (n + 1)
 
-a //= b
+n = int(input())
 
-s = str(round((a / (10 ** c)), c))
-ind = -1
-print(s)
-for i in range(len(s)):
-    if (s[i] == '.'):
-        ind = i
-        break
-
-sz = 0
-for i in range(ind + 1, len(s)):
-    sz+=1
-
-print(s, end='')
-for i in range(c - sz):
-    print(0, end='')
-    
+print(Cat(n + 1))
