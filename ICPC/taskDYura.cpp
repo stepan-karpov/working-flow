@@ -101,7 +101,7 @@ void _dbg(const char* _s, T _h, Ts... _t) {
 #endif
 
 
-void fastios() {
+void Init() {
 
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
@@ -217,7 +217,7 @@ void Solve() {
 
 
 signed main() {
-    fastios();
+    Init();
     Solve();
     return 0;
 }

@@ -1,96 +1,221 @@
-#include <iostream>
-#include <map>
-#include <vector>
+#include <bits/stdc++.h>
+using namespace std;
+// #pragma GCC optimize("unroll-loops")
+// #pragma GCC optimize("Ofast")
+// #pragma GCC optimize("no-stack-protector")
+// #pragma GCC target("sse,sse2,sse3,ssse3,popcnt,abm,mmx,avx,tune=native")
+// #pragma GCC optimize("fast-math")
+// #pragma GCC optimize(2)
+// #pragma GCC optimize("Ofast","inline","-ffast-math")
+// #pragma GCC optimize "-O3"
 
-const long long kMinim = -1'000'000'000'000'000'000;
+using ll = long long;
+using pll = pair<ll, ll>;
+using vll = vector<ll>;
+using vvll = vector<vll>;
+using ld = long double;
+using vb = vector<bool>;
 
-void Floid(std::vector<std::vector<long long>>& matrix,
-           std::vector<std::vector<long long>>& parents, long long n_artur) {
-  for (long long k = 0; k < n_artur; ++k) {
-    for (long long i = 0; i < n_artur; ++i) {
-      for (long long j = 0; j < n_artur; ++j) {
-        if (matrix[i][k] + matrix[k][j] < matrix[i][j]) {
-          parents[i][j] = k;
-          matrix[i][j] = std::max(matrix[k][j] + matrix[i][k], kMinim);
-        }
-      }
+const ll INF = 1e16;
+const ld EPS = 1e-8;
+const string ALPH = "abcdefghijklmnopqrstuvwxyz";
+
+// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
+
+ll Count(ll min_v, vll& a) {
+  bool achieved = false;
+  ll rate = 0;
+
+  for (int i = 0; i < a.size(); ++i) {
+    if (rate >= min_v) {
+      achieved = true;
+    }
+    if (achieved) {
+      rate = max(min_v, rate + a[i]);
+    } else {
+      rate += a[i];
     }
   }
+  return rate;
 }
 
-void Path(long long from, long long to,
-          std::map<std::pair<long long, long long>, long long>& edges,
-          std::vector<std::vector<long long>>& parents,
-          std::vector<long long>& answer) {
-  if (parents[from][to] != -1) {
-    Path(from, parents[from][to], edges, parents, answer);
-    Path(parents[from][to], to, edges, parents, answer);
-  } else {
-    answer.push_back(edges[std::make_pair(from, to)]);
+ll BinarySearchR(vll& a, ll max_achieved) {
+  ll l = -1;
+  ll r = max_achieved + 1;
+
+  while (r - l > 2) {
+    ll m1 = l + (r - l) / 3;
+    ll m2 = r - (r - l) / 3;
+
+    ll cnt1 = Count(m1, a);
+    ll cnt2 = Count(m2, a);
+
+    if (cnt1 > cnt2) {
+      r = m2;
+    } else {
+      l = m1;
+    }
   }
+
+
+  ll max_v = Count(l, a);
+  ll ans = l;
+
+  for (int i = l - 4; i <= l + 4; ++i) {
+    if (Count(i, a) > max_v) {
+      max_v = Count(i, a);
+      ans = i;
+    }
+  }
+
+  return ans;
 }
 
-void Solve() {
-  long long n_artur;
-  long long m_artur;
-  long long k_artur;
-  std::cin >> n_artur >> m_artur >> k_artur;
-  std::map<std::pair<long long, long long>, long long> edges;
-  long long from;
-  long long to;
-  long long weight;
-  std::vector<std::vector<long long>> matrix(
-      n_artur, std::vector<long long>(n_artur, INT32_MAX));
-  for (long long i = 0; i < m_artur; ++i) {
-    std::cin >> from >> to >> weight;
-    --from;
-    --to;
-    weight = -weight;
-    edges[std::make_pair(from, to)] = i + 1;
-    matrix[from][to] = weight;
-  }
-  std::vector<long long> needed(k_artur);
-  for (long long i = 0; i < k_artur; ++i) {
-    std::cin >> needed[i];
-    --needed[i];
-  }
-  std::vector<std::vector<long long>> parents(
-      n_artur, std::vector<long long>(n_artur, -1));
-  Floid(matrix, parents, n_artur);
-  std::vector<std::vector<long long>> copy = matrix;
-  Floid(copy, parents, n_artur);
-  Floid(copy, parents, n_artur);
-  Floid(copy, parents, n_artur);
-  Floid(copy, parents, n_artur);
-  for (int i = 0; i < needed.size() - 1; ++i) {
-    if (matrix[needed[i]][needed[i + 1]] == kMinim ||
-        matrix[needed[i]][needed[i + 1]] != copy[needed[i]][needed[i + 1]] && needed[i] != needed[i + 1]) {
-      std::cout << "infinitely kind";
-      return;
+ll BinarySearchL(vll& a, ll max_achieved) {
+  ll l = -1;
+  ll r = max_achieved + 1;
+
+  while (r - l > 2) {
+    ll m1 = l + (r - l) / 3;
+    ll m2 = r - (r - l) / 3;
+
+    ll cnt1 = Count(m1, a);
+    ll cnt2 = Count(m2, a);
+
+    if (cnt1 >= cnt2) {
+      r = m2;
+    } else {
+      l = m1;
     }
   }
-  for (int i = 0; i < needed.size(); ++i) {
-    if (copy[needed[i]][needed[i]] < 0) {
-      std::cout << "infinitely kind";
-      return;
+
+
+  ll max_v = Count(l, a);
+  ll ans = l;
+
+  for (int i = l - 4; i <= l + 4; ++i) {
+    if (Count(i, a) > max_v) {
+      max_v = Count(i, a);
+      ans = i;
     }
   }
-  std::vector<long long> new_needed;
-  new_needed.push_back(needed[0]);
-  for (int i = 1; i < needed.size(); ++i) {
-    if (needed[i] != needed[i - 1]) {
-      new_needed.push_back(needed[i]);
-    }
-  }
-  needed = new_needed;
-  std::vector<long long> answer;
-  for (long long i = 0; i < needed.size() - 1; ++i) {
-    Path(needed[i], needed[i + 1], edges, parents, answer);
-  }
-  std::cout << answer.size() << "\n";
-  for (long long i = 0; i < static_cast<long long>(answer.size()); ++i) {
-    std::cout << answer[i] << " ";
-  }
+
+  return ans;
 }
 
-int main() { Solve(); }
+ll BinarySearchRRev(vll& a, ll max_achieved) {
+  ll l = -1;
+  ll r = max_achieved + 1;
+
+  while (r - l > 2) {
+    ll m1 = l + (r - l) / 3;
+    ll m2 = r - (r - l) / 3;
+
+    ll cnt1 = -Count(m1, a);
+    ll cnt2 = -Count(m2, a);
+
+    if (cnt1 > cnt2) {
+      r = m2;
+    } else {
+      l = m1;
+    }
+  }
+
+
+  ll max_v = Count(l, a);
+  ll ans = l;
+
+  for (int i = l - 4; i <= l + 4; ++i) {
+    if (Count(i, a) > max_v) {
+      max_v = Count(i, a);
+      ans = i;
+    }
+  }
+
+  return ans;
+}
+
+ll BinarySearchLRev(vll& a, ll max_achieved) {
+  ll l = -1;
+  ll r = max_achieved + 1;
+
+  while (r - l > 2) {
+    ll m1 = l + (r - l) / 3;
+    ll m2 = r - (r - l) / 3;
+
+    ll cnt1 = -Count(m1, a);
+    ll cnt2 = -Count(m2, a);
+
+    if (cnt1 >= cnt2) {
+      r = m2;
+    } else {
+      l = m1;
+    }
+  }
+
+
+  ll max_v = Count(l, a);
+  ll ans = l;
+
+  for (int i = l - 4; i <= l + 4; ++i) {
+    if (Count(i, a) > max_v) {
+      max_v = Count(i, a);
+      ans = i;
+    }
+  }
+
+  return ans;
+}
+
+void solve() {
+  ll n; cin >> n;
+  vll a(n);
+  ll max_achieved = 0;
+  ll rate = 0;
+  for (int i = 0; i < n; ++i) {
+    cin >> a[i];
+    rate += a[i];
+    max_achieved = max(max_achieved, rate);
+  }
+
+  for (int i = 0; i <= max_achieved; ++i) {
+    cout << i << ": " << Count(i, a) << "\n";
+  }
+
+  vll vars = {
+    BinarySearchL(a, max_achieved),
+    BinarySearchR(a, max_achieved),
+    0, max_achieved,
+    BinarySearchLRev(a, max_achieved),
+    BinarySearchRRev(a, max_achieved),
+  };
+ 
+  ll ans = -1;
+
+  for (int i = 0; i < vars.size(); ++i) {
+    ans = max(ans, Count(vars[i], a));
+  }
+
+  cout << ans << "\n";
+
+}
+
+int main() {
+  ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
+  cout.tie(nullptr);
+  ll t = 1;
+  // cin >> t;
+  // cout << fixed << setprecision(10);
+  
+  while (t--) {
+    solve();
+    // cout << solve() << endl;
+    // if (solve())
+    //    cout << "Yes" << endl;
+    // else
+    //    cout << "No" << endl;
+  }
+
+  return 0;
+}

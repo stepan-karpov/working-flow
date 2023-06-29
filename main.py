@@ -1,17 +1,13 @@
-def C(n, k):
-  fact = 1
-  for i in range(1, n + 1):
-    fact *= i
-  for i in range(1, n - k + 1):
-    fact //= i
-  for i in range(1, k + 1):
-    fact //= i
+import math
 
-  return fact
+def isPrime(x):
+  for i in range(2, int(math.sqrt(x)) + 1):
+    if (x % i == 0):
+      return False
+  return True
 
-def Cat(n):
-  return C(2 * n, n) // (n + 1)
+for i in range(4, 100, 4):
+  if (isPrime(i - 1)):
+    print(i)
 
-n = int(input())
 
-print(Cat(n + 1))
