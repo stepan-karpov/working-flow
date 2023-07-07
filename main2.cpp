@@ -22,71 +22,11 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-ll Count(ll min_v, vll& a) {
-  bool achieved = false;
-  ll rate = 0;
-
-  for (int i = 0; i < a.size(); ++i) {
-    if (rate >= min_v) {
-      achieved = true;
-    }
-    if (achieved) {
-      rate = max(min_v, rate + a[i]);
-    } else {
-      rate += a[i];
-    }
-  }
-  return rate;
-}
-
-ll BinarySearchR(vll& a, ll max_achieved) {
-  ll l = -1;
-  ll r = max_achieved + 1;
-
-  while (r - l > 2) {
-    ll m1 = l + (r - l) / 3;
-    ll m2 = r - (r - l) / 3;
-
-    ll cnt1 = Count(m1, a);
-    ll cnt2 = Count(m2, a);
-
-    if (cnt1 > cnt2) {
-      r = m2;
-    } else {
-      l = m1;
-    }
-  }
-
-
-  ll max_v = Count(l, a);
-  ll ans = l;
-
-  for (int i = l - 10; i <= 10; ++i) {
-    if (Count(l + i, a) > max_v) {
-      max_v = Count(l + i, a);
-      ans = l + i;
-    }
-  }
-
-  return ans;
-}
-
 void solve() {
-  ll n; cin >> n;
-  vll a(n);
-  ll max_achieved = 0;
-  ll rate = 0;
-  for (int i = 0; i < n; ++i) {
-    cin >> a[i];
-    rate += a[i];
-    max_achieved = max(max_achieved, rate);
-  }
-
-  // for (int i = 0; i <= max_achieved; ++i) {
-  //   cout << i << ": " << Count(i, a) << "\n";
-  // }
-
-  cout << BinarySearchR(a, max_achieved) << "\n";
+  cout << (1) << "\n";
+  cout << (5 ^ 1) << "\n";
+  cout << (2 ^ 5 ^ 1) << "\n";
+  cout << (0 ^ 2 ^ 5 ^ 1) << "\n";
 }
 
 int main() {

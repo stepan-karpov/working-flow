@@ -23,14 +23,38 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
 void solve() {
-  string s; cin >> s;
-  ll m; cin >> m;
-  string l, r; cin >> l >> r;
-  ll n = s.size();
+  string s1; cin >> s1;
+  string s2; cin >> s2;
 
-  
+  ll n1 = s1.size();
+  ll n2 = s2.size();
+
+  vvll dp(n1 + 1, vll(n2 + 1, INF));
+
+  for (int i = 0; i <= n1; ++i) {
+    dp[i][0] = i;
+  }
+  for (int i = 0; i <= n2; ++i) {
+    dp[0][i] = i;
+  }
 
 
+  for (int i = 1; i <= n1; ++i) {
+    for (int j = 1; j <= n2; ++j) {
+      if (s1[i - 1] == s2[j - 1] ) { // last are equal
+        dp[i][j] = dp[i - 1][j - 1];
+      } else {
+        dp[i][j] = min({dp[i][j], dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + 1});
+      }
+      if (i >= 2 && j >= 2) {
+        if (s1[i - 2] == s2[j - 1] && s1[i - 1] == s2[j - 2]) {
+          dp[i][j] = min(dp[i][j], dp[i - 2][j - 2] + 1);
+        }
+      }
+    }
+  }
+
+  cout << dp[n1][n2] << "\n";
 }
 
 int main() {

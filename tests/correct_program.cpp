@@ -22,78 +22,49 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-ll Count(ll min_v, vll& a) {
-  bool achieved = false;
-  ll rate = 0;
-
-  for (int i = 0; i < a.size(); ++i) {
-    if (rate >= min_v) {
-      achieved = true;
-    }
-    if (achieved) {
-      rate = max(min_v, rate + a[i]);
-    } else {
-      rate += a[i];
+bool CanBe(vvll& a, ll i, ll j, ll max_r) {
+  for (int dx = 0; dx < max_r; ++dx) {
+    for (int dy = 0; dy < max_r; ++dy) {
+      if (a[i + dx][j + dy] == 0) { return false; }
     }
   }
-  return rate;
+  return true;
 }
 
-ll BinarySearchR(vll& a, ll max_achieved) {
-  ll l = -1;
-  ll r = max_achieved + 1;
+ll Count(vvll& a, ll i, ll j) {
+  ll n = a.size();
+  ll m = a[0].size();
 
-  while (r - l > 2) {
-    ll m1 = l + (r - l) / 3;
-    ll m2 = r - (r - l) / 3;
+  ll max_r = min(n - i, m - j);
 
-    ll cnt1 = Count(m1, a);
-    ll cnt2 = Count(m2, a);
+  ll ans = 0;
 
-    if (cnt1 > cnt2) {
-      r = m2;
-    } else {
-      l = m1;
+  for (ll r = 0; r <= max_r; ++r) {
+    if (CanBe(a, i, j, r)) {
+      ans = max(ans, r);
     }
   }
-
-
-  ll max_v = Count(l, a);
-  ll ans = l;
-
-  for (int i = l - 10; i <= 10; ++i) {
-    if (Count(l + i, a) > max_v) {
-      max_v = Count(l + i, a);
-      ans = l + i;
-    }
-  }
-
   return ans;
 }
 
 void solve() {
-  ll n; cin >> n;
-  vll a(n);
-  ll max_achieved = 0;
-  ll rate = 0;
+  ll n, m; cin >> n >> m;
+  vvll a(n, vll(m, 0));
+
   for (int i = 0; i < n; ++i) {
-    cin >> a[i];
-    rate += a[i];
-    max_achieved = max(max_achieved, rate);
-  }
-
-  ll max_v = 0;
-  ll ans = 0;
-
-  for (int i = 0; i <= max_achieved; ++i) {
-    if (Count(i, a) > max_v) {
-      max_v = Count(i, a);
-      ans = Count(i, a);
+    for (int j = 0; j < m; ++j) {
+      cin >> a[i][j];
     }
   }
 
-  cout << ans << "\n";
+  ll ans = 0;
 
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < m; ++j) {
+      ans = max(ans, Count(a, i, j));
+    }
+  }
+  cout << ans << "\n";
 }
 
 int main() {
