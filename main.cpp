@@ -22,39 +22,91 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
+vll Read(ll n) {
+  vll ans(n);
+  for (int i = 0; i < n; ++i) {
+    cin >> ans[i];
+  }
+  return ans;
+}
+
+ll Count(ll x, vll& a) {
+  ll ans = 0;
+  for (int i = 0; i < a.size(); ++i) {
+    ans += int(a[i] == x);
+  }
+  return ans;
+}
+
 void solve() {
-  string s1; cin >> s1;
-  string s2; cin >> s2;
+  ll n; cin >> n;
+  
+  vll init = Read(n);
+  cout << "- 0" << endl;
+  vll init1 = Read(n);
+  cout << "- 0" << endl;
+  vll init2 = Read(n);
 
-  ll n1 = s1.size();
-  ll n2 = s2.size();
+  sort(init.begin(), init.end());
+  sort(init1.begin(), init1.end());
+  sort(init2.begin(), init2.end());
 
-  vvll dp(n1 + 1, vll(n2 + 1, INF));
+  vll diffs;
 
-  for (int i = 0; i <= n1; ++i) {
-    dp[i][0] = i;
-  }
-  for (int i = 0; i <= n2; ++i) {
-    dp[0][i] = i;
-  }
-
-
-  for (int i = 1; i <= n1; ++i) {
-    for (int j = 1; j <= n2; ++j) {
-      if (s1[i - 1] == s2[j - 1] ) { // last are equal
-        dp[i][j] = dp[i - 1][j - 1];
-      } else {
-        dp[i][j] = min({dp[i][j], dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + 1});
-      }
-      if (i >= 2 && j >= 2) {
-        if (s1[i - 2] == s2[j - 1] && s1[i - 1] == s2[j - 2]) {
-          dp[i][j] = min(dp[i][j], dp[i - 2][j - 2] + 1);
-        }
-      }
+  for (int i = 1; i <= 9; ++i) {
+    ll cnt1 = Count(i, init);
+    ll cnt2 = Count(i, init1);
+    ll cnt3 = Count(i, init2);
+    if (min({cnt1, cnt2, cnt3}) != max({cnt1, cnt2, cnt3})) {
+      diffs.push_back(i);
     }
   }
 
-  cout << dp[n1][n2] << "\n";
+  ll was = 0;
+  ll became = 0;
+
+  if (Count(diffs[0], init) > Count(diffs[0], init2)) {
+    was = diffs[0];
+    became = diffs[1];
+  } else {
+    was = diffs[1];
+    became = diffs[0];
+  }
+
+  vll to_delete;
+
+  for (int i = 0; i < n; ++i) {
+    if (init2[i] != was && init2[i] != became) {
+      to_delete.push_back(i + 1);
+    }
+  }
+
+  cout << "- " << to_delete.size() << " ";
+
+  for (int i = 0; i < to_delete.size(); ++i) {
+    cout << to_delete[i] << " ";
+  }
+  cout << endl;
+
+  n -= to_delete.size();
+
+
+  init1 = Read(n);
+  cout << "- 0" << endl;
+  init2 = Read(n);
+
+
+  for (int i = 0; i < init2.size(); ++i) {
+    if (init1[i] != init2[i]) {
+      cout << "! " << i + 1 << endl;
+    }
+  }
+
+
+
+
+
+
 }
 
 int main() {
@@ -62,7 +114,7 @@ int main() {
   cin.tie(nullptr);
   cout.tie(nullptr);
   ll t = 1;
-  // cin >> t;
+  cin >> t;
   // cout << fixed << setprecision(10);
   
   while (t--) {

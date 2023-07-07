@@ -22,53 +22,54 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-void solve() {
-  ll n, m; cin >> n >> m;
-  vvll a(n, vll(m, 0));
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < m; ++j) {
-      cin >> a[i][j];
+ll BinPow(ll k, ll x) {
+  if (x == 0) {
+    return 1;
+  }
+  if (x % 2 == 0) {
+    ll t = BinPow(k, x / 2);
+    return t * t;
+  } else {
+    return k * BinPow(k, x - 1);
+  }
+}
+
+bool solve() {
+  ll n; cin >> n;
+
+  for (int k = 2; k < 500; ++k) {
+    ll cur_power = 0;
+    ll cur = 0;
+
+    while (cur < n) {
+      cur += BinPow(k, cur_power);
+      ++cur_power;
+    }
+    if (n == cur && cur_power != 2) {
+      return true;
     }
   }
-  vvll dp = a;
 
-
-  for (int i = 1; i < n; ++i) {
-    for (int j = 1; j < m; ++j) {
-      if (a[i][j] == 0) { continue; }
-      ll up_s = dp[i - 1][j];
-      ll left_s = dp[i][j - 1];
-      ll new_sq = min(up_s, left_s);
-      if (a[i - new_sq][j - new_sq] == 1) {
-        dp[i][j] = new_sq + 1;
+  for (int x = 3; x <= 10; ++x) {
+    ll l = 2;
+    ll r = pow(10, 18 / x);
+    while (r - l > 1) {
+      ll m = (l + r) / 2;
+      ll value = (BinPow(m, x) - 1) / (m - 1);
+      if (value > n) {
+        r = m;
       } else {
-        dp[i][j] = new_sq;
+        l = m;
       }
     }
+    ll value1 = (BinPow(l, x) - 1) / (l - 1);
+    ll value2 = (BinPow(l + 1, x) - 1) / (l);
+    if (value1 == n || value2 == n) {
+      return true;
+    } 
   }
 
-  ll ans = -INF;
-  pll pos = {0, 0};
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < m; ++j) {
-      if (dp[i][j] > ans) {
-        ans = dp[i][j];
-        pos = {i, j};
-      }
-    }
-  }
-  cout << ans << "\n";
-
-  // cout << "\n\n";
-
-  // for (int i = 0; i < n; ++i) {
-  //   for (int j = 0; j < m; ++j) {
-  //     cout << dp[i][j] << " ";
-  //   }
-  //   cout << "\n";
-  // }
-
-  cout << pos.first - ans + 2 << " " << pos.second - ans + 2 << "\n";
+  return false;
 }
 
 int main() {
@@ -80,12 +81,12 @@ int main() {
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    solve();
+    // solve();
     // cout << solve() << endl;
-    // if (solve())
-    //    cout << "Yes" << endl;
-    // else
-    //    cout << "No" << endl;
+    if (solve())
+       cout << "YES" << endl;
+    else
+       cout << "NO" << endl;
   }
 
   return 0;

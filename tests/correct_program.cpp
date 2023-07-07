@@ -22,49 +22,36 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-bool CanBe(vvll& a, ll i, ll j, ll max_r) {
-  for (int dx = 0; dx < max_r; ++dx) {
-    for (int dy = 0; dy < max_r; ++dy) {
-      if (a[i + dx][j + dy] == 0) { return false; }
-    }
+ll BinPow(ll k, ll x) {
+  if (x == 0) {
+    return 1;
   }
-  return true;
+  if (x % 2 == 0) {
+    ll t = BinPow(k, x / 2);
+    return t * t;
+  } else {
+    return k * BinPow(k, x - 1);
+  }
 }
 
-ll Count(vvll& a, ll i, ll j) {
-  ll n = a.size();
-  ll m = a[0].size();
+bool solve() {
+  ll n; cin >> n;
 
-  ll max_r = min(n - i, m - j);
+  if (n == 1) { return false; }
 
-  ll ans = 0;
+  for (int k = 2; k < sqrt(n) + 100; ++k) {
+    ll cur_power = 0;
+    ll cur = 0;
 
-  for (ll r = 0; r <= max_r; ++r) {
-    if (CanBe(a, i, j, r)) {
-      ans = max(ans, r);
+    while (cur < n) {
+      cur += BinPow(k, cur_power);
+      ++cur_power;
+    }
+    if (n == cur && cur_power != 2) {
+      return true;
     }
   }
-  return ans;
-}
-
-void solve() {
-  ll n, m; cin >> n >> m;
-  vvll a(n, vll(m, 0));
-
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < m; ++j) {
-      cin >> a[i][j];
-    }
-  }
-
-  ll ans = 0;
-
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < m; ++j) {
-      ans = max(ans, Count(a, i, j));
-    }
-  }
-  cout << ans << "\n";
+  return false;
 }
 
 int main() {
@@ -72,16 +59,16 @@ int main() {
   cin.tie(nullptr);
   cout.tie(nullptr);
   ll t = 1;
-  // cin >> t;
+  cin >> t;
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    solve();
+    // solve();
     // cout << solve() << endl;
-    // if (solve())
-    //    cout << "Yes" << endl;
-    // else
-    //    cout << "No" << endl;
+    if (solve())
+       cout << "YES" << endl;
+    else
+       cout << "NO" << endl;
   }
 
   return 0;
