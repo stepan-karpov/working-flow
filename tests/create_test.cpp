@@ -8,8 +8,8 @@ std::mt19937 gen(rd());
 
 // returns random value from [low, high]
 int random(long long low, long long high) {
-    std::uniform_int_distribution<> dist(low, high);
-    return dist(gen);
+  std::uniform_int_distribution<> dist(low, high);
+  return dist(gen);
 }
 
 std::string CreateString(int size) {
@@ -38,12 +38,14 @@ bool is_prime(int n){
 int main() {
   std::mt19937 mt(time(nullptr)); 
 
-  ll n = random(1, 1);
+  ll n = random(10000, 10000);
 
   cout << n << "\n";
 
   for (int i = 0; i < n; ++i) {
-    cout << random(1, 1000000) << "\n";
+    long long t1 = abs(random(1e7, 1e9));
+    long long t2 = abs(random(1e7, 1e9));
+    cout <<  t1 * t2 << "\n";
   }
 
   return 0;
