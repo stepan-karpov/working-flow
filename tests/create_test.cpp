@@ -38,15 +38,15 @@ bool is_prime(int n){
 int main() {
   std::mt19937 mt(time(nullptr)); 
 
-  ll n = random(10000, 10000);
+
+  ll n = random(5, 5);
 
   cout << n << "\n";
 
   for (int i = 0; i < n; ++i) {
-    long long t1 = abs(random(1e7, 1e9));
-    long long t2 = abs(random(1e7, 1e9));
-    cout <<  t1 * t2 << "\n";
+    cout << random(-100, 100) << " ";
   }
+  cout << "\n";
 
   return 0;
 }

@@ -22,90 +22,37 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-vll Read(ll n) {
-  vll ans(n);
-  for (int i = 0; i < n; ++i) {
-    cin >> ans[i];
+void check(string& s, ll n, ll m, ll& p) {
+  for (int i = 0; i < s.size(); ++i) {
+    ll neig_right = i + 1;
+    ll neigh_down = i + n;
+    ll c = 0;
+    if (neig_right < s.size() && s[neig_right] == s[i]) {
+      s[neig_right] = ALPH[p];
+      ++c;
+    }
+    if (neigh_down < s.size() && s[neigh_down] == s[i]) {
+      s[neigh_down] = ALPH[p];
+      ++c;
+    }
+    p += c;
   }
-  return ans;
-}
-
-ll Count(ll x, vll& a) {
-  ll ans = 0;
-  for (int i = 0; i < a.size(); ++i) {
-    ans += int(a[i] == x);
-  }
-  return ans;
 }
 
 void solve() {
   ll n; cin >> n;
-  
-  vll init = Read(n);
-  cout << "- 0" << endl;
-  vll init1 = Read(n);
-  cout << "- 0" << endl;
-  vll init2 = Read(n);
+  ll p = 1;
+  string ans;
+  ans.assign(n, 'a');
 
-  sort(init.begin(), init.end());
-  sort(init1.begin(), init1.end());
-  sort(init2.begin(), init2.end());
-
-  vll diffs;
-
-  for (int i = 1; i <= 9; ++i) {
-    ll cnt1 = Count(i, init);
-    ll cnt2 = Count(i, init1);
-    ll cnt3 = Count(i, init2);
-    if (min({cnt1, cnt2, cnt3}) != max({cnt1, cnt2, cnt3})) {
-      diffs.push_back(i);
+  for (int i = 1; i <= sqrt(n) + 10; ++i) {
+    if (n % i == 0) {
+      check(ans, n / i, i, p);
+      check(ans, i, n / i, p);
     }
   }
 
-  ll was = 0;
-  ll became = 0;
-
-  if (Count(diffs[0], init) > Count(diffs[0], init2)) {
-    was = diffs[0];
-    became = diffs[1];
-  } else {
-    was = diffs[1];
-    became = diffs[0];
-  }
-
-  vll to_delete;
-
-  for (int i = 0; i < n; ++i) {
-    if (init2[i] != was && init2[i] != became) {
-      to_delete.push_back(i + 1);
-    }
-  }
-
-  cout << "- " << to_delete.size() << " ";
-
-  for (int i = 0; i < to_delete.size(); ++i) {
-    cout << to_delete[i] << " ";
-  }
-  cout << endl;
-
-  n -= to_delete.size();
-
-
-  init1 = Read(n);
-  cout << "- 0" << endl;
-  init2 = Read(n);
-
-
-  for (int i = 0; i < init2.size(); ++i) {
-    if (init1[i] != init2[i]) {
-      cout << "! " << i + 1 << endl;
-    }
-  }
-
-
-
-
-
+  cout << ans << "\n";
 
 }
 

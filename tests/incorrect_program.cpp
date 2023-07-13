@@ -1,37 +1,83 @@
 #include <bits/stdc++.h>
-#define int long long
-#define re(a, b, c, d) for (auto a = b; a <= c; a += d)
-#define de(a, b, c, d) for (auto a = b; a >= c; a -= d)
-#define ms (a); memset (a, 0, sizeof a);
-#define imax INT_MAX
-#define imin INT_MIN
-#define wh(a) while (a --)
 using namespace std;
-int t, n;
-signed main () {
-	cout << fixed << setprecision (5);
-	cin >> t;
-	wh (t) {
-		cin >> n;
-		bool flag = 0;
-		for (int i = max (2ll, (int) pow (n, 1 / 2.00) - 5); i <= max (2ll, (int) pow (n, 1 / 2.00) + 5); i ++) if (i * i + i + 1 == n) flag = 1;
-		for (int i = max (2ll, (int) pow (n, 1 / 3.00) - 5); i <= max (2ll, (int) pow (n, 1 / 3.00) + 5); i ++) if (i * i * i + i * i + i + 1 == n) flag = 1;
-		for (int i = max (2ll, (int) pow (n, 1 / 4.00) - 5); i <= max (2ll, (int) pow (n, 1 / 4.00) + 5); i ++) if (i * i * i * i + i * i * i + i * i + i + 1 == n) flag = 1;
-		for (int i = max (2ll, (int) pow (n, 1 / 5.00) - 5); i <= max (2ll, (int) pow (n, 1 / 5.00) + 5); i ++) if (i * i * i * i * i + i * i * i * i + i * i * i + i * i + i + 1 == n) flag = 1;
-		for (int i = 2; i <= 3000; i ++) {
-			int n1 = n, res = 0, fl = 1;
-			while (n1 != 1) {
-				n1 --;
-				if (n1 % i == 0) res ++, n1 /= i;
-				else {
-					fl = 0;
-					break;
-				}
-			}
-			if (fl == 1 && res > 1) flag = 1;
-		}
-		if (flag) cout << "YES\n";
-		else cout << "NO\n";
-	}
-	return 0;
+// #pragma GCC optimize("unroll-loops")
+// #pragma GCC optimize("Ofast")
+// #pragma GCC optimize("no-stack-protector")
+// #pragma GCC target("sse,sse2,sse3,ssse3,popcnt,abm,mmx,avx,tune=native")
+// #pragma GCC optimize("fast-math")
+// #pragma GCC optimize(2)
+// #pragma GCC optimize("Ofast","inline","-ffast-math")
+// #pragma GCC optimize "-O3"
+
+using ll = long long;
+using pll = pair<ll, ll>;
+using vll = vector<ll>;
+using vvll = vector<vll>;
+using ld = long double;
+using vb = vector<bool>;
+
+const ll INF = 1e16;
+const ld EPS = 1e-8;
+const string ALPH = "abcdefghijklmnopqrstuvwxyz";
+
+// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
+
+void solve() {
+  ll n; cin >> n;
+  vll a(n);
+  for (int i = 0; i < n; ++i) {
+    cin >> a[i];
+  }
+
+  ll ans = -INF;
+  for (int i = 0; i < n; ++i) {
+    ans = max(ans, a[i]);
+  }
+
+  ll cur_s = 0;
+
+  for (int i = 0; i < n; ++i) {
+    if (i % 2 == 0) {
+      cur_s += max(0ll, a[i]);
+      ans = max(cur_s, ans);
+    }
+    // if (cur_s < 0) {
+    //   cur_s = 0;
+    // }
+  }
+
+  cur_s = 0;
+  
+  for (int i = 0; i < n; ++i) {
+    if (i % 2 == 1) {
+      cur_s += max(0ll, a[i]);
+      ans = max(cur_s, ans);
+    }
+    // if (cur_s < 0) {
+    //   cur_s = 0;
+    // }
+  }
+
+  cout << ans << "\n";
+
+}
+
+int main() {
+  ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
+  cout.tie(nullptr);
+  ll t = 1;
+  // cin >> t;
+  // cout << fixed << setprecision(10);
+  
+  while (t--) {
+    solve();
+    // cout << solve() << endl;
+    // if (solve())
+    //    cout << "Yes" << endl;
+    // else
+    //    cout << "No" << endl;
+  }
+
+  return 0;
 }

@@ -22,65 +22,97 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-ll Read() {
-  string s; cin >> s;
-  ll p = 0;
-  ll ans = 0;
-  for (int i = s.size() - 1; i >= 0; --i) {
-    if (s[i] == '1') {
-      ans += (1 << p);
+bool isPrime(int n){
+  if (n == 1) { return false; }
+  if (n == 2) { return true; }
+  bool f = true;
+  for (int i = 2; i <= sqrt(n); i++) {
+    if (n % i == 0){
+      f = false;
+      break;
     }
-    ++p;
   }
-  return ans;
+  return f;   
 }
 
-struct Node {
-  ll d, cure, new_sympt;
-  Node() = default;
-  Node(ll d, ll cure, ll new_sympt)
-    : d(d), cure(cure), new_sympt(new_sympt) {}
-};
-
-
-void solve() {
-  ll n, m; cin >> n >> m;
-  ll start = Read();
-  vector<Node> treats(m);
-
-  for (int i = 0; i < m; ++i) {
-    ll a, b, c; cin >> a;
-    b = Read();
-    c = Read();
-    treats[i] = Node(a, b, c);
+bool FindIn(vll& temp, ll x) {
+  for (int i = 0; i < temp.size(); ++i) {
+    if (temp[i] == x) { return true; }
   }
+  return false;
+}
 
-  vll dist((1 << n) + 100, INF);
+ll MEX(vll& temp, ll l, ll r) {
+  for (int i = 1; i <= temp.size() + 10; ++i) {
+    bool ok = true;
+    for (int j = l; j <= r; ++j) {
+      if (temp[j] == i) {
+        ok = false;
+        break;
+      }
+    }
+    if (ok) { return i; }
+  }
+  return -1;
+}
 
-  set<pll> q;
-  q.insert({0, start});
+ll CheckPrim(vll& temp) {
+  ll n = temp.size();
 
-  while (!q.empty()) {
-    ll cur_d = q.begin()->first;
-    ll cur_v = q.begin()->second;
-    q.erase(q.begin());
-    if (dist[cur_v] != INF) { continue; }
-    dist[cur_v] = cur_d;
+  ll cnt = 0;
 
-    for (int i = 0; i < treats.size(); ++i) {
-      ll c1 = cur_v;
-      ll c2 = ~treats[i].cure;
-      ll c3 = treats[i].new_sympt;
-      ll to = (c1 & c2) | c3;
-      if (dist[to] != INF) { continue; }
-      q.insert({cur_d + treats[i].d, to});
+  for (int l = 0; l < n; ++l) {
+    for (int r = l; r < n; ++r) {
+      ll mex = MEX(temp, l, r);
+      if (isPrime(mex)) {
+        ++cnt;
+      }
     }
   }
+  return cnt;
+}
 
-  if (dist[0] == INF) {
-    dist[0] = -1;
+set<vll> ans;
+ll best = 0;
+
+void backtrack(vll temp, ll n) {
+  if (temp.size() == n) {
+    ll cur = CheckPrim(temp);
+    if (cur > best) {
+      ans.clear(); ans.insert(temp);
+      best = cur;
+    } else if (cur == best) {
+      ans.insert(temp);
+    }
+
+    return;
   }
-  cout << dist[0] << "\n";
+  for (int i = 1; i <= n; ++i) {
+    if (!FindIn(temp, i)) {
+      temp.push_back(i);
+      backtrack(temp, n);
+      temp.pop_back();
+    }
+  }
+}
+
+void solve() {
+  ll n; cin >> n;
+
+  backtrack({}, n);
+
+  cout << best << "\n";
+
+  ll cnt = 0;
+
+  for (auto a : ans) {
+    ++cnt;
+    // if (cnt > 100) { continue; }
+    for (int j = 0; j < a.size(); ++j) {
+      cout << a[j] << " ";
+    }
+    cout << "\n";
+  }
 
 }
 
@@ -89,9 +121,11 @@ int main() {
   cin.tie(nullptr);
   cout.tie(nullptr);
   ll t = 1;
-  cin >> t;
+  // cin >> t;
   // cout << fixed << setprecision(10);
   
+  freopen("a.out", "w", stdout);
+
   while (t--) {
     solve();
     // cout << solve() << endl;
