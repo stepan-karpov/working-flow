@@ -23,43 +23,14 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
 void solve() {
-  ll n; cin >> n;
-  vll a(n);
-  for (int i = 0; i < n; ++i) {
-    cin >> a[i];
-  }
 
-  ll ans = -INF;
-  for (int i = 0; i < n; ++i) {
-    ans = max(ans, a[i]);
-  }
+  ll a = 11;
+  ll b = 11;
+  ll my_x = 15;
+  ll nm_x = 4;
 
-  ll cur_s = 0;
-
-  for (int i = 0; i < n; ++i) {
-    if (i % 2 == 0) {
-      cur_s += a[i];
-      ans = max(cur_s, ans);
-    }
-    if (cur_s < 0) {
-      cur_s = 0;
-    }
-  }
-
-  cur_s = 0;
-  
-  for (int i = 0; i < n; ++i) {
-    if (i % 2 == 1) {
-      cur_s += a[i];
-      ans = max(cur_s, ans);
-    }
-    if (cur_s < 0) {
-      cur_s = 0;
-    }
-  }
-
-  cout << ans << "\n";
-
+  cout << ((my_x ^ a) & (my_x ^ b)) << "\n";
+  cout << ((nm_x ^ a) & (nm_x ^ b)) << "\n";
 }
 
 int main() {
@@ -67,7 +38,7 @@ int main() {
   cin.tie(nullptr);
   cout.tie(nullptr);
   ll t = 1;
-  cin >> t;
+  // cin >> t;
   // cout << fixed << setprecision(10);
   
   while (t--) {

@@ -22,98 +22,50 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-bool isPrime(int n){
-  if (n == 1) { return false; }
-  if (n == 2) { return true; }
-  bool f = true;
-  for (int i = 2; i <= sqrt(n); i++) {
-    if (n % i == 0){
-      f = false;
-      break;
-    }
-  }
-  return f;   
+ll FUNC(ll m, ll MV, ll n) {
+  return max((m - MV + n - 1) / n + 1, 1ll);
 }
 
-bool FindIn(vll& temp, ll x) {
-  for (int i = 0; i < temp.size(); ++i) {
-    if (temp[i] == x) { return true; }
+ll solve() {
+  ll n, k; cin >> n >> k;
+  vll a(n);
+  for (int i = 0; i < n; ++i) {
+    cin >> a[i];
   }
-  return false;
-}
+  if (a[0] != 1) {
+    return 1;
+  }
 
-ll MEX(vll& temp, ll l, ll r) {
-  for (int i = 1; i <= temp.size() + 10; ++i) {
-    bool ok = true;
-    for (int j = l; j <= r; ++j) {
-      if (temp[j] == i) {
-        ok = false;
-        break;
+  set<ll> nums;
+  ll DIGITS_NUM = 10000;
+  vll func(DIGITS_NUM, INF);
+
+  for (int i = 1; i <= DIGITS_NUM; ++i) {
+    nums.insert(i);
+  }
+
+  for (ll day = 1; day <= 20; ++day) {
+    vll to_delete;
+    ll c = 1;
+    ll p = 0;
+    for (auto temp : nums) {
+      if (c == a[p]) {
+        ++p;
+        to_delete.push_back(temp);
       }
+      if (p == n) { break; }
+      ++c;
     }
-    if (ok) { return i; }
-  }
-  return -1;
-}
-
-ll CheckPrim(vll& temp) {
-  ll n = temp.size();
-
-  ll cnt = 0;
-
-  for (int l = 0; l < n; ++l) {
-    for (int r = l; r < n; ++r) {
-      ll mex = MEX(temp, l, r);
-      if (isPrime(mex)) {
-        ++cnt;
-      }
-    }
-  }
-  return cnt;
-}
-
-set<vll> ans;
-ll best = 0;
-
-void backtrack(vll temp, ll n) {
-  if (temp.size() == n) {
-    ll cur = CheckPrim(temp);
-    if (cur > best) {
-      ans.clear(); ans.insert(temp);
-      best = cur;
-    } else if (cur == best) {
-      ans.insert(temp);
-    }
-
-    return;
-  }
-  for (int i = 1; i <= n; ++i) {
-    if (!FindIn(temp, i)) {
-      temp.push_back(i);
-      backtrack(temp, n);
-      temp.pop_back();
-    }
-  }
-}
-
-void solve() {
-  ll n; cin >> n;
-
-  backtrack({}, n);
-
-  cout << best << "\n";
-
-  ll cnt = 0;
-
-  for (auto a : ans) {
-    ++cnt;
-    // if (cnt > 100) { continue; }
-    for (int j = 0; j < a.size(); ++j) {
-      cout << a[j] << " ";
+    for (int i = 0; i < to_delete.size(); ++i) {
+      if (to_delete[i] < 10)
+        cout << " ";
+      cout << to_delete[i] << " ";
+      nums.erase(to_delete[i]);
     }
     cout << "\n";
   }
 
+  return -1;
 }
 
 int main() {
@@ -124,11 +76,9 @@ int main() {
   // cin >> t;
   // cout << fixed << setprecision(10);
   
-  freopen("a.out", "w", stdout);
-
   while (t--) {
-    solve();
-    // cout << solve() << endl;
+    // solve();
+    cout << solve() << endl;
     // if (solve())
     //    cout << "Yes" << endl;
     // else

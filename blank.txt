@@ -1,183 +1,29 @@
-Как определить максимальную лексикографическую строку за O(logn) на запрос?
-Очень просто - давайте сделаем это бинпоиском по ответу, спрашивая себя каждый раз
-"можем ли мы сделать так, что в начале будет стоять ровно mid нулей?".
+Пусть у нас есть ряд этих чисел, из которых мы их удаляем.
+Сначала он выглядит как последовательность натуральных чисел
 
------
-Как написать чекер к предыдущему вопросу? 
-Тоже несложно - если мы хотим, чтобы в начале стояло k нулей, то мы точно
-знаем, сколько замен нам надо совершить.
+1, 2, 3, 4, 5, 6, 7, 8, ....
 
-Для этого надо знать, сколько из первых k элементов являются нулевыми.
-Будет нетрудно посчитать это, зная сумму первых k элементов.
-Заметим, что с помощью ДО мы можем элементарно находить сумму на любом из отрезков за
-O(log(n)), однако этого недостаточно. Надо уметь находить сумму на всех первых
-l отрезков, таких, что их длина в сумме не превосходит k. Как это сделать - непонятно. 
-Давайте для этого построим ДО на множестве всех отрезков, причем в узлах будем
-хранить сумму на всех отрезках, а также все элементы, которые мы изменили. При этом 
-будем все это проталкивать. удачи мне(((
+Потом, когда мы удаляем из них какие-то n, то большинство ряда просто
+сдвигается на n чисел влево.
 
-1
-999999999000000001
+Зададимся вопросом - на каком шаге будет удалено число, которое больше либо равно m?
+Тогда все, что нам нужно - это просто бинпоиском найти нужное нам число. Давайте научимся отвечать на
+поставленный вопрос. 
+
+Рассмотрим процесс удаления чисел из ряда. Пусть MV = a[len(a) - 1] - максимальное число.
+Тогда на каком шаге мы сможем "дотянуться" до m? Понятно, что мы не сможем сделать это за 
+k = (m - MV) / n шагов, поскольку это просто нереально. Но мы точно знаем, что в (k + 1)-ый момент
+времени мы захватим элемент, больший либо равный m. Значит, наш ответ равен (m - MV) / n + 1
 
 
-5 
-100 -25 -13 16 17
+5 1
+1 4 7 9 12
 
+2 1
+1 3
 
+4 1
+1 3 4 5
 
-
-#include <bits/stdc++.h>
-using namespace std;
-// #pragma GCC optimize("unroll-loops")
-// #pragma GCC optimize("Ofast")
-// #pragma GCC optimize("no-stack-protector")
-// #pragma GCC target("sse,sse2,sse3,ssse3,popcnt,abm,mmx,avx,tune=native")
-// #pragma GCC optimize("fast-math")
-// #pragma GCC optimize(2)
-// #pragma GCC optimize("Ofast","inline","-ffast-math")
-// #pragma GCC optimize "-O3"
-
-using ll = long long;
-using pll = pair<ll, ll>;
-using vll = vector<ll>;
-using vvll = vector<vll>;
-using ld = long double;
-using vb = vector<bool>;
-
-const ll INF = 1e16;
-const ld EPS = 1e-8;
-const string ALPH = "abcdefghijklmnopqrstuvwxyz";
-
-// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
-
-ll Markup(vll& next, vll& pos, ll l, ll r, ll cur_length, ll current_number) {
-  if (current_number > r) { return current_number; }
-  if (pos[current_number] == -1) {
-    pos[current_number] = current_number - l + cur_length;
-  }
-  return Markup(next, pos, l, r, cur_length, next[current_number]);
-}
-
-struct SegTree {
-  vll tree;
-  ll size = 1;
-
-  SegTree(ll n) {
-    while (size < n) {
-      size *= 2;
-    }
-    tree.assign(2 * size - 1, 0);
-  }
-
-  void Set(ll index, ll value, ll lx, ll rx, ll x) {
-    if (rx - lx == 1) {
-      tree[x] = value;
-      return;
-    }
-    ll m = (lx + rx) / 2;
-    if (index < m) {
-      Set(index, value, lx, m, 2 * x + 1);
-    } else {
-      Set(index, value, m, rx, 2 * x + 2);
-    }
-    tree[x] = tree[2 * x + 1] + tree[2 * x + 2];
-  }
-
-  void Set(ll index, ll value) {
-    Set(index, value, 0, size, 0);
-  }
-
-  ll GetSum(ll l, ll r, ll lx, ll rx, ll x) {
-    if (l <= lx && rx <= r) {
-      return tree[x];
-    }
-    if (lx >= r || l >= rx) {
-      return 0;
-    }
-    ll m = (lx + rx) / 2;
-    ll ans1 = GetSum(l, r, lx, m, 2 * x + 1);
-    ll ans2 = GetSum(l, r, m, rx, 2 * x + 2);
-    return ans1 + ans2;
-  }
-
-  ll GetSum(ll l, ll r) {
-    return GetSum(l, r, 0, size, 0);
-  }
-
-};
-
-void solve() {
-  ll n, m, q; cin >> n >> m >> q;
-  string s; cin >> s;
-
-  vll next(n, -1);
-  vll pos(n, -1);
-
-  for (int i = 0; i < n; ++i) {
-    next[i] = i + 1;
-  }
-
-
-  ll cur_length = 0;
-  for (int i = 0; i < m; ++i) {
-    ll l, r; cin >> l >> r; --l; --r;
-    Markup(next, pos, l, r, cur_length, l);
-    cur_length += r - l + 1;
-  }
-
-  vector<pll> temp;
-
-  for (int i = 0; i < n; ++i) {
-    if (pos[i] != -1) {
-      temp.push_back({pos[i], i});
-    }
-  }
-
-  sort(temp.begin(), temp.end());
-
-  map<ll, ll> number_in_res;
-
-  ll cnt = 0;
-
-  for (int i = 0; i < temp.size(); ++i) {
-    number_in_res[temp[i].second] = cnt++;
-  }
-
-  SegTree tree(n);
-
-  for (int i = 0; i < temp.size(); ++i) {
-    tree.Set(i, s[temp[i].second] - '0');
-  }
-
-  for (int i = 0; i < q; ++i) {
-    ll ind; cin >> ind; --ind;
-    if (pos[ind] != -1) {
-      ll cur_v = tree.GetSum(number_in_res[ind])
-    }
-    ll cur_v = tree
-  }
-
-  cout << tree.GetSum(0, temp.size()) << "\n";
-
-
-}
-
-int main() {
-  ios_base::sync_with_stdio(false);
-  cin.tie(nullptr);
-  cout.tie(nullptr);
-  ll t = 1;
-  // cin >> t;
-  // cout << fixed << setprecision(10);
-  
-  while (t--) {
-    solve();
-    // cout << solve() << endl;
-    // if (solve())
-    //    cout << "Yes" << endl;
-    // else
-    //    cout << "No" << endl;
-  }
-
-  return 0;
-}
+4 1
+1 3 4 15

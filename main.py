@@ -1,23 +1,18 @@
-import sys
+import time
 
-def jopa(s: str):
-  print("jopa", s)
+def progress_bar(iteration, total, bar_length=50):
+    progress = (iteration / total)
+    arrow = '=' * int(round(progress * bar_length) - 1)
+    spaces = ' ' * (bar_length - len(arrow))
+    print(f'\rProgress: [{arrow}{spaces}] {int(progress * 100)}%', end='', flush=True)
 
-# for _ in range(int(sys.stdin.readline())):
-# 	s = [int(c) for c in sys.stdin.readline().strip()]
-# 	n = len(s)
-# 	m = int(sys.stdin.readline())
-# 	l = sys.stdin.readline()
-# 	r = sys.stdin.readline()
-# 	mx = 0
-# 	for i in range(m):
-# 		li = int(l[i])
-# 		ri = int(r[i])
-# 		nmx = mx
-# 		for c in range(li, ri + 1):
-# 			cur = mx
-# 			while cur < n and s[cur] != c:
-# 				cur += 1
-# 			nmx = max(nmx, cur)
-# 		mx = nmx + 1
-# 	print("YES" if mx > n else "NO")
+# Example usage:
+total_iterations = 100
+for i in range(total_iterations):
+    # Simulating some work being done
+    time.sleep(0.1)
+
+    # Update the progress bar
+    progress_bar(i + 1, total_iterations)
+
+print()  # Move to the next line after the progress bar is completed
