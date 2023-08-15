@@ -24,42 +24,43 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 void solve() {
   ll n; cin >> n;
-  vll a(n);
+  vll a;
+  ll last = -1;
   for (int i = 0; i < n; ++i) {
-    cin >> a[i];
-  }
-
-  ll ans = -INF;
-  for (int i = 0; i < n; ++i) {
-    ans = max(ans, a[i]);
-  }
-
-  ll cur_s = 0;
-
-  for (int i = 0; i < n; ++i) {
-    if (i % 2 == 0) {
-      cur_s += max(0ll, a[i]);
-      ans = max(cur_s, ans);
+    ll x; cin >> x;
+    if (x == 0) {
+      a.push_back(x);
+    } else if (x != last) {
+      a.push_back(x);
     }
-    // if (cur_s < 0) {
-    //   cur_s = 0;
-    // }
+    last = x;
   }
 
-  cur_s = 0;
-  
-  for (int i = 0; i < n; ++i) {
-    if (i % 2 == 1) {
-      cur_s += max(0ll, a[i]);
-      ans = max(cur_s, ans);
+  n = a.size();
+
+  vll dp(n + 10, INF);
+  dp[0] = 0;
+
+  for (int i = 1; i <= n; ++i) {
+    dp[i] = min(dp[i], dp[i - 1] + 1);
+    ll cur_v = a[i - 1];
+    if (cur_v == 1) {
+      if (i - 2 >= 0) {
+        dp[i] = min(dp[i], dp[i - 2] + 1);
+      }
+    } else if (cur_v == 2) {
+      if (i - 2 >= 0) {
+        dp[i] = min(dp[i], dp[i - 2] + 1);
+      }
+      ll d = 1;
+      if (i - 2 >= 0) {
+        d = dp[i - 2] + 1;
+      }
+      dp[i + 1] = min(dp[i + 1], d);
     }
-    // if (cur_s < 0) {
-    //   cur_s = 0;
-    // }
   }
 
-  cout << ans << "\n";
-
+  cout << dp[n] << "\n";
 }
 
 int main() {

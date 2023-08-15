@@ -1,18 +1,18 @@
-import time
+def check(s, t):
+    if len(s) != len(t):
+        return  'NO'
+    dicts = {}
+    dictt = {}
+    for pair in zip(s, t):
+        if dicts.setdefault(pair[0], pair[1]) != pair[1]:
+            return 'NO'
+        if dictt.setdefault(pair[1], pair[0]) != pair[0]:
+            return 'NO'
+    return 'YES'
 
-def progress_bar(iteration, total, bar_length=50):
-    progress = (iteration / total)
-    arrow = '=' * int(round(progress * bar_length) - 1)
-    spaces = ' ' * (bar_length - len(arrow))
-    print(f'\rProgress: [{arrow}{spaces}] {int(progress * 100)}%', end='', flush=True)
+t = int(input())
 
-# Example usage:
-total_iterations = 100
-for i in range(total_iterations):
-    # Simulating some work being done
-    time.sleep(0.1)
-
-    # Update the progress bar
-    progress_bar(i + 1, total_iterations)
-
-print()  # Move to the next line after the progress bar is completed
+for i in range(t):
+  s1 = input()
+  s2 = input()
+  print(check(s1, s2)) 

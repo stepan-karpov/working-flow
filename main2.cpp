@@ -22,50 +22,37 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-ll FUNC(ll m, ll MV, ll n) {
-  return max((m - MV + n - 1) / n + 1, 1ll);
-}
-
-ll solve() {
-  ll n, k; cin >> n >> k;
-  vll a(n);
-  for (int i = 0; i < n; ++i) {
-    cin >> a[i];
-  }
-  if (a[0] != 1) {
-    return 1;
-  }
-
-  set<ll> nums;
-  ll DIGITS_NUM = 10000;
-  vll func(DIGITS_NUM, INF);
-
-  for (int i = 1; i <= DIGITS_NUM; ++i) {
-    nums.insert(i);
-  }
-
-  for (ll day = 1; day <= 20; ++day) {
-    vll to_delete;
-    ll c = 1;
-    ll p = 0;
-    for (auto temp : nums) {
-      if (c == a[p]) {
-        ++p;
-        to_delete.push_back(temp);
+void solve() {
+  ll testcase; cin >> testcase;
+  for (int temp = 0; temp < testcase; ++temp) {
+    string s1, s2; cin >> s1 >> s2;
+    vll a(35, -1);
+    vll b(35, -1);
+    bool ok = true;
+    for (int i = 0; i < s1.size(); ++i) {
+      ll c1 = s1[i] - 'a';
+      ll c2 = s2[i] - 'a';
+      if (a[c1] == -1) {
+        a[c1] = c2;
+      } else {
+        if (c2 != a[c1]) {
+          ok = false;
+        }
       }
-      if (p == n) { break; }
-      ++c;
+      if (b[c2] == -1) {
+        b[c2] = c1;
+      } else {
+        if (c1 != b[c2]) {
+          ok = false;
+        }
+      }
     }
-    for (int i = 0; i < to_delete.size(); ++i) {
-      if (to_delete[i] < 10)
-        cout << " ";
-      cout << to_delete[i] << " ";
-      nums.erase(to_delete[i]);
+    if (ok) {
+      cout << "YES\n";
+    } else {
+      cout << "NO\n";
     }
-    cout << "\n";
   }
-
-  return -1;
 }
 
 int main() {
@@ -77,8 +64,8 @@ int main() {
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    // solve();
-    cout << solve() << endl;
+    solve();
+    // cout << solve() << endl;
     // if (solve())
     //    cout << "Yes" << endl;
     // else

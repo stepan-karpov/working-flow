@@ -22,50 +22,17 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-bool FindIn(vll& temp, ll x) {
-  for (int i = 0; i < temp.size(); ++i) {
-    if (temp[i] == x) { return true; }
-  }
-  return false;
-}
-
-ll ans = -INF;
-vll t;
-
-void backtrack(vll temp) {
-  if (temp.size() == 1) {
-    ans = max(ans, temp[0]);
-    return;
-  }
-  for (int i = 0; i < temp.size(); ++i) {
-    vll copy1 = temp;
-    if (i == 0 || i == temp.size() - 1) {
-      copy1[i] = -INF;
-    } else {
-      copy1[i] = -INF;
-      copy1[i - 1] += copy1[i + 1];
-      copy1[i + 1] = -INF;
-    }
-    vll copy2;
-    for (int j = 0; j < copy1.size(); ++j) {
-      if (copy1[j] != -INF) {
-        copy2.push_back(copy1[j]);
-      }
-    }
-    backtrack(copy2);
-  }
-}
-
 void solve() {
-  ll n; cin >> n;
-  t.assign(n, 0);
-  for (int i = 0; i < n; ++i) {
-    cin >> t[i];
+  ll n, m; cin >> n >> m;
+  string s; cin >> s;
+  set<string> temp;
+  for (int i = 0; i < m; ++i) {
+    ll l, r; cin >> l >> r; --l; --r;
+    string m = s;
+    sort(m.begin() + l, m.begin() + r + 1);
+    temp.insert(m);
   }
-
-  backtrack(t);
-
-  cout << ans << "\n";
+  cout << temp.size() << "\n";
 }
 
 int main() {
@@ -76,8 +43,6 @@ int main() {
   // cin >> t;
   // cout << fixed << setprecision(10);
   
-  // freopen("a.out", "w", stdout);
-
   while (t--) {
     solve();
     // cout << solve() << endl;
