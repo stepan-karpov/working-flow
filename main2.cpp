@@ -23,36 +23,22 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
 void solve() {
-  ll testcase; cin >> testcase;
-  for (int temp = 0; temp < testcase; ++temp) {
-    string s1, s2; cin >> s1 >> s2;
-    vll a(35, -1);
-    vll b(35, -1);
-    bool ok = true;
-    for (int i = 0; i < s1.size(); ++i) {
-      ll c1 = s1[i] - 'a';
-      ll c2 = s2[i] - 'a';
-      if (a[c1] == -1) {
-        a[c1] = c2;
-      } else {
-        if (c2 != a[c1]) {
-          ok = false;
-        }
-      }
-      if (b[c2] == -1) {
-        b[c2] = c1;
-      } else {
-        if (c1 != b[c2]) {
-          ok = false;
-        }
-      }
-    }
-    if (ok) {
-      cout << "YES\n";
-    } else {
-      cout << "NO\n";
-    }
+  ll n; cin >> n;
+  set<ll> s;
+  for (int i = 2; i <= n; ++i) {
+    s.insert(i);
   }
+  ll last = 1;
+  cout << "1 ";
+  while (!s.empty()) {
+    if (s.find(last) == s.end()) {
+      last = *s.begin();
+    }
+    s.erase(last);
+    cout << last << " ";
+    last *= 2;
+  }
+  cout << "\n";
 }
 
 int main() {
@@ -60,7 +46,7 @@ int main() {
   cin.tie(nullptr);
   cout.tie(nullptr);
   ll t = 1;
-  // cin >> t;
+  cin >> t;
   // cout << fixed << setprecision(10);
   
   while (t--) {
