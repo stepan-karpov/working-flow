@@ -23,22 +23,7 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
 void solve() {
-  ll n; cin >> n;
-  set<ll> s;
-  for (int i = 2; i <= n; ++i) {
-    s.insert(i);
-  }
-  ll last = 1;
-  cout << "1 ";
-  while (!s.empty()) {
-    if (s.find(last) == s.end()) {
-      last = *s.begin();
-    }
-    s.erase(last);
-    cout << last << " ";
-    last *= 2;
-  }
-  cout << "\n";
+  
 }
 
 int main() {
@@ -46,7 +31,7 @@ int main() {
   cin.tie(nullptr);
   cout.tie(nullptr);
   ll t = 1;
-  cin >> t;
+  // cin >> t;
   // cout << fixed << setprecision(10);
   
   while (t--) {
