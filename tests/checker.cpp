@@ -32,7 +32,7 @@ void output_test() {
   }
 }
 
-void solve() {
+void Solve() {
   // ll n; cin >> n;
   // vector<string> a(n);
 
@@ -75,7 +75,7 @@ int main() {
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    solve();
+    Solve();
     // cout << solve() << endl;
     // if (solve())
     //    cout << "Yes" << endl;

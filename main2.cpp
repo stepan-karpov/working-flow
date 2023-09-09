@@ -22,8 +22,41 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-void solve() {
-  
+vll z_func(string s) {
+  ll n = s.size();
+  vll z(n);
+  ll l = -1, r = -1;
+  for (int i = 1; i < n; ++i) {
+    if (l <= i && i <= r) {
+      z[i] = min(z[i - l], r - i + 1);
+    }
+    while (i + z[i] < n && s[z[i]] == s[i + z[i]]) { ++z[i]; }
+    if (i + z[i] - 1 > r) {
+      l = i;
+      r = i + z[i] - 1;
+    }
+  }
+  return z;
+}
+
+
+void Solve() {
+  string s; cin >> s;
+  ll n = s.size();
+
+  ll ans = 1;
+
+  for (int i = 0; i < n; ++i) {
+    ll new_len = n - i;
+    vll z = z_func(s.substr(i, n - i));
+    for (int j = i + 1; j < n; ++j) {
+      ll potential_period = j - i + 1;
+      ll local_k = z[j - i] / potential_period;
+      ans = max(ans, local_k + 1);
+    }
+  }
+
+  cout << ans << "\n";
 }
 
 int main() {
@@ -35,7 +68,7 @@ int main() {
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    solve();
+    Solve();
     // cout << solve() << endl;
     // if (solve())
     //    cout << "Yes" << endl;

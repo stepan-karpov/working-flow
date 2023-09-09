@@ -22,17 +22,30 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-void solve() {
-  ll n, m; cin >> n >> m;
-  string s; cin >> s;
-  set<string> temp;
-  for (int i = 0; i < m; ++i) {
-    ll l, r; cin >> l >> r; --l; --r;
-    string m = s;
-    sort(m.begin() + l, m.begin() + r + 1);
-    temp.insert(m);
+bool is_segment_equal(string& s, int ind, string pattern) {
+  for (int i = 0; i < pattern.size(); ++i) {
+    if (ind + i >= s.size()) { return false; }
+    if (s[ind + i] != pattern[i]) { return false; }
   }
-  cout << temp.size() << "\n";
+  return true;
+}
+
+void Solve() {
+  string s; cin >> s;
+  ll n = s.size();
+  ll ans = 0;
+  for (int l = 0; l < n; ++l) {
+    for (int r = l; r < n; ++r) {
+      ll current_score = 0;
+      int ind = l;
+      while (is_segment_equal(s, ind, s.substr(l, r - l + 1))) {
+        ++current_score;
+        ind += r - l + 1;
+      }
+      ans = max(ans, current_score);
+    }
+  }
+  cout << ans << "\n";
 }
 
 int main() {
@@ -44,7 +57,7 @@ int main() {
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    solve();
+    Solve();
     // cout << solve() << endl;
     // if (solve())
     //    cout << "Yes" << endl;

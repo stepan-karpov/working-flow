@@ -81,7 +81,7 @@ struct SegTree {
 
 };
 
-void solve() {
+void Solve() {
   ll n; cin >> n;
   vll a(n);
   for (int i = 0; i < n; ++i) {
@@ -116,7 +116,7 @@ int main() {
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    solve();
+    Solve();
     // cout << solve() << endl;
     // if (solve())
     //    cout << "Yes" << endl;

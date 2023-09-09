@@ -26,7 +26,7 @@ struct Eq {
   Eq(int cy, int s, int dir) : cy(cy), s(s), dir(dir) {}
 };
 
-void solve() {
+void Solve() {
   ll n, m, k;
   std::cin >> n >> m >> k;
   vector<pll> a(k);
@@ -164,7 +164,7 @@ int main() {
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    solve();
+    Solve();
     // cout << solve() << endl;
     // if (solve())
     //    cout << "Yes" << endl;
