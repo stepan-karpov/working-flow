@@ -18,34 +18,37 @@ using vb = vector<bool>;
 
 const ll INF = 1e16;
 const ld EPS = 1e-8;
-const string ALPH = "abcdefghijklmnopqrstuvwxyz";
+const string kALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-bool is_segment_equal(string& s, int ind, string pattern) {
-  for (int i = 0; i < pattern.size(); ++i) {
-    if (ind + i >= s.size()) { return false; }
-    if (s[ind + i] != pattern[i]) { return false; }
+bool is_substr(string t, int start, string s) {
+  for (int i = 0; i < s.size(); ++i) {
+    if (i + start >= t.size()) { return false; }
+    if (t[i + start] != s[i]) { return false; }
   }
   return true;
 }
 
 void Solve() {
-  string s; cin >> s;
-  ll n = s.size();
-  ll ans = 0;
-  for (int l = 0; l < n; ++l) {
-    for (int r = l; r < n; ++r) {
-      ll current_score = 0;
-      int ind = l;
-      while (is_segment_equal(s, ind, s.substr(l, r - l + 1))) {
-        ++current_score;
-        ind += r - l + 1;
+  string t; cin >> t;
+  ll q; cin >> q;
+
+  for (int i = 0; i < q; ++i) {
+    string s; cin >> s;
+    vll temp;
+    for (int j = 0; j < t.size(); ++j) {
+      if (is_substr(t, j, s)) {
+        temp.push_back(j);
       }
-      ans = max(ans, current_score);
     }
+    cout << temp.size() << " ";
+    for (int j = 0; j < temp.size(); ++j) {
+      cout << temp[j] + 1 << " ";
+    }
+    cout << "\n";
   }
-  cout << ans << "\n";
+
 }
 
 int main() {

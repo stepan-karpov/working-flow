@@ -18,7 +18,7 @@ using ld = long double;
 
 const ll INF = 1e16;
 const ld EPS = 1e-8;
-const string ALPH = "abcdefghijklmnopqrstuvwxyz";
+const string kALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
@@ -40,7 +40,7 @@ string get_string(string s, ll k, vector<pair<ll, ll>>& usage) {
   ll ans = INF;
   ll to_start = -1;
 
-  for (int i = 0; i <= ALPH.size() - k; ++i) {
+  for (int i = 0; i <= kALPH.size() - k; ++i) {
     ll cur_ans = 0;
     for (int j = i; j < i + k; ++j) {
       cur_ans += abs(t - usage[j].first);
@@ -56,7 +56,7 @@ string get_string(string s, ll k, vector<pair<ll, ll>>& usage) {
 
   for (int i = to_start; i < to_start + k; ++i) {
     rest[usage[i].second] = t;
-    new_alph += ALPH[usage[i].second];
+    new_alph += kALPH[usage[i].second];
   }
 
   vll fixed(n, 0);
@@ -64,7 +64,7 @@ string get_string(string s, ll k, vector<pair<ll, ll>>& usage) {
   for (int i = 0; i < n; ++i) {
     ll pos = find(new_alph, s[i]);
     if (pos != new_alph.size()) {
-      ll pos_in_alph = ALPH.find(new_alph[pos]);
+      ll pos_in_alph = kALPH.find(new_alph[pos]);
       if (rest[pos_in_alph] > 0) {
         --rest[pos_in_alph];
         fixed[i] = 1;
@@ -81,7 +81,7 @@ string get_string(string s, ll k, vector<pair<ll, ll>>& usage) {
           break;
         }
       }
-      s[i] = ALPH[v];
+      s[i] = kALPH[v];
       --rest[v];
     }
   }
@@ -95,12 +95,12 @@ void Solve() {
   cin >> n;
   string s;
   cin >> s;
-  vll coords(ALPH.size(), 0);
+  vll coords(kALPH.size(), 0);
   for (int i = 0; i < s.size(); ++i) {
-    ++coords[ALPH.find(s[i])];
+    ++coords[kALPH.find(s[i])];
   }
   vector<pair<ll, ll>> used;
-  for (int i = 0; i < ALPH.size(); ++i) {
+  for (int i = 0; i < kALPH.size(); ++i) {
     used.push_back({coords[i], i});
   }
 
@@ -109,7 +109,7 @@ void Solve() {
   string ans = "";
   ll cur_d = INF;
 
-  for (int i = 1; i <= ALPH.size(); ++i) {
+  for (int i = 1; i <= kALPH.size(); ++i) {
     if (n % i != 0) {
       continue;
     }

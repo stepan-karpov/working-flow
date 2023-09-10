@@ -18,7 +18,7 @@ using ld = long double;
 
 const ll INF = 1e16;
 const ld EPS = 1e-8;
-const string ALPH = "abcdefghijklmnopqrstuvwxyz";
+const string kALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 

@@ -18,7 +18,7 @@ using ld = long double;
 
 const ll INF = 1e16;
 const ld EPS = 1e-8;
-const string ALPH = "abcdefghijklmnopqrstuvwxyz";
+const string kALPH = "abcdefghijklmnopqrstuvwxyz";
 
 std::random_device rd;
 std::mt19937 gen(rd());

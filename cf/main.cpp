@@ -18,7 +18,7 @@ using ld = long double;
 
 const ll INF = 1e16;
 const ld EPS = 1e-8;
-const string ALPH = "abcdefghijklmnopqrstuvwxyz";
+const string kALPH = "abcdefghijklmnopqrstuvwxyz";
 
 ll find(string& str, char s) {
   for (long long i = 0; i < str.size(); ++i) {
@@ -42,7 +42,7 @@ ll use_only_i_letters(string& s, ll k) {
     return INF;
   }
 
-  vector<ll> coords(ALPH.size(), 0);
+  vector<ll> coords(kALPH.size(), 0);
 
   for (long long i = 0; i < n; ++i) {
     ++coords[s[i] - 97];
@@ -50,7 +50,7 @@ ll use_only_i_letters(string& s, ll k) {
 
   vector<pair<ll, ll>> usage;
 
-  for (long long i = 0; i < ALPH.size(); ++i) {
+  for (long long i = 0; i < kALPH.size(); ++i) {
     usage.push_back({coords[i], i});
   }
 
@@ -58,7 +58,7 @@ ll use_only_i_letters(string& s, ll k) {
 
   ll ans = INF;
 
-  for (long long i = 0; i < ALPH.size(); ++i) {
+  for (long long i = 0; i < kALPH.size(); ++i) {
     ll cur_ans = 0;
     for (long long j = i; j < i + k; ++j) {
       cur_ans += abs(t - usage[j].first);
@@ -70,18 +70,18 @@ ll use_only_i_letters(string& s, ll k) {
 }
 
 char find_cand(string& new_alph, vll& coords, ll t) {
-  for (long long i = 0; i < ALPH.size(); ++i) {
-    if (find(new_alph, ALPH[i]) == new_alph.size()) {
+  for (long long i = 0; i < kALPH.size(); ++i) {
+    if (find(new_alph, kALPH[i]) == new_alph.size()) {
       continue;
     }
 
     if (coords[i] > t) {
       --coords[i];
-      return ALPH[i];
+      return kALPH[i];
     }
 
   }
-  return ALPH[0];
+  return kALPH[0];
 }
 
 void Solve() {
@@ -93,7 +93,7 @@ void Solve() {
 
   ll ans_t = INF;
   ll ind = 1;
-  for (long long i = 1; i <= ALPH.size(); ++i) {
+  for (long long i = 1; i <= kALPH.size(); ++i) {
     ll cur_ans = use_only_i_letters(s, i);
     if (cur_ans < ans_t) {
       ans_t = cur_ans;
@@ -106,7 +106,7 @@ void Solve() {
   ll k = ind;
   ll t = n / k; // how many time we should use each letter
 
-  vector<ll> coords(ALPH.size(), 0);
+  vector<ll> coords(kALPH.size(), 0);
 
   for (long long i = 0; i < n; ++i) {
     ++coords[s[i] - 97];
@@ -114,7 +114,7 @@ void Solve() {
 
   vector<pair<ll, ll>> usage;
 
-  for (long long i = 0; i < ALPH.size(); ++i) {
+  for (long long i = 0; i < kALPH.size(); ++i) {
     usage.push_back({coords[i], i});
   }
 
@@ -123,7 +123,7 @@ void Solve() {
   ll ans = INF;
   ll to_start = -1;
 
-  for (long long i = 0; i < ALPH.size(); ++i) {
+  for (long long i = 0; i < kALPH.size(); ++i) {
     ll cur_ans = 0;
     for (long long j = i; j < i + k; ++j) {
       cur_ans += abs(t - usage[j].first);
@@ -146,26 +146,26 @@ void Solve() {
   cout << '\n';
 
   for (long long i = to_start; i < to_start + k; ++i) {
-    new_alph += ALPH[usage[i].second];
+    new_alph += kALPH[usage[i].second];
   }
 
   vll new_usage(30, 0);
 
   for (long long i = 0; i < n; ++i) {
     if (find(new_alph, s[i]) != new_alph.size()) { // s[i] in new_alph
-      ll used = new_usage[ALPH.find(s[i])];
+      ll used = new_usage[kALPH.find(s[i])];
       if (used < t) {
-        ++new_usage[ALPH.find(s[i])];
+        ++new_usage[kALPH.find(s[i])];
       } else {
 
         char new_value = find_cand(new_alph, coords, t);
-        ++new_usage[ALPH.find(new_value)];
+        ++new_usage[kALPH.find(new_value)];
         s[i] = new_value;
 
       }
     } else {
       char new_value = find_cand(new_alph, coords, t);
-      ++new_usage[ALPH.find(new_value)];
+      ++new_usage[kALPH.find(new_value)];
       s[i] = new_value;
     }
   }

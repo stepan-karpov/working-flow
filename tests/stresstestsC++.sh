@@ -1,8 +1,8 @@
 #!/bin/bash
 cd /Users/stepan/Desktop/working-flow/tests/
-g++ -std=c++17 create_test.cpp -o create_test.trash
-g++ -std=c++17 correct_program.cpp -o correct_program.trash
-g++ -std=c++17 incorrect_program.cpp -o incorrect_program.trash
+g++ -std=c++20 create_test.cpp -o create_test.trash
+g++ -std=c++20 correct_program.cpp -o correct_program.trash
+g++  -fsanitize=undefined -fsanitize=address -std=c++20 incorrect_program.cpp -o incorrect_program.trash
 
 > log.txt
 
