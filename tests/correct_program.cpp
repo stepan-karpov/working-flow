@@ -30,25 +30,33 @@ bool is_substr(string t, int start, string s) {
   return true;
 }
 
-void Solve() {
-  string t; cin >> t;
-  ll q; cin >> q;
+bool prefix_eq(string& text, string& pattern, int r) {
+  int start = text.size() - r;
+  for (int i = 0; i < r; ++i) {
+    if (start + i < 0 || start + i >= text.size()) { return false; }
+    if (text[start + i] != pattern[i]) { return false; }
+  }
+  return true;
+}
 
-  for (int i = 0; i < q; ++i) {
-    string s; cin >> s;
-    vll temp;
-    for (int j = 0; j < t.size(); ++j) {
-      if (is_substr(t, j, s)) {
-        temp.push_back(j);
+void Solve() {
+  ll n; cin >> n;
+  std::vector<string> a(n);
+  for (int i = 0; i < n; ++i) {
+    std::cin >> a[i];
+  }
+  string ans = a[0];
+
+  for (int i = 1; i < n; ++i) {
+    int max_delete = 0;
+    for (int j = 1; j <= a[i].size(); ++j) {
+      if (prefix_eq(ans, a[i], j)) {
+        max_delete = j;
       }
     }
-    cout << temp.size() << " ";
-    for (int j = 0; j < temp.size(); ++j) {
-      cout << temp[j] + 1 << " ";
-    }
-    cout << "\n";
+    ans += a[i].substr(max_delete, a[i].size() - max_delete);
   }
-
+  std::cout << ans << "\n";
 }
 
 int main() {

@@ -38,10 +38,10 @@ bool is_prime(int n){
 int main() {
   std::mt19937 mt(time(nullptr)); 
 
-  string text = CreateString(random(2, 15));
-  cout << text << "\n";
+  string text = CreateString(random(10, 15));
+  // cout << text << "\n";
 
-  int testcases = 5;
+  int testcases = random(1, 2);
 
   cout << testcases << "\n";
 
@@ -51,9 +51,9 @@ int main() {
       int l = random(0, text.size() - 2);
       int r = random(l + 1, text.size() - 1);
       string cur = text.substr(l, r - l + 1);
-      cout << cur << "\n";
+      cout << cur << " ";
     } else {
-      cout << CreateString(random(10, 15)) << "\n";
+      cout << CreateString(random(3, 4)) << " ";
     }
   }
 
