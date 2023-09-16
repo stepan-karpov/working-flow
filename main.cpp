@@ -1,10 +1,7 @@
 #include <algorithm>
 #include <iostream>
-#include <queue>
-#include <unordered_map>
+#include <set>
 #include <vector>
-
-const std::string kALPH = "abcdefghijklmnopqrstuvwxyz";
 
 void Init() {
   std::ios_base::sync_with_stdio(false);
@@ -12,162 +9,82 @@ void Init() {
   std::cout.tie(nullptr);
 }
 
-struct Node {
-  std::unordered_map<char, int> edges;
-  std::unordered_map<char, int> to;
-  int link = -1;
-  int len = 0;
-  std::vector<int> reversed_links;
-  std::vector<int> num;
-  bool terminate = false;
-  int border = 0;
-  std::vector<std::pair<int, int>>* path = nullptr;
-};
+const long long kPrime = 19;
+const long long kRemainder = 2000000011;
 
-void BuildTrieSceleton(std::vector<std::string>& sequence,
-                       std::vector<Node>& trie) {
-  for (size_t i = 0; i < sequence.size(); ++i) {
-    int current_v = 0;
+std::vector<long long> PolynomialHash(std::string& pattern) {
+  std::vector<long long> hash(pattern.size());
+  hash[0] = pattern[0] - 'a' + 1;
 
-    for (size_t j = 0; j < sequence[i].size(); ++j) {
-      if (trie[current_v].edges.count(sequence[i][j]) == 0) {
-        trie.push_back(Node());
-        trie[current_v].edges[sequence[i][j]] = trie.size() - 1;
-      }
-      current_v = trie[current_v].edges[sequence[i][j]];
-    }
-
-    trie[current_v].len = sequence[i].size();
-    trie[current_v].terminate = true;
-    trie[current_v].num.push_back(i);
+  for (size_t i = 1; i < pattern.size(); ++i) {
+    hash[i] = (hash[i - 1] * kPrime + int(pattern[i] - 'a' + 1)) % kRemainder;
   }
+  return hash;
 }
 
-std::vector<Node> BuildTrie(std::vector<std::string>& sequence) {
-  std::vector<Node> trie;
-  trie.push_back(Node());
-
-  trie[0].link = 0;
-  BuildTrieSceleton(sequence, trie);
-
-  for (auto child : kALPH) {
-    if (trie[0].edges.count(child) != 0) {
-      trie[0].to[child] = trie[0].edges[child];
-    } else {
-      trie[0].to[child] = 0;
-    }
+std::vector<long long> PPowers(int size) {
+  std::vector<long long> answer(size, 0);
+  answer[0] = 1;
+  for (int i = 1; i < size; ++i) {
+    answer[i] = (answer[i - 1] * kPrime) % kRemainder;
   }
-  std::queue<int> queue;
-  queue.push(0);
-
-  while (!queue.empty()) {
-    int parent = queue.front();
-    queue.pop();
-    for (auto child : kALPH) {
-      int to = trie[parent].to[child];
-      if (trie[parent].edges.count(child) == 0) {
-        continue;
-      }
-      if (parent == 0) {
-        trie[to].link = 0;
-      } else {
-        trie[to].link = trie[trie[parent].link].to[child];
-      }
-      for (auto grandson : kALPH) {
-        if (trie[to].edges.count(grandson) != 0) {
-          trie[to].to[grandson] = trie[to].edges[grandson];
-        } else {
-          trie[to].to[grandson] = trie[trie[to].link].to[grandson];
-        }
-      }
-      queue.push(to);
-    }
-  }
-
-  return trie;
+  return answer;
 }
 
-void FindSources(int current_v, std::vector<int>& sources,
-                 std::vector<Node>& trie) {
-  if (trie[current_v].reversed_links.size() == 0) {
-    sources.push_back(current_v);
-    return;
+int GetHash(std::vector<long long>& hash, std::vector<long long>& p_powers,
+            long long left_border, long long right_border) {
+  long long answer = hash[right_border];
+  if (left_border > 0LL) {
+    answer = answer - (hash[left_border - 1] *
+                       p_powers[right_border - left_border + 1]) %
+                          kRemainder;
+    answer = (answer + kRemainder) % kRemainder;
   }
-  for (auto edge : trie[current_v].reversed_links) {
-    FindSources(edge, sources, trie);
-  }
-}
-
-void ReverseLinks(int current_v, std::vector<Node>& trie) {
-  if (current_v != 0) {
-    int link = trie[current_v].link;
-    trie[link].reversed_links.push_back(current_v);
-  }
-  for (auto edge : trie[current_v].edges) {
-    ReverseLinks(edge.second, trie);
-  }
-}
-
-void MarkUp(int current_v, std::vector<std::pair<int, int>>& path,
-            std::vector<Node>& trie) {
-  if (current_v == 0) { return; }
-  MarkUp(trie[current_v].link, path, trie);
-  if (trie[current_v].terminate) {
-    for (auto num : trie[current_v].num) {
-      path.push_back({num, trie[current_v].len});
-    }
-  }
-  trie[current_v].border = path.size();
-  trie[current_v].path = &path;
-}
-
-void MarkUpTerminators(std::vector<int>& sources,
-                       std::vector<std::vector<std::pair<int, int>>>& terminators,
-                       std::vector<Node>& trie) {
-  for (int i = 0; i < sources.size(); ++i) {
-    MarkUp(sources[i], terminators[i], trie);
-  }
+  return answer;
 }
 
 void Solve() {
+  std::string pattern;
   std::string text;
+  std::cin >> pattern;
   std::cin >> text;
-  int n_size; std::cin >> n_size;
-  std::vector<std::string> sequence(n_size);
-  for (int i = 0; i < n_size; ++i) {
-    std::cin >> sequence[i];
+
+  long long n_size = pattern.size();
+  pattern = pattern + pattern;
+
+  std::vector<long long> p_powers =
+      PPowers(std::max(pattern.size(), text.size()));
+
+  std::vector<long long> pattern_hash = PolynomialHash(pattern);
+
+  std::vector<long long> text_hash = PolynomialHash(text);
+
+  std::set<long long> found;
+
+  for (size_t i = 0; i < pattern.size(); ++i) {
+    size_t start = i;
+    size_t end = i + n_size - 1;
+    if (end >= pattern.size()) {
+      break;
+    }
+    found.insert(GetHash(pattern_hash, p_powers, start, end));
   }
-  std::vector<Node> trie = BuildTrie(sequence);
 
-  std::vector<int> sources;
+  long long ans = 0;
 
-  ReverseLinks(0, trie);
-  FindSources(0, sources, trie);
-  std::vector<std::vector<std::pair<int, int>>> terminators(sources.size());
-  MarkUpTerminators(sources, terminators, trie);
-
-  std::vector<std::vector<int>> answer(sequence.size());
-
-  int current_vertex = 0;
   for (size_t i = 0; i < text.size(); ++i) {
-    current_vertex = trie[current_vertex].to[text[i]];
-    int parent = current_vertex;
-    std::vector<std::pair<int, int>>* path = trie[current_vertex].path;
-    int border = trie[current_vertex].border;
-    for (int j = 0; j < border; ++j) {
-      int num = (*path)[j].first;
-      int len = (*path)[j].second;
-      int start = i - len + 1;
-      answer[num].push_back(start + 1);
+    size_t start = i;
+    size_t end = i + n_size - 1;
+    if (end >= text.size()) {
+      break;
+    }
+    long long current_hash = GetHash(text_hash, p_powers, start, end);
+    if (found.find(current_hash) != found.end()) {
+      ++ans;
     }
   }
-  for (size_t i = 0; i < answer.size(); ++i) {
-    std::cout << answer[i].size() << " ";
-    for (size_t j = 0; j < answer[i].size(); ++j) {
-      std::cout << answer[i][j] << " ";
-    }
-    std::cout << "\n";
-  }
+
+  std::cout << ans << "\n";
 }
 
 int main() {

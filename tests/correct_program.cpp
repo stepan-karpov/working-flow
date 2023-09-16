@@ -39,24 +39,46 @@ bool prefix_eq(string& text, string& pattern, int r) {
   return true;
 }
 
-void Solve() {
-  ll n; cin >> n;
-  std::vector<string> a(n);
-  for (int i = 0; i < n; ++i) {
-    std::cin >> a[i];
-  }
-  string ans = a[0];
+void Shift(string& s) {
+  char start = s.front();
+  char end = s.back();
 
-  for (int i = 1; i < n; ++i) {
-    int max_delete = 0;
-    for (int j = 1; j <= a[i].size(); ++j) {
-      if (prefix_eq(ans, a[i], j)) {
-        max_delete = j;
+  string ans = end + s.substr(0, s.size() - 1);
+  s = ans;
+}
+
+ll CountEntries(string s, string t) {
+  ll ans = 0;
+
+  for (int i = 0; i < t.size(); ++i) {
+    bool ok = true;
+
+    for (int j = 0; j < s.size(); ++j) {
+      if (i + j >= t.size() || s[j] != t[i + j]) {
+        ok = false;
       }
     }
-    ans += a[i].substr(max_delete, a[i].size() - max_delete);
+    ans += ok;
   }
-  std::cout << ans << "\n";
+  return ans;
+}
+
+void Solve() {
+  string s; cin >> s;
+  string t; cin >> t;
+  
+  ll ans = 0;
+
+  set<string> options;
+
+  for (int i = 0; i < s.size(); ++i) {
+    if (options.find(s) == options.end()) {
+      ans += CountEntries(s, t);
+    }
+    options.insert(s);
+    Shift(s);
+  }
+  cout << ans << "\n";
 }
 
 int main() {

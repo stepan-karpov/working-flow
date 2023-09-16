@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iostream>
+#include <set>
 #include <vector>
 
 void Init() {
@@ -8,42 +9,104 @@ void Init() {
   std::cout.tie(nullptr);
 }
 
-void PrefixFunction(std::vector<int>& prefix_function, std::string& text) {
-  prefix_function[0] = 0;
+const std::pair<long long, long long> kPrimes = {29, 31};
+const std::pair<long long, long long> kRems = {1'000'000'007, 1'000'000'009};
 
-  for (int i = 1; i < text.size(); ++i) {
-    int last_ans = prefix_function[i - 1];
-    while (last_ans > 0 && text[last_ans] != text[i]) {
-      last_ans = prefix_function[last_ans - 1];
+struct Hash {
+  std::vector<std::pair<long long, long long>> hashes;
+  std::vector<std::pair<long long, long long>> primes_powers;
+
+  Hash(std::string& text) {
+    hashes.assign(text.size(), {0, 0});
+    primes_powers.assign(text.size(), {1, 1});
+    primes_powers[0].first = 1;
+    primes_powers[0].second = 1;
+    hashes[0].first = text[0] - 'a' + 1;
+    hashes[0].second = text[0] - 'a' + 1;
+
+    for (size_t i = 1; i < text.size(); ++i) {
+      long long current_value = text[i] - 'a' + 1;
+      hashes[i].first =
+          (hashes[i - 1].first * kPrimes.first + current_value) % kRems.first;
+      hashes[i].second =
+          (hashes[i - 1].second * kPrimes.second + current_value) %
+          kRems.second;
+      primes_powers[i].first =
+          (primes_powers[i - 1].first * kPrimes.first) % kRems.first;
+      primes_powers[i].second =
+          (primes_powers[i - 1].second * kPrimes.second) % kRems.second;
     }
-    if (text[last_ans] == text[i]) {
-      ++last_ans;
-    }
-    prefix_function[i] = last_ans;
   }
+
+  std::pair<long long, long long> GetHash(int left, int right) {
+    std::pair<long long, long long> answer = hashes[right];
+
+    if (left > 0) {
+      answer.first -=
+          (hashes[left - 1].first * primes_powers[right - left + 1].first) %
+          kRems.first;
+      answer.second -=
+          (hashes[left - 1].second * primes_powers[right - left + 1].second) %
+          kRems.second;
+    }
+    answer.first = (answer.first + kRems.first) % kRems.first;
+    answer.second = (answer.second + kRems.first) % kRems.second;
+    return answer;
+  }
+};
+
+bool CanFind(std::vector<std::pair<long long, long long>>& used,
+             std::pair<long long, long long> value) {
+  int left = 0;
+  int right = used.size();
+
+  while (right - left > 1) {
+    int mid = (left + right) / 2;
+    if (used[mid] > value) {
+      right = mid;
+    } else {
+      left = mid;
+    }
+  }
+  if (left >= 0 && used[left] == value) {
+    return true;
+  }
+  return (right < int(used.size()) && used[right] == value);
 }
 
 void Solve() {
-  int n_size;
-  std::cin >> n_size;
-  std::vector<std::string> dict(n_size);
-  for (int i = 0; i < n_size; ++i) {
-    std::cin >> dict[i];
+  std::string pattern;
+  std::string text;
+  std::cin >> pattern;
+  std::cin >> text;
+
+  int n_size = pattern.size();
+
+  pattern += pattern;
+
+  Hash pattern_hash(pattern);
+  Hash text_hash(text);
+
+  std::vector<std::pair<long long, long long>> used;
+
+  for (size_t i = 0; i < pattern.size(); ++i) {
+    if (int(i + n_size - 1) >= int(pattern.size())) {
+      break;
+    }
+    used.push_back(pattern_hash.GetHash(i, i + n_size - 1));
   }
-  std::string answer = dict[0];
+  std::sort(used.begin(), used.end());
 
-  for (int i = 1; i < n_size; ++i) {
-    int start = std::max(int(answer.size() - dict[i].size()), 0);
-    
-    std::string current_string = dict[i] + "#" + answer.substr(start, answer.size() - start);
-    std::vector<int> prefix_function(current_string.size());
-    PrefixFunction(prefix_function, current_string);
+  int answer = 0;
 
-    int border = answer.size() - start;
-
-    int to_delete = prefix_function[prefix_function.size() - 1];
-
-    answer += dict[i].substr(to_delete, dict[i].size() - to_delete);
+  for (size_t i = 0; i < text.size(); ++i) {
+    if (int(i + n_size - 1) >= int(text.size())) {
+      break;
+    }
+    std::pair<long long, long long> temp = text_hash.GetHash(i, i + n_size - 1);
+    if (CanFind(used, temp)) {
+      ++answer;
+    }
   }
 
   std::cout << answer << "\n";

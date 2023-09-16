@@ -1,49 +1,38 @@
-#include <bits/stdc++.h>
-using namespace std;
-// #pragma GCC optimize("unroll-loops")
-// #pragma GCC optimize("Ofast")
-// #pragma GCC optimize("no-stack-protector")
-// #pragma GCC target("sse,sse2,sse3,ssse3,popcnt,abm,mmx,avx,tune=native")
-// #pragma GCC optimize("fast-math")
-// #pragma GCC optimize(2)
-// #pragma GCC optimize("Ofast","inline","-ffast-math")
-// #pragma GCC optimize "-O3"
+#include <algorithm>
+#include <iostream>
+#include <vector>
 
-using ll = long long;
-using pll = pair<ll, ll>;
-using vll = vector<ll>;
-using vvll = vector<vll>;
-using ld = long double;
-using vb = vector<bool>;
-
-const ll INF = 1e16;
-const ld EPS = 1e-8;
-const string kALPH = "abcdefghijklmnopqrstuvwxyz";
-
-// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
-
-void Solve() {
-  cout << ('a' - 97) << "\n";
-  cout << ('b' - 97) << "\n";
-  cout << ('c' - 97) << "\n";
+void Init() {
+  std::ios_base::sync_with_stdio(false);
+  std::cin.tie(nullptr);
+  std::cout.tie(nullptr);
 }
 
 int main() {
-  ios_base::sync_with_stdio(false);
-  cin.tie(nullptr);
-  cout.tie(nullptr);
-  ll t = 1;
-  // cin >> t;
-  // cout << fixed << setprecision(10);
-  
-  while (t--) {
-    Solve();
-    // cout << solve() << endl;
-    // if (solve())
-    //    cout << "Yes" << endl;
-    // else
-    //    cout << "No" << endl;
+  Init();
+  std::string s;
+  std::cin >> s;
+
+  std::vector<int> prefix_function(s.size());
+
+  prefix_function[0] = 0;
+
+  for (int i = 1; i < s.size(); ++i) {
+    int last_ans = prefix_function[i - 1];
+    while (last_ans > 0 && s[last_ans] != s[i]) {
+      last_ans = prefix_function[last_ans - 1];
+    }
+    if (s[last_ans] == s[i]) {
+      ++last_ans;
+    }
+    prefix_function[i] = last_ans;
   }
+
+  for (int i = 0; i < s.size(); ++i) {
+    std::cout << prefix_function[i] << " ";
+  }
+  std::cout << "\n";
+
 
   return 0;
 }

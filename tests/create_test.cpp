@@ -13,8 +13,8 @@ int random(long long low, long long high) {
 }
 
 std::string CreateString(int size) {
-  // const std::string ALPH = "abcd";
-  const std::string ALPH = "abcdefghijklmopq";
+  const std::string ALPH = "abc";
+  // const std::string ALPH = "abcdefghijklmopq";
   std::string ans = "";
 
   for (int i = 0; i < size; ++i) {
@@ -38,12 +38,11 @@ bool is_prime(int n){
 int main() {
   std::mt19937 mt(time(nullptr)); 
 
-  string text = CreateString(random(10, 15));
-  // cout << text << "\n";
+  string text = CreateString(random(5, 10));
 
-  int testcases = random(1, 2);
+  int testcases = 1;
 
-  cout << testcases << "\n";
+  // cout << testcases << "\n";
 
   for (int i = 0; i < testcases; ++i) {
     int chance = random(0, 10);
@@ -51,11 +50,12 @@ int main() {
       int l = random(0, text.size() - 2);
       int r = random(l + 1, text.size() - 1);
       string cur = text.substr(l, r - l + 1);
-      cout << cur << " ";
+      cout << cur << "\n";
     } else {
-      cout << CreateString(random(3, 4)) << " ";
+      cout << CreateString(random(3, 4)) << "\n";
     }
   }
+  cout << text;
 
   return 0;
 }
