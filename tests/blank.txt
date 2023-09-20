@@ -1,4 +1,4 @@
-D E F G H I
-| | | | | |
-
-bacacbb abacacbb
+3
++ ab
++ aab
+? aabac

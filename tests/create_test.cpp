@@ -38,24 +38,29 @@ bool is_prime(int n){
 int main() {
   std::mt19937 mt(time(nullptr)); 
 
-  string text = CreateString(random(5, 10));
+  int testcases = random(100, 500);
 
-  int testcases = 1;
+  std::cout << testcases << "\n";
 
-  // cout << testcases << "\n";
+  set<string> used;
 
   for (int i = 0; i < testcases; ++i) {
-    int chance = random(0, 10);
-    if (chance < 9) {
-      int l = random(0, text.size() - 2);
-      int r = random(l + 1, text.size() - 1);
-      string cur = text.substr(l, r - l + 1);
-      cout << cur << "\n";
+    int type = random(1, 5);
+    if (type == 1) {
+      if (used.size() > 0) {
+        cout << "- " << *used.begin() << "\n";
+        used.erase(used.begin());
+      } else {
+        cout << "- " << CreateString(random(1, 3)) << "\n";
+      }
+    } else if (type == 2) {
+      cout << "? " << CreateString(random(4, 5)) << "\n";
     } else {
-      cout << CreateString(random(3, 4)) << "\n";
+      string temp = CreateString(random(1, 5));
+      used.insert(temp);
+      cout << "+ " << temp << "\n";
     }
   }
-  cout << text;
 
   return 0;
 }
