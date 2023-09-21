@@ -29,7 +29,7 @@ struct Node {
 };
 
 struct NFA {
-  int max_length_check = 11;
+  static const int max_length_check = 11;
   Node node1, node2;
   NFA(Node&& node1, Node&& node2)
     : node1(std::move(node1)), node2(std::move(node2)) {}
@@ -140,7 +140,16 @@ void CountNFA(bool check_dfa = false) {
 }
 
 int main() {
+  /* 
+    some notes: 
+      -this codes works ~5 sec on my machine (Mac M2, 8 cores)
 
+      -function isEquals() implies that if 
+      each of the word from {a, b}^(NFA.max_length_check) has
+      equal recognition from two different nka then two nfa are equal
+
+      -answer doesn't depend on max_length_check (if it is >= 5)
+  */
   CountNFA(false);
   CountNFA(true);
 

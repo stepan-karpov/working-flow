@@ -1,9 +1,6 @@
-// no_concepts
 #include <algorithm>
 #include <iostream>
-#include <map>
 #include <queue>
-#include <unordered_map>
 #include <vector>
 
 void Init() {
@@ -12,269 +9,191 @@ void Init() {
   std::cout.tie(nullptr);
 }
 
-const std::string kAlph = "abc";
-const int kTen = 10;
-const int kThree = 3 + 0;
+const std::string kAlph = "abcdefghijklmnopqrstuvwxyz";
+const int kAlphSize = 26;
 
-struct Corasick {
-  struct Node {
-    int to[kThree];
-    int edges[kThree];
-    int link = -1;
-    int comp = 0;
-    int terminate = 0;
-    Node() {
-      for (int i = 0; i < kThree; ++i) {
-        to[i] = -1;
-        edges[i] = -1;
-      }
+struct Node {
+  int to[kAlphSize];
+  std::vector<int> nums;
+  bool terminate = false;
+  int link = -1;
+  int comp = 0;
+  Node() {
+    for (int i = 0; i < kAlphSize; ++i) {
+      to[i] = -1;
     }
-  };
-  bool build = false;
-  std::vector<Node> trie;
+  }
+};
 
-  void BuildSceleton(std::string& text) {
-    trie.push_back(Node());
+void BuildSceleton(std::vector<std::string>& dict, std::vector<Node>& trie) {
+  trie.reserve(dict.size() * 2);
+  trie.push_back(Node());
 
+  for (size_t i = 0; i < dict.size(); ++i) {
+    std::string& current_string = dict[i];
     int current_vertex = 0;
-    for (size_t j = 0; j < text.size(); ++j) {
-      if (trie[current_vertex].edges[text[j] - 'a'] == -1) {
+    for (size_t j = 0; j < current_string.size(); ++j) {
+      if (trie[current_vertex].to[current_string[j] - 'a'] == -1) {
         trie.push_back(Node());
-        trie[current_vertex].edges[text[j] - 'a'] = trie.size() - 1;
+        trie[current_vertex].to[current_string[j] - 'a'] = trie.size() - 1;
       }
-      current_vertex = trie[current_vertex].edges[text[j] - 'a'];
+      current_vertex = trie[current_vertex].to[current_string[j] - 'a'];
     }
-    ++trie[current_vertex].terminate;
+    trie[current_vertex].terminate = true;
+    trie[current_vertex].nums.push_back(i);
+  }
+}
+
+void BuildTrie(std::vector<std::string>& dict, std::vector<Node>& trie) {
+  BuildSceleton(dict, trie);
+
+  trie[0].link = 0;
+
+  for (size_t i = 0; i < kAlph.size(); ++i) {
+    if (trie[0].to[i] == -1) {
+      trie[0].to[i] = 0;
+    }
   }
 
-  void BuildTrie() {
-    build = true;
-    for (size_t i = 0; i < trie.size(); ++i) {
-      trie[i].comp = 0;
-      trie[i].link = -1;
-      trie[i].to[0] = trie[i].edges[0];
-      trie[i].to[1] = trie[i].edges[1];
-      trie[i].to[2] = trie[i].edges[2];
-    }
-    trie[0].link = 0;
+  std::queue<int> queue;
+  queue.push(0);
+
+  while (!queue.empty()) {
+    int current_vertex = queue.front();
+    queue.pop();
 
     for (size_t i = 0; i < kAlph.size(); ++i) {
-      if (trie[0].to[i] == -1) {
-        trie[0].to[i] = 0;
-      }
-    }
-
-    std::queue<int> queue;
-    queue.push(0);
-
-    while (!queue.empty()) {
-      int current_vertex = queue.front();
-      queue.pop();
-
-      for (size_t i = 0; i < kAlph.size(); ++i) {
-        int son = trie[current_vertex].to[i];
-        if (trie[son].link != -1) {
-          continue;
-        }
-        trie[son].link =
-            current_vertex == 0 ? 0 : trie[trie[current_vertex].link].to[i];
-        for (size_t j = 0; j < kAlph.size(); ++j) {
-          int grandson = trie[son].to[j];
-          if (grandson != -1) {
-            continue;
-          }
-          trie[son].to[j] = trie[trie[son].link].to[j];
-        }
-
-        int link = trie[son].link;
-        trie[son].comp += trie[link].comp;
-        if (trie[son].terminate != 0) {
-          trie[son].comp += trie[son].terminate;
-        }
-        queue.push(son);
-      }
-    }
-  }
-
-  Corasick(std::string& text) {
-    trie.clear();
-    trie.reserve(text.size() + 1);
-    BuildSceleton(text);
-    BuildTrie();
-  }
-
-  void DfsMerge(int old_number, int new_number, Corasick* root) {
-    std::vector<Node>& old_trie = root->trie;
-    trie[new_number].terminate += old_trie[old_number].terminate;
-
-    for (size_t i = 0; i < kAlph.size(); ++i) {
-      int togo = old_trie[old_number].edges[kAlph[i] - 'a'];
-      if (togo == -1) {
+      int son = trie[current_vertex].to[i];
+      if (trie[son].link != -1) {
         continue;
       }
-      if (trie[new_number].edges[kAlph[i] - 'a'] == -1) {
-        trie.push_back(Node());
-        trie[new_number].edges[kAlph[i] - 'a'] = trie.size() - 1;
+      trie[son].link =
+          current_vertex == 0 ? 0 : trie[trie[current_vertex].link].to[i];
+      for (size_t j = 0; j < kAlph.size(); ++j) {
+        int grandson = trie[son].to[j];
+        if (grandson != -1) {
+          continue;
+        }
+        trie[son].to[j] = trie[trie[son].link].to[j];
       }
-      DfsMerge(togo, trie[new_number].edges[kAlph[i] - 'a'], root);
-    }
-  }
-
-  void Merge(Corasick* root) {
-    trie.reserve(trie.size() + root->trie.size() + 1);
-    DfsMerge(0, 0, root);
-    // BuildTrie();
-    build = false;
-  }
-
-  long long Count(std::string& text) {
-    if (!build) {
-      BuildTrie();
-    }
-    long long answer = 0;
-
-    int vertex = 0;
-    for (size_t i = 0; i < text.size(); ++i) {
-      vertex = trie[vertex].to[text[i] - 'a'];
-      int current_parent = vertex;
-      long long temp = trie[current_parent].comp;
-      answer += temp;
-    }
-    return answer;
-  }
-
-  int CountExactDfs(std::string& text, int number, int vertex) {
-    if (number == int(text.size())) {
-      return trie[vertex].terminate;
-    }
-    if (trie[vertex].edges[text[number] - 'a'] == -1) {
-      return 0;
-    }
-    return CountExactDfs(text, number + 1,
-                         trie[vertex].edges[text[number] - 'a']);
-  }
-
-  int CountExact(std::string& text) { return CountExactDfs(text, 0, 0); }
-};
-
-struct MegaCorasick {
-  int size = 1;
-  int log_size = 1;
-  std::vector<Corasick*> trie;
-
-  MegaCorasick(int n_size) : size(n_size) {
-    while ((1 << log_size) <= size) {
-      ++log_size;
-    }
-    trie.assign(log_size + kTen, nullptr);
-  }
-
-  void Add(std::string& text) {
-    Corasick* pointer = new Corasick(text);
-    int position = 0;
-    while (trie[position] != nullptr) {
-      if (trie[position]->trie.size() > pointer->trie.size()) {
-        trie[position]->Merge(pointer);
-        delete pointer;
-        pointer = trie[position];
-        trie[position] = nullptr;
+      int link = trie[son].link;
+      if (trie[link].terminate || link == 0) {
+        trie[son].comp = link;
       } else {
-        pointer->Merge(trie[position]);
-        delete trie[position];
-        trie[position] = nullptr;
+        trie[son].comp = trie[link].comp;
       }
-      ++position;
+      queue.push(son);
     }
-    trie[position] = pointer;
   }
+}
 
-  long long Count(std::string& text) {
-    long long answer = 0;
-    for (size_t i = 0; i < trie.size(); ++i) {
-      if (trie[i] != nullptr) {
-        long long temp = trie[i]->Count(text);
-        answer += temp;
-      }
-    }
-    return answer;
-  }
+void CountTable(std::vector<std::string>& main_map,
+                std::vector<std::string>& patterns,
+                std::vector<std::vector<int>>& coord1) {
+  int n_size = main_map.size();
 
-  int CountExact(std::string& text) {
-    int answer = 0;
-    for (size_t i = 0; i < trie.size(); ++i) {
-      if (trie[i] != nullptr) {
-        answer += trie[i]->CountExact(text);
-      }
-    }
-    return answer;
-  }
+  std::vector<Node> trie;
+  BuildTrie(patterns, trie);
 
-  ~MegaCorasick() {
-    for (size_t i = 0; i < trie.size(); ++i) {
-      if (trie[i] != nullptr) {
-        delete trie[i];
+  for (int j = 0; j < n_size; ++j) {
+    int vertex = 0;
+    for (size_t i = 0; i < main_map[j].size(); ++i) {
+      vertex = trie[vertex].to[main_map[j][i] - 'a'];
+      int current_parent = vertex;
+      while (current_parent != 0) {
+        if (trie[current_parent].terminate) {
+          for (size_t k = 0; k < trie[current_parent].nums.size(); ++k) {
+            int current_number = trie[current_parent].nums[k];
+            int start_pos = i - patterns[current_number].size() + 1;
+            int row_start = j - current_number;
+            if (row_start >= 0) {
+              ++coord1[row_start][start_pos];
+            }
+          }
+        }
+        current_parent = trie[current_parent].comp;
       }
     }
   }
-};
+}
 
-void Shift(std::string& text, int shift) {
-  shift = int(shift) % int(text.size());
-  std::string ans;
-  for (size_t i = shift; i < text.size(); ++i) {
-    ans += text[i];
+void Transpose(std::vector<std::string>& sequence) {
+  std::vector<std::string> answer;
+  answer.reserve(sequence.size());
+
+  for (size_t i = 0; i < sequence[0].size(); ++i) {
+    answer.push_back("");
+    for (size_t j = 0; j < sequence.size(); ++j) {
+      answer[i] += sequence[j][i];
+    }
   }
-  for (int i = 0; i < shift; ++i) {
-    ans += text[i];
+  sequence = answer;
+}
+
+int CountTables(std::vector<std::vector<int>>& coord1,
+                std::vector<std::string>& patterns,
+                std::vector<std::vector<int>>& coord2) {
+  int answer = 0;
+  int n_size = coord1.size();
+  int m_size = coord1[0].size();
+  int size = patterns[0].size();
+  int size_m = patterns.size();
+
+  for (int i = 0; i <= n_size - size; ++i) {
+    for (int j = 0; j <= m_size - size_m; ++j) {
+      if (coord1[i][j] == size ||
+          coord1[i][j] + coord2[j][i] == size + size_m - 2) {
+        ++answer;
+      }
+    }
   }
-  text = ans;
+  return answer;
 }
 
 void Solve() {
-  int queries;
-  std::cin >> queries;
+  int n_size;
+  int m_size;
+  std::cin >> n_size >> m_size;
+  std::vector<std::string> main_map(n_size);
+  for (int i = 0; i < n_size; ++i) {
+    std::cin >> main_map[i];
+  }
 
-  MegaCorasick megamonster_add(queries + kTen);
-  MegaCorasick megamonster_delete(queries + kTen);
+  int a_size;
+  int b_size;
+  std::cin >> a_size >> b_size;
+  std::vector<std::string> patterns(a_size);
 
-  long long last_answer = 0;
+  for (int i = 0; i < a_size; ++i) {
+    std::cin >> patterns[i];
+  }
 
-  std::unordered_map<std::string, int> added_words;
-  std::unordered_map<std::string, int> deleted_words;
+  std::vector<std::vector<int>> coord1(n_size, std::vector<int>(m_size, 0));
+  CountTable(main_map, patterns, coord1);
 
-  added_words.reserve(queries);
-  deleted_words.reserve(queries);
+  Transpose(main_map);
+  Transpose(patterns);
 
-  for (int i = 0; i < queries; ++i) {
-    std::string query;
-    std::string text;
-    std::cin >> query >> text;
-    Shift(text, last_answer);
-    if (query == "?") {
-      long long added = megamonster_add.Count(text);
-      long long deleted = megamonster_delete.Count(text);
-      last_answer = added - deleted;
-      std::cout << last_answer << "\n";
-    } else if (query == "-") {
-      if (added_words.find(text) == added_words.end()) {
-        continue;
-      }
-      long long added_cnt = added_words[text];
-      long long deleted_cnt = deleted_words[text];
-      if (added_cnt > deleted_cnt) {
-        deleted_words[text] = added_words[text];
-        megamonster_delete.Add(text);
-      }
-    } else {
-      if (added_words.find(text) == added_words.end()) {
-        added_words[text] = 0;
-        deleted_words[text] = 0;
-      }
-      if (added_words[text] == deleted_words[text]) {
-        ++added_words[text];
-        megamonster_add.Add(text);
-      }
+  std::vector<std::vector<int>> coord2(m_size, std::vector<int>(n_size, 0));
+  CountTable(main_map, patterns, coord2);
+
+  std::cout << CountTables(coord1, patterns, coord2) << "\n";
+  return;
+  for (int i = 0; i < n_size; ++i) {
+    for (int j = 0; j < m_size; ++j) {
+      std::cout << coord1[i][j] << " ";
     }
+    std::cout << "\n";
+  }
+
+  std::cout << "\n";
+  std::cout << "\n";
+
+  for (int i = 0; i < m_size; ++i) {
+    for (int j = 0; j < n_size; ++j) {
+      std::cout << coord2[i][j] << " ";
+    }
+    std::cout << "\n";
   }
 }
 
