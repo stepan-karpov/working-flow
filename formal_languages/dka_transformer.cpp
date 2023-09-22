@@ -7,9 +7,6 @@
 
 // usefull tool: https://csacademy.com/app/graph_editor/
 
-// legacy: warning! #vertexes should be <= 64!!
-// legacy: (see NFA.ThompsonConstruction to understand why is it so)
-
 // symbol ` means eps
 const std::string kAlph = "`abcdef";
 
