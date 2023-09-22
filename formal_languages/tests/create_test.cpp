@@ -39,8 +39,8 @@ int main() {
   std::mt19937 mt(time(nullptr)); 
 
   const std::string kAlph = "`abcdef";
-  int vertex_size = random(2, 2);
-  int edges_size = random(2, 5);
+  int vertex_size = random(3, 7);
+  int edges_size = random(4, 20);
 
   std::cout << vertex_size << "\n" << edges_size << "\n";
 
