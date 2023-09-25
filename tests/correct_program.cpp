@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <iostream>
-#include <queue>
 #include <vector>
 
 void Init() {
@@ -9,191 +8,95 @@ void Init() {
   std::cout.tie(nullptr);
 }
 
-const std::string kAlph = "abcdefghijklmnopqrstuvwxyz";
-const int kAlphSize = 26;
+const int kNumbers = 10;
+const int kMillion = 1'000'010;
+
+void InputString(std::vector<std::string>& sequence) {
+  std::string row;
+  std::cin >> row;
+
+  row += row;
+
+  int p1 = 0;
+  int p2 = row.size() - 1;
+
+  sequence.push_back(row);
+
+  for (size_t i = 0; i < row.size(); ++i) {
+    if (i % 2 == 0) {
+      sequence[sequence.size() - 1][i] = row[p1];
+      ++p1;
+    } else {
+      sequence[sequence.size() - 1][i] = row[p2];
+      --p2;
+    }
+  }
+}
 
 struct Node {
-  int to[kAlphSize];
-  std::vector<int> nums;
-  bool terminate = false;
-  int link = -1;
-  int comp = 0;
-  Node() {
-    for (int i = 0; i < kAlphSize; ++i) {
-      to[i] = -1;
-    }
-  }
+  std::vector<int> to;
+  int term_power = 0;
+  int parent_power = 0;
+  int depth = 0;
+  Node() { to.assign(kNumbers, -1); }
 };
 
-void BuildSceleton(std::vector<std::string>& dict, std::vector<Node>& trie) {
-  trie.reserve(dict.size() * 2);
-  trie.push_back(Node());
-
-  for (size_t i = 0; i < dict.size(); ++i) {
-    std::string& current_string = dict[i];
-    int current_vertex = 0;
-    for (size_t j = 0; j < current_string.size(); ++j) {
-      if (trie[current_vertex].to[current_string[j] - 'a'] == -1) {
-        trie.push_back(Node());
-        trie[current_vertex].to[current_string[j] - 'a'] = trie.size() - 1;
-      }
-      current_vertex = trie[current_vertex].to[current_string[j] - 'a'];
-    }
-    trie[current_vertex].terminate = true;
-    trie[current_vertex].nums.push_back(i);
-  }
-}
-
-void BuildTrie(std::vector<std::string>& dict, std::vector<Node>& trie) {
-  BuildSceleton(dict, trie);
-
-  trie[0].link = 0;
-
-  for (size_t i = 0; i < kAlph.size(); ++i) {
-    if (trie[0].to[i] == -1) {
-      trie[0].to[i] = 0;
+int CountDynamics(int current_vertex, int depth, std::vector<Node>& bruh,
+                  int group_size, std::vector<int>& answers) {
+  int answer = bruh[current_vertex].term_power;
+  for (int i = 0; i < kNumbers; ++i) {
+    if (bruh[current_vertex].to[i] != -1) {
+      answer += CountDynamics(bruh[current_vertex].to[i], depth + 1, bruh,
+                              group_size, answers);
     }
   }
-
-  std::queue<int> queue;
-  queue.push(0);
-
-  while (!queue.empty()) {
-    int current_vertex = queue.front();
-    queue.pop();
-
-    for (size_t i = 0; i < kAlph.size(); ++i) {
-      int son = trie[current_vertex].to[i];
-      if (trie[son].link != -1) {
-        continue;
-      }
-      trie[son].link =
-          current_vertex == 0 ? 0 : trie[trie[current_vertex].link].to[i];
-      for (size_t j = 0; j < kAlph.size(); ++j) {
-        int grandson = trie[son].to[j];
-        if (grandson != -1) {
-          continue;
-        }
-        trie[son].to[j] = trie[trie[son].link].to[j];
-      }
-      int link = trie[son].link;
-      if (trie[link].terminate || link == 0) {
-        trie[son].comp = link;
-      } else {
-        trie[son].comp = trie[link].comp;
-      }
-      queue.push(son);
-    }
-  }
-}
-
-void CountTable(std::vector<std::string>& main_map,
-                std::vector<std::string>& patterns,
-                std::vector<std::vector<int>>& coord1) {
-  int n_size = main_map.size();
-
-  std::vector<Node> trie;
-  BuildTrie(patterns, trie);
-
-  for (int j = 0; j < n_size; ++j) {
-    int vertex = 0;
-    for (size_t i = 0; i < main_map[j].size(); ++i) {
-      vertex = trie[vertex].to[main_map[j][i] - 'a'];
-      int current_parent = vertex;
-      while (current_parent != 0) {
-        if (trie[current_parent].terminate) {
-          for (size_t k = 0; k < trie[current_parent].nums.size(); ++k) {
-            int current_number = trie[current_parent].nums[k];
-            int start_pos = i - patterns[current_number].size() + 1;
-            int row_start = j - current_number;
-            if (row_start >= 0) {
-              ++coord1[row_start][start_pos];
-            }
-          }
-        }
-        current_parent = trie[current_parent].comp;
-      }
-    }
-  }
-}
-
-void Transpose(std::vector<std::string>& sequence) {
-  std::vector<std::string> answer;
-  answer.reserve(sequence.size());
-
-  for (size_t i = 0; i < sequence[0].size(); ++i) {
-    answer.push_back("");
-    for (size_t j = 0; j < sequence.size(); ++j) {
-      answer[i] += sequence[j][i];
-    }
-  }
-  sequence = answer;
-}
-
-int CountTables(std::vector<std::vector<int>>& coord1,
-                std::vector<std::string>& patterns,
-                std::vector<std::vector<int>>& coord2) {
-  int answer = 0;
-  int n_size = coord1.size();
-  int m_size = coord1[0].size();
-  int size = patterns[0].size();
-  int size_m = patterns.size();
-
-  for (int i = 0; i <= n_size - size; ++i) {
-    for (int j = 0; j <= m_size - size_m; ++j) {
-      if (coord1[i][j] == size ||
-          coord1[i][j] + coord2[j][i] == size + size_m - 2) {
-        ++answer;
-      }
-    }
+  bruh[current_vertex].parent_power = answer;
+  bruh[current_vertex].depth = depth;
+  if (depth % 2 == 0 && answer >= group_size) {
+    ++answers[depth / 2];
   }
   return answer;
 }
 
+void BuildBruh(std::vector<Node>& bruh, std::vector<std::string>& sequence) {
+  for (size_t i = 0; i < sequence.size(); ++i) {
+    int current_pointer = 0;
+    for (size_t j = 0; j < sequence[i].size(); ++j) {
+      int current_to = sequence[i][j] - '0';
+      if (bruh[current_pointer].to[current_to] == -1) {
+        bruh.push_back(Node());
+        bruh[current_pointer].to[current_to] = bruh.size() - 1;
+      }
+      current_pointer = bruh[current_pointer].to[current_to];
+    }
+    ++bruh[current_pointer].term_power;
+  }
+}
+
 void Solve() {
   int n_size;
-  int m_size;
-  std::cin >> n_size >> m_size;
-  std::vector<std::string> main_map(n_size);
+  std::cin >> n_size;
+  int group_size;
+  std::cin >> group_size;
+  std::vector<std::string> sequence;
   for (int i = 0; i < n_size; ++i) {
-    std::cin >> main_map[i];
+    InputString(sequence);
   }
 
-  int a_size;
-  int b_size;
-  std::cin >> a_size >> b_size;
-  std::vector<std::string> patterns(a_size);
+  std::vector<Node> bruh(1);
 
-  for (int i = 0; i < a_size; ++i) {
-    std::cin >> patterns[i];
-  }
+  std::vector<int> answers(kMillion, 0);
 
-  std::vector<std::vector<int>> coord1(n_size, std::vector<int>(m_size, 0));
-  CountTable(main_map, patterns, coord1);
+  BuildBruh(bruh, sequence);
+  CountDynamics(0, 0, bruh, group_size, answers);
 
-  Transpose(main_map);
-  Transpose(patterns);
+  int queries;
+  std::cin >> queries;
 
-  std::vector<std::vector<int>> coord2(m_size, std::vector<int>(n_size, 0));
-  CountTable(main_map, patterns, coord2);
-
-  std::cout << CountTables(coord1, patterns, coord2) << "\n";
-  return;
-  for (int i = 0; i < n_size; ++i) {
-    for (int j = 0; j < m_size; ++j) {
-      std::cout << coord1[i][j] << " ";
-    }
-    std::cout << "\n";
-  }
-
-  std::cout << "\n";
-  std::cout << "\n";
-
-  for (int i = 0; i < m_size; ++i) {
-    for (int j = 0; j < n_size; ++j) {
-      std::cout << coord2[i][j] << " ";
-    }
-    std::cout << "\n";
+  for (int i = 0; i < queries; ++i) {
+    int current_l;
+    std::cin >> current_l;
+    std::cout << answers[current_l] << "\n";
   }
 }
 

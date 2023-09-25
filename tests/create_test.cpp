@@ -13,7 +13,7 @@ int random(long long low, long long high) {
 }
 
 std::string CreateString(int size) {
-  const std::string ALPH = "abc";
+  const std::string ALPH = "0123456789";
   // const std::string ALPH = "abcdefghijklmopq";
   std::string ans = "";
 
@@ -38,28 +38,31 @@ bool is_prime(int n){
 int main() {
   std::mt19937 mt(time(nullptr)); 
 
-  int testcases = random(100, 500);
+  int n = random(10, 15);
+  int k = random(2, n);
 
-  std::cout << testcases << "\n";
+  std::cout << n << " " << k << "\n";
 
-  set<string> used;
+  std::vector<string> added;
 
-  for (int i = 0; i < testcases; ++i) {
-    int type = random(1, 5);
-    if (type == 1) {
-      if (used.size() > 0) {
-        cout << "- " << *used.begin() << "\n";
-        used.erase(used.begin());
-      } else {
-        cout << "- " << CreateString(random(1, 3)) << "\n";
-      }
-    } else if (type == 2) {
-      cout << "? " << CreateString(random(4, 5)) << "\n";
+  for (int i = 0; i < n; ++i) {
+    int chance = random(1, 5);
+    if (added.size() == 0 || chance == 1) {
+      added.push_back(CreateString(random(50, 100)));
+      std::cout << added[added.size() - 1] << "\n";
     } else {
-      string temp = CreateString(random(1, 5));
-      used.insert(temp);
-      cout << "+ " << temp << "\n";
+      int rand = random(0, added.size() - 1);
+      int sz = added[rand].size();
+      int l = random(1, sz);
+      string cur = added[rand].substr(0, l)  + added[rand].substr(0, l);
+      std::cout << cur << "\n";
+      added.push_back(cur);
     }
+  }
+  int testcases = 100;
+  std::cout << testcases << "\n";
+  for (int i = 0; i < testcases; ++i) {
+    std::cout << i << "\n";
   }
 
   return 0;
