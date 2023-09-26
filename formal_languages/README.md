@@ -8,7 +8,8 @@
     >If you want to use it, just read the instructions given in the output in console
     >example of an automaton description:
 
-    ```2 3     - number of vertexes, number of edges
+    ```
+    2 3     - number of vertexes, number of edges
     0 1 `   - there is an edge from vertex #0 to vertex #1 with a letter ` (eps)
     1 0 a   - there is an edge from vertex #1 to vertex #0 with a letter a
     0 0 a   - there is an edge from vertex #0 to vertex #0 with a letter a
