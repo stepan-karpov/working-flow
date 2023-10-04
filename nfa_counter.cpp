@@ -115,12 +115,12 @@ void CountNFA(bool check_dfa = false) {
       NFA current_nfa(std::move(Node(mask1)), std::move(Node(mask2)));
       if (check_dfa && !current_nfa.isDFA()) { continue; }
       bool found = false;
-      for (size_t j = 0; j < languages.size(); ++j) {
-        if (current_nfa.isEquals(languages[j])) {
-          found = true;
-          break;
-        }
-      }
+      // for (size_t j = 0; j < languages.size(); ++j) {
+      //   if (current_nfa.isEquals(languages[j])) {
+      //     found = true;
+      //     break;
+      //   }
+      // }
       if (!found) {
         languages.push_back(current_nfa);
       }

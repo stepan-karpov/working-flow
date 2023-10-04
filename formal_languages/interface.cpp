@@ -4,7 +4,8 @@
 #include <set>
 #include <string>
 #include <vector>
-#include "nfa.cpp"
+
+
 
 int main() {
   if (interface_output) {
@@ -14,25 +15,17 @@ int main() {
   long long vertexes; std::cin >> vertexes;
   DFA nfa(vertexes);
   nfa.ReadNFA();
+  std::cout << "===========\n\ninitializing eps-removing algorithm\n";
   nfa.RemoveEps();
+  std::cout << "\neps-free graph\n\n";
+  nfa.OutputGraph();
+  std::cout << "===========\n\ninitializing Thompson's construction\n";
   nfa.InitializeThompsonsAlgorithm();
-
+  std::cout << "\nDKA graph\n\n";
+  nfa.OutputGraph();
+  std::cout << "===========\n\ninitializing DFA->MIN-CDFA algorithm\n";
   nfa.MakeComplete();
-  
-  // nfa.OutputGraph();
-  // std::cout << "\n\n======\n\n";
   nfa.Minimize();
-  // nfa.OutputGraph();
-  // std::cout << "\n\n======\n\n";
-
-  int testsize; std::cin >> testsize;
-
-  for (int i = 0; i < testsize; ++i) {
-    std::string text; std::cin >> text;
-    if (nfa.CanRecognize(text)) {
-      std::cout << "YES\n";
-    } else {
-      std::cout << "NO\n";
-    }
-  }
+  std::cout << "\nmin CDFA graph\n\n";
+  nfa.OutputGraph();
 }

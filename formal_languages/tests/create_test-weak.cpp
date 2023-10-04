@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const std::string kAlph = "`abcdef";
+const std::string kAlph = "`ab";
 
 using ll = long long;
 
@@ -27,16 +27,15 @@ std::string CreateString(int size) {
 int main() {
   std::mt19937 mt(time(nullptr)); 
 
-
-  int vertex_size = random(3, 5);
-  int edges_size = random(4, 20);
+  int vertex_size = random(3, 3);
+  int edges_size = random(4, 10);
 
   std::cout << vertex_size << "\n" << edges_size << "\n";
 
   for (int i = 0; i < edges_size; ++i) {
     int u = random(0, vertex_size - 1);
     int v = random(0, vertex_size - 1);
-    int symb = random(0, kAlph.size());
+    int symb = random(0, kAlph.size() - 1);
     std::cout << u << " " << v << " " << kAlph[symb] << "\n";
   }
 
@@ -52,12 +51,12 @@ int main() {
     std::cout << ind << " ";
   }
 
-  int queries = 1000;
+  int queries = 50;
 
   std::cout << queries << "\n";
 
   for (int i = 0; i < queries; ++i) {
-    std::cout << CreateString(random(1, 100)) << "\n";
+    std::cout << CreateString(random(1, 6)) << "\n";
   }
 
   return 0;

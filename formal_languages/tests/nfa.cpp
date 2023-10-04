@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <map>
 #include <queue>
@@ -10,7 +12,7 @@
 // symbol ` means eps
 const std::string kAlph = "`abcdef";
 
-const bool interface_output = true;
+const bool interface_output = false;
 // no bitmasks optimizations
 // to support any number of vertexes/edges
 struct NFA {
@@ -202,6 +204,9 @@ struct NFA {
 
   bool DFSRecognize(int current_vertex, int pointer, std::string& word,
                     std::set<std::pair<int, int>>& used) {
+    while (pointer < word.size() && word[pointer] == '`') {
+      ++pointer;
+    }
     if (used.find({pointer, current_vertex}) != used.end()) {
       return false;
     }
@@ -223,6 +228,7 @@ struct NFA {
     if (static_cast<int>(nodes.size()) == 0) {
       return false;
     }
+
     std::set<std::pair<int, int>> used;
     return DFSRecognize(0, 0, word, used);
   }
@@ -299,6 +305,111 @@ struct DFA : public NFA {
     std::swap(other.nodes, nodes);
   }
 
+  bool isComplete() {
+    for (auto& node : nodes) {
+      for (char current_char : kAlph) {
+        if (current_char == '`') { continue; }
+        if (node.edges[current_char].empty()) { return false; }
+      }
+    }
+    return true;
+  }
+
+  void MakeComplete() {
+    if (isComplete()) { return; }
+    nodes.push_back(Node());
+
+    for (auto& node : nodes) {
+      for (auto current_char : kAlph) {
+        if (current_char == '`') { continue; }
+        if (node.edges[current_char].empty()) {
+          node.AddEdge(nodes.size() - 1, current_char);
+        }
+      }
+    }
+  }
+
+  void FindSimularVertexes(
+    std::set<std::pair<int, int>>& storage,
+    std::vector<std::map<char, std::set<int>>>& reveresed_edges) {
+    std::queue<std::pair<int, int>> pairs;
+
+    for (size_t i = 0; i < nodes.size(); ++i) {
+      for (size_t j = i + 1; j < nodes.size(); ++j) {
+        Node& node1 = nodes[i], node2 = nodes[j];
+        if (node1.is_terminal != node2.is_terminal) {
+          pairs.push({i, j});
+          storage.insert({i, j});
+        }
+      }
+    }
+
+    for (size_t i = 0; i < nodes.size(); ++i) {
+      Node& node = nodes[i];
+      for (auto current_char : kAlph) {
+        for (int to : node.edges[current_char]) {
+          if (!reveresed_edges[to].contains(current_char)) {
+            reveresed_edges[to][current_char] = {};
+          }
+          reveresed_edges[to][current_char].insert(i);
+        }
+      }
+    }
+
+    while (!pairs.empty()) {
+      int x = pairs.front().first, y = pairs.front().second;
+      pairs.pop();
+      for (auto current_char : kAlph) {
+
+        for (int a : reveresed_edges[x][current_char]) {
+          for (int b : reveresed_edges[y][current_char]) {
+            std::pair<int, int> temp = {std::min(a, b), std::max(a, b)};
+            if (storage.find(temp) == storage.end()) {
+              storage.insert(temp);
+              pairs.push(temp);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  void Minimize() {
+    if (nodes.size() == 0) { return; }
+    if (!isComplete()) {
+      std::cout << "ERROR ERROR ERROR ERROR ERROR ERROR Not complete!\n";
+      return;
+    }
+
+    int last_size = 100'500;
+
+    while (last_size > nodes.size()) {
+      last_size = nodes.size();
+      std::vector<std::map<char, std::set<int>>> reveresed_edges(nodes.size());
+      std::set<std::pair<int, int>> storage;
+      FindSimularVertexes(storage, reveresed_edges);
+
+    
+      std::vector<bool> deleted(nodes.size());
+      for (int first_vertex = 0; first_vertex < nodes.size(); ++first_vertex) {
+        for (int second_vertex = first_vertex + 1; second_vertex < nodes.size(); ++second_vertex) {
+          if (storage.find({first_vertex, second_vertex}) != storage.end()) { continue; }
+          if (!deleted[first_vertex] && !deleted[second_vertex]) {
+            for (auto current_char : kAlph) {
+              for (int parent : reveresed_edges[second_vertex][current_char]) {
+                reveresed_edges[first_vertex][current_char].insert(parent);
+                nodes[parent].edges[current_char].erase(second_vertex);
+                nodes[parent].AddEdge(first_vertex, current_char);
+              }
+            }
+          }
+        }
+      }
+
+      ClearUseless();
+    }
+  }
+
   DFA(std::vector<ThompsonNode>& nodes) : NFA(nodes) {}
   DFA(int size) : NFA(size) {}
   ~DFA() = default;
@@ -310,22 +421,3 @@ struct DFA : public NFA {
   }
   DFA(DFA&& other) = default;
 };
-
-
-int main() {
-  if (interface_output) {
-    std::cout << "!the initial automaton vertex should have number 0\n";
-    std::cout << "Input number of vertexes: ";
-  }
-  long long vertexes; std::cin >> vertexes;
-  DFA nfa(vertexes);
-  nfa.ReadNFA();
-  std::cout << "===========\n\ninitializing eps-removing algorithm\n";
-  nfa.RemoveEps();
-  std::cout << "\neps-free graph\n\n";
-  nfa.OutputGraph();
-  std::cout << "===========\n\ninitializing Thompson's construction\n";
-  nfa.InitializeThompsonsAlgorithm();
-  std::cout << "\nDKA graph\n\n";
-  nfa.OutputGraph();
-}
