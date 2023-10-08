@@ -1,148 +1,142 @@
-#include <algorithm>
-#include <iostream>
-#include <vector>
+#include <bits/stdc++.h>
+using namespace std;
+// #pragma GCC optimize("unroll-loops")
+// #pragma GCC optimize("Ofast")
+// #pragma GCC optimize("no-stack-protector")
+// #pragma GCC target("sse,sse2,sse3,ssse3,popcnt,abm,mmx,avx,tune=native")
+// #pragma GCC optimize("fast-math")
+// #pragma GCC optimize(2)
+// #pragma GCC optimize("Ofast","inline","-ffast-math")
+// #pragma GCC optimize "-O3"
 
-struct Node {
-  std::vector<bool> config;
-  Node(int mask) {
-    config.push_back((mask >> 4) & 1);
-    config.push_back((mask >> 3) & 1);
-    config.push_back((mask >> 2) & 1);
-    config.push_back((mask >> 1) & 1);
-    config.push_back((mask >> 0) & 1);
+using ll = long long;
+using pll = pair<ll, ll>;
+using vll = vector<ll>;
+using vvll = vector<vll>;
+using ld = long double;
+using vb = vector<bool>;
+
+const ll INF = 1e16;
+const ld EPS = 1e-8;
+const string ALPH = "abcdefghijklmnopqrstuvwxyz";
+
+// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
+
+set<ll> possible;
+
+string Ans(ll sit) {
+  if (1 <= sit && sit <= 36) {
+    if (sit % 2 == 0) {
+      return "highmain";
+    }
+    return "lowmain";
   }
-  void OutputNode(int number) {
-    int res_number = 1 - number;
-    if (config[1]) {
-      std::cout << number << " " << number << " a\n";
-    }
-    if (config[2]) {
-      std::cout << number << " " << res_number << " a\n";
-    }
-    if (config[3]) {
-      std::cout << number << " " << number << " b\n";
-    }
-    if (config[4]) {
-      std::cout << number << " " << res_number << " b\n";
+  if (sit % 2 == 0) {
+    return "highside";
+  }
+  return "lowside";
+}
+
+bool CanBe(int sit, std::vector<pair<string, int>>& q) {
+  for (int i = 0; i < q.size(); ++i) {
+    sit += q[i].second;
+    if (Ans(sit) != q[i].first) { return false; }
+  }
+  return true;
+}
+
+void ClearVars(std::vector<pair<string, int>>& q) {
+  set<ll> n_v;
+  for (auto el : possible) {
+    if (CanBe(el, q)) {
+      n_v.insert(el);
     }
   }
-};
+  possible = n_v;
+}
 
-struct NFA {
-  int max_length_check = 11;
-  Node node1, node2;
-  NFA(Node&& node1, Node&& node2)
-    : node1(std::move(node1)), node2(std::move(node2)) {}
+void solve() {
+  for (int i = 1; i <= 54; ++i) {
+    possible.insert(i);
+  }
+  std::vector<pair<string, int>> q;
+  std::cout << "? 0" << endl;
+  string s1, s2; cin >> s1 >> s2;
+  q.push_back({s1 + s2, 0});
 
-  bool RecognizeDfs(Node& first_node, Node& second_node,
-                    int pointer, int word) {
-    if (pointer == -1) { return first_node.config[0]; }
-    int bit = (word >> pointer) & 1;
+  ClearVars(q);
 
-    if (bit == 0) {
-      bool tree_check = false;
-      if (first_node.config[1]) {
-        tree_check =
-          (tree_check | RecognizeDfs(first_node, second_node, pointer - 1, word));
+  ll current = 0;
+
+  while (possible.size() > 1) {
+    if (q[q.size() - 1].first == "highmain" || q[q.size() - 1].first == "lowmain") {
+      ll add = INF;
+      for (auto el : possible) {
+        add = min(add, 54 - el - current);
       }
-      if (first_node.config[2]) {
-        tree_check =
-          (tree_check | RecognizeDfs(second_node, first_node, pointer - 1, word));
+      std::cout << "? " << add << endl;
+      string s1, s2; cin >> s1 >> s2;
+      current += add;
+      q.push_back({s1 + s2, add});
+      ClearVars(q);
+    } else {
+      ll add = INF;
+      for (auto el : possible) {
+        add = min(add, el + current - 1);
       }
-      return tree_check;
+      add = -add;
+      std::cout << "? " << add << endl;
+      string s1, s2; cin >> s1 >> s2;
+      current += add;
+      q.push_back({s1 + s2, add});
+      ClearVars(q);
     }
-    bool tree_check = false;
-    if (first_node.config[3]) {
-      tree_check =
-        (tree_check | RecognizeDfs(first_node, second_node, pointer - 1, word));
-    }
-    if (first_node.config[4]) {
-      tree_check =
-        (tree_check | RecognizeDfs(second_node, first_node, pointer - 1, word));
-    }
-    return tree_check;
   }
+  std::cout << "! " << *possible.begin() << "\n";
+}
 
-  bool CanRecognize(int word, int length) {
-    return RecognizeDfs(node1, node2, length - 1, word);
-  }
-
-  bool isEquals(NFA& other) {
-    for (int length = 0; length <= max_length_check; ++length) {
-      for (int word = 0; word < (1 << length); ++word) {
-        bool can_recognize1 = CanRecognize(word, length);
-        bool can_recognize2 = other.CanRecognize(word, length);
-        if (can_recognize1 != can_recognize2) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-  
-  bool isDFA() {
-    if (node1.config[1] != 0 && node1.config[2] != 0) {
-      return false;
-    }
-    if (node2.config[3] != 0 && node2.config[4] != 0) {
-      return false;
-    }
-    return true;
-  }
-
-  void OutputNFA() {
-    std::vector<bool> blank(5, 0);
-    if (node1.config == blank && node2.config == blank) {
-      std::cout << "blank NFA\n";
-      return;
-    }
-    if (node1.config[0]) {
-      std::cout << "0 is a terminal\n";
-    }
-    if (node2.config[0]) {
-      std::cout << "1 is a terminal\n";
-    }
-    node1.OutputNode(0);
-    node2.OutputNode(1);
-  }
-};
-
-void CountNFA(bool check_dfa = false) {
-  std::vector<NFA> languages;
-
-  for (int mask1 = 0; mask1 < (1 << 5); ++mask1) {
-    for (int mask2 = 0; mask2 < (1 << 5); ++mask2) {
-      NFA current_nfa(std::move(Node(mask1)), std::move(Node(mask2)));
-      if (check_dfa && !current_nfa.isDFA()) { continue; }
-      bool found = false;
-      for (size_t j = 0; j < languages.size(); ++j) {
-        if (current_nfa.isEquals(languages[j])) {
-          found = true;
-          break;
-        }
-      }
-      if (!found) {
-        languages.push_back(current_nfa);
+void solve2() {
+  string ananas1;
+  string ananas2;
+  cout << "? 0\n";
+  cin >> ananas1 >> ananas2;
+  int cur = 0;
+  if (ananas2 == "side") {
+    int l = 0, r = 19;
+    while (r - l > 1) {
+      int mid = (l + r) / 2;
+      int len = -(mid + cur);
+      cur += abs(len);
+      cout << "? " << len << endl;
+      cin >> ananas1 >> ananas2;
+      if (ananas2 == "side") {
+        l = mid;
+      } else {
+        r = mid;
       }
     }
+    cout << "! " << 36 + l;
+  } else {
+    cout << "v razrabotke\n";
   }
-
-  // to output all different nfa uncomment the following code: 
-  // for (int i = 0; i < 20; ++i) {
-  //   languages[i].OutputNFA();
-  //   std::cout << "\n\n========\n\n";
-  // }
-  std::string output_text = "number of nfa: ";
-  if (check_dfa) {
-    output_text = "number of dfa: ";
-  }
-  std::cout << output_text << languages.size() << "\n";
 }
 
 int main() {
-
-  CountNFA(false);
-  CountNFA(true);
+  ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
+  cout.tie(nullptr);
+  ll t = 1;
+  // cin >> t;
+  // cout << fixed << setprecision(10);
+  
+  while (t--) {
+    solve2();
+    // cout << solve() << endl;
+    // if (solve())
+    //    cout << "Yes" << endl;
+    // else
+    //    cout << "No" << endl;
+  }
 
   return 0;
 }

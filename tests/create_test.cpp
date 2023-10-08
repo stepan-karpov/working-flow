@@ -35,34 +35,88 @@ bool is_prime(int n){
   return f;   
 }
 
+void DFS(int v, vector<vector<int>>& g, vector<int>& kek) {
+  kek[v] = true;
+  for (auto& to : g[v]) {
+    if (kek[to]) {
+      continue;
+    }
+    DFS(to, g, kek);
+  }
+}
+
+
 int main() {
   std::mt19937 mt(time(nullptr)); 
 
-  int n = random(10, 15);
-  int k = random(2, n);
+  int n = random(3, 5);
+  int m = random(n, n * (n - 1) / 2);
 
-  std::cout << n << " " << k << "\n";
-
-  std::vector<string> added;
-
+  std::cout << n << " " << m << "\n";
   for (int i = 0; i < n; ++i) {
-    int chance = random(1, 5);
-    if (added.size() == 0 || chance == 1) {
-      added.push_back(CreateString(random(50, 100)));
-      std::cout << added[added.size() - 1] << "\n";
-    } else {
-      int rand = random(0, added.size() - 1);
-      int sz = added[rand].size();
-      int l = random(1, sz);
-      string cur = added[rand].substr(0, l)  + added[rand].substr(0, l);
-      std::cout << cur << "\n";
-      added.push_back(cur);
-    }
+    std::cout << random(2, 2) << " ";
   }
-  int testcases = 100;
-  std::cout << testcases << "\n";
-  for (int i = 0; i < testcases; ++i) {
-    std::cout << i << "\n";
+  std::cout << "\n";
+  
+  set<std::pair<int, int>> edges;
+  vector<int> hui(n, 0);
+  vector<vector<int>> g(n);
+
+  while (edges.size() != m) {
+    int u = random(0, n - 1);
+    int v = random(0, n - 1);
+    if (u > v) { swap(u, v); }
+    while (u == v) {
+      u = random(0, n - 1);
+      v = random(0, n - 1);
+      if (u > v) {
+        swap(u, v);
+      }
+    }
+    edges.insert({u, v});
+  }
+
+  for (auto& [i, j] : edges) {
+    g[i - 1].emplace_back(j - 1);
+    g[j - 1].emplace_back(i - 1);
+  }
+
+
+  
+  DFS(0, g, hui);
+  auto kek = [&hui, &n]() {
+    for (int i = 0; i < n; ++i) {
+      if (hui[i] == false) {
+        return false;
+      }
+    }
+    return true;
+  };
+    while (!kek()) {
+      g.clear();
+      g.resize(n);
+      hui.assign(n, 0);
+      while (edges.size() != m) {
+      int u = random(0, n - 1);
+      int v = random(0, n - 1);
+      if (u > v) { swap(u, v); }
+      while (u == v) {
+        u = random(0, n - 1);
+        v = random(0, n - 1);
+        if (u > v) {
+          swap(u, v);
+        }
+      }
+      edges.insert({u, v});
+    }
+
+    for (auto& [i, j] : edges) {
+      g[i - 1].emplace_back(j - 1);
+      g[j - 1].emplace_back(i - 1);
+    } 
+  }
+  for (auto el : edges) {
+    std::cout << el.first + 1 << " " << el.second + 1 << "\n";
   }
 
   return 0;

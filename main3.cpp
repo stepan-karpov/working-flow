@@ -18,19 +18,63 @@ using vb = vector<bool>;
 
 const ll INF = 1e16;
 const ld EPS = 1e-8;
-const string kALPH = "abcdefghijklmnopqrstuvwxyz";
+const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-void Solve() {
+ll BinarySearch1() {
+  ll l = 0;
+  ll r = 18;
+  int last_step = 0;
 
-  ll a = 11;
-  ll b = 11;
-  ll my_x = 15;
-  ll nm_x = 4;
+  while (r - l > 1) {
+    ll m = (l + r) / 2;
+    ll q = m - last_step;
+    last_step = m;
+    cout << "? " << -q << endl;
+    string s1, s2; cin >> s1 >> s2;
+    if (s2 == "side") {
+      l = m;
+    } else {
+      r = m;
+    }
+  }
+  cout << "! " << 37 + l << endl;
+  return 0;
+}
 
-  cout << ((my_x ^ a) & (my_x ^ b)) << "\n";
-  cout << ((nm_x ^ a) & (nm_x ^ b)) << "\n";
+ll BinarySearch2() {
+  ll l = 0;
+  ll r = 36;
+  int last_step = 0;
+
+  while (r - l > 1) {
+    ll m = (l + r) / 2;
+    ll q = m - last_step;
+    last_step = m;
+    cout << "? " << q << endl;
+    string s1, s2; cin >> s1 >> s2;
+    if (s2 == "main") {
+      l = m;
+    } else {
+      r = m;
+    }
+    cerr << l << ' ' << r << endl;
+  }
+  cout << "! " << 1 + l << endl;
+  return 0;
+}
+
+
+void solve() {
+  std::cout << "? 0" << endl;
+  string s1, s2; cin >> s1 >> s2;
+
+  if (s2 == "side") {
+    BinarySearch1();
+  } else {
+    BinarySearch2();
+  }
 }
 
 int main() {
@@ -42,7 +86,7 @@ int main() {
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    Solve();
+    solve();
     // cout << solve() << endl;
     // if (solve())
     //    cout << "Yes" << endl;
