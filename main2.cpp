@@ -1,142 +1,144 @@
-#include <bits/stdc++.h>
-using namespace std;
-// #pragma GCC optimize("unroll-loops")
-// #pragma GCC optimize("Ofast")
-// #pragma GCC optimize("no-stack-protector")
-// #pragma GCC target("sse,sse2,sse3,ssse3,popcnt,abm,mmx,avx,tune=native")
-// #pragma GCC optimize("fast-math")
-// #pragma GCC optimize(2)
-// #pragma GCC optimize("Ofast","inline","-ffast-math")
-// #pragma GCC optimize "-O3"
+#include "storage.h"
+#include <dirent.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <errno.h>
+#include <string.h>
+#include <dirent.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <errno.h>
+#include <string.h>
 
-using ll = long long;
-using pll = pair<ll, ll>;
-using vll = vector<ll>;
-using vvll = vector<vll>;
-using ld = long double;
-using vb = vector<bool>;
+void storage_init(storage_t* storage, const char* root_path) {
+    storage->root_path = calloc(strlen(root_path) + 1, sizeof(char));
+    strcpy(storage->root_path, root_path);
+}
 
-const ll INF = 1e16;
-const ld EPS = 1e-8;
-const string ALPH = "abcdefghijklmnopqrstuvwxyz";
+void storage_destroy(storage_t* storage) {
+    // free(storage) - no need to call 'free'
+    storage = NULL;
+}
 
-// v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
-
-set<ll> possible;
-
-string Ans(ll sit) {
-  if (1 <= sit && sit <= 36) {
-    if (sit % 2 == 0) {
-      return "highmain";
+void find_path(const char* cur_path, storage_key_t key, returned_value_t buf) {
+    strcat(buf, cur_path);
+    size_t size = strlen(buf) + 1;
+    buf[size - 1] = '/';
+    size_t j = 0, dir_sz = 0;
+    while (j < strlen(key)) {
+        buf[size] = key[j];
+        ++size; ++dir_sz;
+        if (dir_sz == SUBDIR_NAME_SIZE) {
+            buf[size] = '\0';
+            mkdir(buf, (1 << 10) - 1);
+            buf[size++] = '/';
+            dir_sz = 0;
+        }
+        ++j;
     }
-    return "lowmain";
-  }
-  if (sit % 2 == 0) {
-    return "highside";
-  }
-  return "lowside";
+    if (dir_sz == 0) {  buf[size++] = '@'; }
+    buf[size++] = '\0';
 }
 
-bool CanBe(int sit, std::vector<pair<string, int>>& q) {
-  for (int i = 0; i < q.size(); ++i) {
-    sit += q[i].second;
-    if (Ans(sit) != q[i].first) { return false; }
-  }
-  return true;
-}
+version_t storage_set(storage_t* storage, storage_key_t key, storage_value_t value) {
+    char buf[MAX_KEY_SIZE];
+    for (int i = 0; i < MAX_KEY_SIZE; ++i) { buf[i] = '\0'; }
+    find_path(storage->root_path, key, buf);
 
-void ClearVars(std::vector<pair<string, int>>& q) {
-  set<ll> n_v;
-  for (auto el : possible) {
-    if (CanBe(el, q)) {
-      n_v.insert(el);
+    int fd = open(buf, O_CREAT | O_RDWR, S_IRWXU);
+    struct stat st;
+    if (stat(buf, &st) == -1) { return -1; }
+
+    size_t res = 0;
+    for (size_t index = 0; index < st.st_size; ++index) {
+        char current_value;
+        if (read(fd, &current_value, 1) < 0) { return -1; }
+        if (current_value == '\n') { ++res; }
     }
-  }
-  possible = n_v;
+    if (write(fd, value, strlen(value)) < 0) { return -1; }
+    if (write(fd, "\n", 1) < 0) { return -1; }
+    close(fd);
+    ++res;
+    return res;
 }
 
-void solve() {
-  for (int i = 1; i <= 54; ++i) {
-    possible.insert(i);
-  }
-  std::vector<pair<string, int>> q;
-  std::cout << "? 0" << endl;
-  string s1, s2; cin >> s1 >> s2;
-  q.push_back({s1 + s2, 0});
+version_t storage_get(storage_t* storage, storage_key_t key, returned_value_t returned_value) {
+    char buf[MAX_KEY_SIZE];
+    for (int i = 0; i < MAX_KEY_SIZE; ++i) { buf[i] = '\0'; }
+    find_path(storage->root_path, key, buf);
 
-  ClearVars(q);
+    struct stat st;
+    int fd = open(buf, O_CREAT | O_RDWR, S_IRWXU);
+    if (stat(buf, &st) == -1) { return -1; }
 
-  ll current = 0;
-
-  while (possible.size() > 1) {
-    if (q[q.size() - 1].first == "highmain" || q[q.size() - 1].first == "lowmain") {
-      ll add = INF;
-      for (auto el : possible) {
-        add = min(add, 54 - el - current);
-      }
-      std::cout << "? " << add << endl;
-      string s1, s2; cin >> s1 >> s2;
-      current += add;
-      q.push_back({s1 + s2, add});
-      ClearVars(q);
-    } else {
-      ll add = INF;
-      for (auto el : possible) {
-        add = min(add, el + current - 1);
-      }
-      add = -add;
-      std::cout << "? " << add << endl;
-      string s1, s2; cin >> s1 >> s2;
-      current += add;
-      q.push_back({s1 + s2, add});
-      ClearVars(q);
+    int startln = -1, endln = -1;
+    size_t res = 0;
+    char content[MAX_VALUE_SIZE];
+    for (size_t index = 0; index < st.st_size; ++index) {
+        char current_value;
+        if (read(fd, &current_value, 1) < 0) { return -1; }
+        // if (strcmp(current_value, '\n') == 0) {
+        if (current_value == '\n') {
+            ++res;
+            startln = endln;
+            endln = index;
+        }
+        content[index] = current_value;
     }
-  }
-  std::cout << "! " << *possible.begin() << "\n";
-}
-
-void solve2() {
-  string ananas1;
-  string ananas2;
-  cout << "? 0\n";
-  cin >> ananas1 >> ananas2;
-  int cur = 0;
-  if (ananas2 == "side") {
-    int l = 0, r = 19;
-    while (r - l > 1) {
-      int mid = (l + r) / 2;
-      int len = -(mid + cur);
-      cur += abs(len);
-      cout << "? " << len << endl;
-      cin >> ananas1 >> ananas2;
-      if (ananas2 == "side") {
-        l = mid;
-      } else {
-        r = mid;
-      }
+    close(fd);
+    // strncopy??
+    for (int i = startln + 1; i < endln; ++i) {
+        returned_value[i - startln - 1] = content[i];
     }
-    cout << "! " << 36 + l;
-  } else {
-    cout << "v razrabotke\n";
-  }
+    returned_value[endln] = '\0';
+    return res;
 }
 
-int main() {
-  ios_base::sync_with_stdio(false);
-  cin.tie(nullptr);
-  cout.tie(nullptr);
-  ll t = 1;
-  // cin >> t;
-  // cout << fixed << setprecision(10);
-  
-  while (t--) {
-    solve2();
-    // cout << solve() << endl;
-    // if (solve())
-    //    cout << "Yes" << endl;
-    // else
-    //    cout << "No" << endl;
-  }
+version_t storage_get_by_version(storage_t* storage, storage_key_t key, version_t version, returned_value_t returned_value) {
+    char buf[MAX_VALUE_SIZE];
+    for (int i = 0; i < MAX_KEY_SIZE; ++i) { buf[i] = '\0'; }
+    find_path(storage->root_path, key, buf);
 
-  return 0;
+    struct stat st;
+    int fd = open(buf, O_CREAT | O_RDWR, S_IRWXU);
+    if (stat(buf, &st) == -1) { return -1; }
+
+    size_t res = 0;
+    int startln = -1, endln = -1;
+    char content[MAX_KEY_SIZE];
+    for (size_t index = 0; index < st.st_size; ++index) {
+        char current_value;
+        if (read(fd, &current_value, 1) < 0) { return -1; }
+        content[index - endln - 1] = current_value;
+        if (current_value == '\n') {
+            ++res;
+            startln = endln;
+            endln = index;
+            if (res == version) {
+                close(fd);
+                for (int i = 0; i < endln - startln - 1; ++i) {
+                    returned_value[i] = content[i];
+                }
+                returned_value[endln - startln - 1] = '\0';
+                return res;
+            }
+        }
+    }
+    close(fd);
+    return 0;
 }
