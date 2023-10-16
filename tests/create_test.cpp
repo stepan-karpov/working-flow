@@ -13,7 +13,7 @@ int random(long long low, long long high) {
 }
 
 std::string CreateString(int size) {
-  const std::string ALPH = "0123456789";
+  const std::string ALPH = "ab";
   // const std::string ALPH = "abcdefghijklmopq";
   std::string ans = "";
 
@@ -49,75 +49,8 @@ void DFS(int v, vector<vector<int>>& g, vector<int>& kek) {
 int main() {
   std::mt19937 mt(time(nullptr)); 
 
-  int n = random(3, 5);
-  int m = random(n, n * (n - 1) / 2);
-
-  std::cout << n << " " << m << "\n";
-  for (int i = 0; i < n; ++i) {
-    std::cout << random(2, 2) << " ";
-  }
-  std::cout << "\n";
-  
-  set<std::pair<int, int>> edges;
-  vector<int> hui(n, 0);
-  vector<vector<int>> g(n);
-
-  while (edges.size() != m) {
-    int u = random(0, n - 1);
-    int v = random(0, n - 1);
-    if (u > v) { swap(u, v); }
-    while (u == v) {
-      u = random(0, n - 1);
-      v = random(0, n - 1);
-      if (u > v) {
-        swap(u, v);
-      }
-    }
-    edges.insert({u, v});
-  }
-
-  for (auto& [i, j] : edges) {
-    g[i - 1].emplace_back(j - 1);
-    g[j - 1].emplace_back(i - 1);
-  }
-
-
-  
-  DFS(0, g, hui);
-  auto kek = [&hui, &n]() {
-    for (int i = 0; i < n; ++i) {
-      if (hui[i] == false) {
-        return false;
-      }
-    }
-    return true;
-  };
-    while (!kek()) {
-      g.clear();
-      g.resize(n);
-      hui.assign(n, 0);
-      while (edges.size() != m) {
-      int u = random(0, n - 1);
-      int v = random(0, n - 1);
-      if (u > v) { swap(u, v); }
-      while (u == v) {
-        u = random(0, n - 1);
-        v = random(0, n - 1);
-        if (u > v) {
-          swap(u, v);
-        }
-      }
-      edges.insert({u, v});
-    }
-
-    for (auto& [i, j] : edges) {
-      g[i - 1].emplace_back(j - 1);
-      g[j - 1].emplace_back(i - 1);
-    } 
-  }
-  for (auto el : edges) {
-    std::cout << el.first + 1 << " " << el.second + 1 << "\n";
-  }
+  int n = random(2, 30);
+  std::cout << CreateString(n) << "\n";
 
   return 0;
 }
