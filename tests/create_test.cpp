@@ -49,16 +49,7 @@ void DFS(int v, vector<vector<int>>& g, vector<int>& kek) {
 int main() {
   std::mt19937 mt(time(nullptr)); 
 
-  int n = random(3, 5);
-  // int m = random(3, 5);
-  int m = 2;
-
-  cout << n << " " << m << "\n";
-
-  for (int i = 0; i < n; ++i) {
-    std::cout << random(1, m) << " ";
-  }
-
+  std::cout << CreateString(random(2, 30)) << "\n";
 
   return 0;
 }
