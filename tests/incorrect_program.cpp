@@ -3,7 +3,7 @@
 #include <stack>
 #include <vector>
 
-const int kInf = 1e9;
+const std::string kAlph = "abcdefghijklmnopqrstuvwxyz";
 
 void Init() {
   std::ios_base::sync_with_stdio(false);
@@ -127,93 +127,29 @@ void FindFirstLessThanI(std::vector<int>& initial, std::vector<int>& result) {
   initial.pop_back();
 }
 
-struct SegTree {
-  struct Node {
-    int max_value = -kInf;
-    int min_value = +kInf;
-    Node() = default;
-    Node(int init) : max_value(init), min_value(init) {}
-  };
-  int size = 1;
-  std::vector<Node> tree;
-  SegTree(int n) {
-    while (size < n) {
-      size *= 2;
+void FindLastLessThanI(std::vector<int>& initial, std::vector<int>& result) {
+  std::stack<int> stack;
+  stack.push(-1);
+  for (size_t i = 0; i < initial.size(); ++i) {
+    while (stack.top() != -1 && initial[stack.top()] >= initial[i]) {
+      stack.pop();
     }
-    tree.assign(2 * size - 1, Node());
+    result[i] = stack.top();
+    stack.push(i);
   }
-
-  Node static Combine(Node& first, Node& second) {
-    Node answer;
-    answer.min_value = std::min(first.min_value, second.min_value);
-    answer.max_value = std::max(first.max_value, second.max_value);
-    return answer;
-  }
-
-  void Set(int ind, int value, int lx, int rx, int x_size) {
-    if (rx - lx == 1) {
-      tree[x_size] = Node(value);
-      return;
-    }
-    int mid = (lx + rx) / 2;
-    if (ind < mid) {
-      Set(ind, value, lx, mid, 2 * x_size + 1);
-    } else {
-      Set(ind, value, mid, rx, 2 * x_size + 2);
-    }
-    tree[x_size] = Combine(tree[2 * x_size + 1], tree[2 * x_size + 2]);
-  }
-
-  void Set(int ind, int value) { Set(ind, value, 0, size, 0); }
-
-  Node Get(int left_border, int right_border, int lx, int rx, int x_cnt) {
-    if (left_border <= lx && rx <= right_border) {
-      return tree[x_cnt];
-    }
-    if (left_border >= rx || lx >= right_border) {
-      Node null;
-      null.max_value = -kInf;
-      null.min_value = +kInf;
-      return null;
-    }
-    int mid = (lx + rx) / 2;
-    Node ans1 = Get(left_border, right_border, lx, mid, 2 * x_cnt + 1);
-    Node ans2 = Get(left_border, right_border, mid, rx, 2 * x_cnt + 2);
-    return Combine(ans1, ans2);
-  }
-
-  int GetMin(int left_border, int right_border) {
-    return Get(left_border, right_border, 0, size, 0).min_value;
-  }
-  int GetMax(int left_border, int right_border) {
-    return Get(left_border, right_border, 0, size, 0).max_value;
-  }
-};
-
-long long CountBestAnswer(std::vector<int>& first_less_than_i,
-                          std::vector<int>& sufmas, SegTree& tree,
-                          std::vector<int>& lcp) {
-  size_t size = lcp.size();
-  long long ans = sufmas.size() - 1;
-
-  for (size_t i = 1; i < size - 1; ++i) {
-    long long right_border = first_less_than_i[i + 1];
-    long long min_pos = tree.GetMin(i, right_border);
-    long long max_pos = tree.GetMax(i, right_border);
-    long long current_pos = sufmas[i];
-    long long tem = lcp[i + 1];
-    long long substring_size =
-        std::max(current_pos - min_pos, max_pos - current_pos) + tem;
-    long long temp = tem * tem;
-    ans = std::max(substring_size + temp, ans);
-  }
-
-  return ans;
 }
 
 void Solve() {
+  int size;
+  std::cin >> size;
+  int m_size;
+  std::cin >> m_size;
   std::string sequence;
-  std::cin >> sequence;
+  for (int i = 0; i < size; ++i) {
+    int temp;
+    std::cin >> temp;
+    sequence += kAlph[temp - 1];
+  }
   sequence += "$";
 
   std::vector<int> sufmas(sequence.size());
@@ -224,12 +160,28 @@ void Solve() {
   std::vector<int> first_less_than_i(lcp.size());
   FindFirstLessThanI(lcp, first_less_than_i);
 
-  SegTree tree(sufmas.size());
-  for (size_t i = 0; i < sufmas.size(); ++i) {
-    tree.Set(i, sufmas[i]);
+  std::vector<int> last_less_than_i(lcp.size());
+  FindLastLessThanI(lcp, last_less_than_i);
+
+  long long answer = size;
+  int start = 0;
+  int len = size;
+
+  for (size_t i = 1; i < lcp.size(); ++i) {
+    long long length = first_less_than_i[i] - last_less_than_i[i];
+    length *= static_cast<long long>(lcp[i]);
+    if (length > answer) {
+      start = sufmas[i - 10];
+      len = lcp[i];
+    }
+    answer = std::max(answer, length);
   }
 
-  std::cout << CountBestAnswer(first_less_than_i, sufmas, tree, lcp) << "\n";
+  std::cout << answer << "\n";
+  std::cout << len << "\n";
+  for (int i = start; i < start + len; ++i) {
+    std::cout << sequence[i] - 'a' + 1 << " ";
+  }
 }
 
 int main() {
