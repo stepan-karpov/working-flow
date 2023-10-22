@@ -13,7 +13,7 @@ int random(long long low, long long high) {
 }
 
 std::string CreateString(int size) {
-  const std::string ALPH = "ab";
+  const std::string ALPH = "a";
   // const std::string ALPH = "abcdefghijklmopq";
   std::string ans = "";
 
@@ -49,7 +49,13 @@ void DFS(int v, vector<vector<int>>& g, vector<int>& kek) {
 int main() {
   std::mt19937 mt(time(nullptr)); 
 
-  std::cout << CreateString(random(2, 30)) << "\n";
+
+  int n = random(4, 10);
+  cout << n << "\n";
+
+  for (int i = 0; i < n; ++i) {
+    std::cout << CreateString(random(2, 30)) << "\n";
+  }
 
   return 0;
 }

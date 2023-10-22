@@ -1,0 +1,36 @@
+[I 2023-10-20 18:12:23,912] A new study created in memory with name: no-name-f97afa70-10dc-4222-a11d-24a532bc2f41
+/usr/local/lib/python3.10/dist-packages/xgboost/core.py:160: UserWarning: [18:12:27] WARNING: /workspace/src/common/error_msg.cc:45: `gpu_id` is deprecated since2.0.0, use `device` instead. E.g. device=cpu/cuda/cuda:0
+  warnings.warn(smsg, UserWarning)
+/usr/local/lib/python3.10/dist-packages/xgboost/core.py:160: UserWarning: [18:12:27] WARNING: /workspace/src/context.cc:44: No visible GPU is found, setting device to CPU.
+  warnings.warn(smsg, UserWarning)
+[I 2023-10-20 18:16:49,977] Trial 0 finished with value: 0.6457890820065038 and parameters: {'n_estimators': 9600, 'max_depth': 5, 'min_child_weight': 8, 'learning_rate': 0.00012019761356159375, 'subsample': 0.7204552898672679, 'colsample_bytree': 0.39713577550379187, 'reg_alpha': 6.896002554334907, 'reg_lambda': 2.499853274390996, 'gamma': 0.7999999999999999}. Best is trial 0 with value: 0.6457890820065038.
+/usr/local/lib/python3.10/dist-packages/xgboost/core.py:160: UserWarning: [18:16:50] WARNING: /workspace/src/context.cc:44: No visible GPU is found, setting device to CPU.
+  warnings.warn(smsg, UserWarning)
+[I 2023-10-20 18:22:25,810] Trial 1 finished with value: 0.79257251158086 and parameters: {'n_estimators': 11400, 'max_depth': 9, 'min_child_weight': 7, 'learning_rate': 0.022191567894716543, 'subsample': 0.7520674657192796, 'colsample_bytree': 0.4792723884019606, 'reg_alpha': 9.527457281098195, 'reg_lambda': 3.9260647596407114, 'gamma': 0.8999999999999999}. Best is trial 1 with value: 0.79257251158086.
+/usr/local/lib/python3.10/dist-packages/xgboost/core.py:160: UserWarning: [18:22:26] WARNING: /workspace/src/context.cc:44: No visible GPU is found, setting device to CPU.
+  warnings.warn(smsg, UserWarning)
+[I 2023-10-20 18:25:49,758] Trial 2 finished with value: 0.6321119580066906 and parameters: {'n_estimators': 8800, 'max_depth': 4, 'min_child_weight': 7, 'learning_rate': 0.0001883783363881043, 'subsample': 0.7676573169785349, 'colsample_bytree': 0.6775708059641493, 'reg_alpha': 9.563294589858904, 'reg_lambda': 4.474071790089469, 'gamma': 0.7}. Best is trial 1 with value: 0.79257251158086.
+/usr/local/lib/python3.10/dist-packages/xgboost/core.py:160: UserWarning: [18:25:50] WARNING: /workspace/src/context.cc:44: No visible GPU is found, setting device to CPU.
+  warnings.warn(smsg, UserWarning)
+[I 2023-10-20 18:28:17,990] Trial 3 finished with value: 0.7739524791477783 and parameters: {'n_estimators': 9300, 'max_depth': 6, 'min_child_weight': 8, 'learning_rate': 0.012316966656349935, 'subsample': 0.9943660506851875, 'colsample_bytree': 0.6211357549241426, 'reg_alpha': 7.29627245692301, 'reg_lambda': 6.017425343218398, 'gamma': 0.7999999999999999}. Best is trial 1 with value: 0.79257251158086.
+/usr/local/lib/python3.10/dist-packages/xgboost/core.py:160: UserWarning: [18:28:18] WARNING: /workspace/src/context.cc:44: No visible GPU is found, setting device to CPU.
+  warnings.warn(smsg, UserWarning)
+[I 2023-10-20 18:34:16,995] Trial 4 finished with value: 0.7818489297178359 and parameters: {'n_estimators': 7900, 'max_depth': 8, 'min_child_weight': 7, 'learning_rate': 0.0025080414792142836, 'subsample': 0.7241126830843342, 'colsample_bytree': 0.6480873347679428, 'reg_alpha': 4.654568463778241, 'reg_lambda': 8.70932497771725, 'gamma': 0.7}. Best is trial 1 with value: 0.79257251158086.
+/usr/local/lib/python3.10/dist-packages/xgboost/core.py:160: UserWarning: [18:34:18] WARNING: /workspace/src/context.cc:44: No visible GPU is found, setting device to CPU.
+  warnings.warn(smsg, UserWarning)
+[I 2023-10-20 18:38:42,579] Trial 5 finished with value: 0.723066682301662 and parameters: {'n_estimators': 11600, 'max_depth': 5, 'min_child_weight': 8, 'learning_rate': 0.0009117052689987319, 'subsample': 0.8563980976051261, 'colsample_bytree': 0.2668459784523155, 'reg_alpha': 1.655593440506249, 'reg_lambda': 5.435061038629746, 'gamma': 0.7999999999999999}. Best is trial 1 with value: 0.79257251158086.
+/usr/local/lib/python3.10/dist-packages/xgboost/core.py:160: UserWarning: [18:38:43] WARNING: /workspace/src/context.cc:44: No visible GPU is found, setting device to CPU.
+  warnings.warn(smsg, UserWarning)
+[I 2023-10-20 18:41:01,942] Trial 6 finished with value: 0.7812810018599923 and parameters: {'n_estimators': 9900, 'max_depth': 7, 'min_child_weight': 8, 'learning_rate': 0.03468419176023077, 'subsample': 0.9686800223130454, 'colsample_bytree': 0.21723524102031716, 'reg_alpha': 8.869611759928356, 'reg_lambda': 7.863482980961643, 'gamma': 0.7999999999999999}. Best is trial 1 with value: 0.79257251158086.
+/usr/local/lib/python3.10/dist-packages/xgboost/core.py:160: UserWarning: [18:41:03] WARNING: /workspace/src/context.cc:44: No visible GPU is found, setting device to CPU.
+  warnings.warn(smsg, UserWarning)
+[I 2023-10-20 18:46:05,813] Trial 7 finished with value: 0.7971023243708584 and parameters: {'n_estimators': 9400, 'max_depth': 7, 'min_child_weight': 8, 'learning_rate': 0.01581255761956066, 'subsample': 0.73099869824991, 'colsample_bytree': 0.31131764787095695, 'reg_alpha': 3.8640552562279535, 'reg_lambda': 3.0077456583217876, 'gamma': 0.7}. Best is trial 7 with value: 0.7971023243708584.
+/usr/local/lib/python3.10/dist-packages/xgboost/core.py:160: UserWarning: [18:46:06] WARNING: /workspace/src/context.cc:44: No visible GPU is found, setting device to CPU.
+  warnings.warn(smsg, UserWarning)
+[I 2023-10-20 18:59:16,681] Trial 8 finished with value: 0.7344978354111671 and parameters: {'n_estimators': 9600, 'max_depth': 10, 'min_child_weight': 8, 'learning_rate': 0.00030257420613571164, 'subsample': 0.7516415040084352, 'colsample_bytree': 0.8965901482312257, 'reg_alpha': 7.358378436581964, 'reg_lambda': 8.82113360780927, 'gamma': 0.8999999999999999}. Best is trial 7 with value: 0.7971023243708584.
+/usr/local/lib/python3.10/dist-packages/xgboost/core.py:160: UserWarning: [18:59:17] WARNING: /workspace/src/context.cc:44: No visible GPU is found, setting device to CPU.
+  warnings.warn(smsg, UserWarning)
+[I 2023-10-20 19:04:22,868] Trial 9 finished with value: 0.7953894114854294 and parameters: {'n_estimators': 9700, 'max_depth': 8, 'min_child_weight': 8, 'learning_rate': 0.013783723010843055, 'subsample': 0.8483015889229598, 'colsample_bytree': 0.861190146537496, 'reg_alpha': 9.7975404170735, 'reg_lambda': 1.6514672838172941, 'gamma': 0.8999999999999999}. Best is trial 7 with value: 0.7971023243708584.
+Best Hyperparameters: {'n_estimators': 9400, 'max_depth': 7, 'min_child_weight': 8, 'learning_rate': 0.01581255761956066, 'subsample': 0.73099869824991, 'colsample_bytree': 0.31131764787095695, 'reg_alpha': 3.8640552562279535, 'reg_lambda': 3.0077456583217876, 'gamma': 0.7}
+Best ROC AUC: 0.7971023243708584
+Final ROC AUC with Best Hyperparameters: 0.7971023243708584

@@ -1,0 +1,42 @@
+/usr/local/lib/python3.10/dist-packages/xgboost/core.py:160: UserWarning: [18:12:27] WARNING: /workspace/src/common/error_msg.cc:45: `gpu_id` is deprecated since2.0.0, use `device` instead. E.g. device=cpu/cuda/cuda:0
+  warnings.warn(smsg, UserWarning)
+/usr/local/lib/python3.10/dist-packages/xgboost/core.py:160: UserWarning: [18:12:27] WARNING: /workspace/src/context.cc:44: No visible GPU is found, setting device to CPU.
+  warnings.warn(smsg, UserWarning)
+
+num_features = ['Unnamed: 0', 'Probability', 'Column8', 'Column11', 'Column13',
+                'Column14', 'Column15', 'Column16', 'Column17', 'Column20',
+                'Column22', 'Column23', 'Column27', 'Column28', 'Column29',
+                'Column30', 'Column31', 'Column32', 'Column33', 'Column34',
+                'Column35', 'Column36', 'Column37', 'Column39', 'Column40',
+                'Column41', 'Column42', 'Column43', 'Column44',
+                # heavily_skewed
+                'Column11', 'Column13', 'Column16', 'Column17', 'Column22', 'Column23', 'Column27', 'Column29', 'Column36', 'Column41'
+                ]
+cat_features = ['Column12' 'Column18' 'Column24' 'Column25' 'Column51' 'Column6'
+ 'LocationId' 'ProductId' 'd' 'h' 'min',
+  # categorical
+ 'Column19', 'Column45', 'Column46', 'Column47', 'Column49', 'Column50', 'Column52', 'mon']
+
+
+  columns_to_drop = data.columns.tolist()
+  columns_to_drop.remove('IsCorrect')
+
+  num_features = ['Unnamed: 0', 'Probability', 'Column8', 'Column11', 'Column13',
+                'Column14', 'Column15', 'Column16', 'Column17', 'Column20',
+                'Column22', 'Column23', 'Column27', 'Column28', 'Column29',
+                'Column30', 'Column31', 'Column32', 'Column33', 'Column34',
+                'Column35', 'Column36', 'Column37', 'Column39', 'Column40',
+                'Column41', 'Column42', 'Column43', 'Column44',
+                # heavily_skewed
+                'Column11', 'Column13', 'Column16', 'Column17', 'Column22', 'Column23', 'Column27', 'Column29', 'Column36', 'Column41'
+                ]
+  cat_features = ['Column12' 'Column18' 'Column24' 'Column25' 'Column51' 'Column6'
+                  'LocationId' 'ProductId' 'd' 'h' 'min',
+                  # categorical
+                  'Column19', 'Column45', 'Column46', 'Column47',
+                  'Column49', 'Column50', 'Column52', 'mon']
+
+  for el in num_features:
+    columns_to_drop.remove(el)
+  for el in cat_features:
+    columns_to_drop.remove(el)
