@@ -49,13 +49,13 @@ void DFS(int v, vector<vector<int>>& g, vector<int>& kek) {
 int main() {
   std::mt19937 mt(time(nullptr)); 
 
+  int p = random(1, 200);
 
-  int n = random(4, 10);
-  cout << n << "\n";
-
-  for (int i = 0; i < n; ++i) {
-    std::cout << CreateString(random(2, 30)) << "\n";
+  while (!is_prime(p)) {
+    p = random(1, 200);
   }
+
+  cout << random(0, p - 1) << " " << p << "\n";
 
   return 0;
 }

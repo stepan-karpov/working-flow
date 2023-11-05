@@ -23,7 +23,16 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
 void solve() {
-  
+  ll a, p; cin >> a >> p;
+
+  for (int i = 0; i < p; ++i) {
+    ll sq = (i * i) % p;
+    if (sq == a) {
+      cout << i << "\n";
+      return;
+    }
+  }
+  cout << "IMPOSSIBLE\n";
 }
 
 int main() {

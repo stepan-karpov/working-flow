@@ -5,7 +5,7 @@
 #include <algorithm>
 
 const double EPS = 1e-5;
-const double PI = acos(-1);
+const double kPi = acos(-1);
 
 bool Less(const double& v1, const double& v2) {
   return v1 <= v2 - EPS;
@@ -75,7 +75,7 @@ Point Rotate(Point vector, double alpha) {
 }
 
 void Point::rotation(const Point& center, double angle) {
-  *this = Rotate(*this, angle / 180 * PI);
+  *this = Rotate(*this, angle / 180 * kPi);
   *this = *this + center;
 }
 
@@ -405,8 +405,8 @@ class Ellipse : public Shape {
 
   std::pair<Line, Line> directrices();
   double perimeter() const final
-      { return PI * (3 * (a + b) - sqrt((3 * a + b) * (a + 3 * b))); }
-  double area() const final { return PI * a * b; }
+      { return kPi * (3 * (a + b) - sqrt((3 * a + b) * (a + 3 * b))); }
+  double area() const final { return kPi * a * b; }
 
   // rotates Ellipse on angle DEGREES
   void rotate(const Point& center, double angle) final;
@@ -435,8 +435,8 @@ std::pair<Line, Line> Ellipse::directrices() {
 }
 
 void Ellipse::rotate(const Point& center, double angle) {
-  focus1.rotation(center, angle / 180 * PI);
-  focus2.rotation(center, angle / 180 * PI);
+  focus1.rotation(center, angle / 180 * kPi);
+  focus2.rotation(center, angle / 180 * kPi);
 }
 
 void Ellipse::reflect(const Point& center) {
