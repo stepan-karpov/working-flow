@@ -55,20 +55,21 @@ void Prepare(std::vector<long long>& aa) {
 }
 
 void Fft(std::vector<long long>& aa, bool invert) {
-  int nn = aa.size();
+  long long nn = aa.size();
 
   Prepare(aa);
 
   for (int len = 2; len <= nn; len <<= 1) {
-    int wlen = invert ? kRoot1 : kRoot;
+    long long wlen = invert ? kRoot1 : kRoot;
     for (int i = len; i < kRootpw; i <<= 1) {
-      wlen = int(wlen * 1LL * wlen % kMod);
+      wlen = (long long)(wlen * 1LL * wlen % kMod);
     }
-    for (int i = 0; i < nn; i += len) {
-      int ww = 1;
-      for (int j = 0; j < len / 2; ++j) {
-        int uu = aa[i + j];
-        int vv = int(aa[i + j + len / 2] * 1LL * ww % kMod);
+    for (long long i = 0; i < nn; i += len) {
+      long long ww = 1;
+      for (long long j = 0; j < len / 2; ++j) {
+        long long uu = aa[i + j];
+        long long vv =
+            (long long)(aa[i + j + len / 2] % kMod * 1LL * ww % kMod % kMod);
         aa[i + j] = uu + vv < kMod ? uu + vv : uu + vv - kMod;
         aa[i + j + len / 2] = uu - vv >= 0 ? uu - vv : uu - vv + kMod;
         ww = int(ww * 1LL * wlen % kMod);
@@ -76,9 +77,9 @@ void Fft(std::vector<long long>& aa, bool invert) {
     }
   }
   if (invert) {
-    int nrev = BinPow(nn, kMod - 2, kMod);
+    long long nrev = BinPow(nn, kMod - 2, kMod);
     for (int i = 0; i < nn; ++i) {
-      aa[i] = int(aa[i] * 1LL * nrev % kMod);
+      aa[i] = (long long)(aa[i] % kMod * 1LL * nrev % kMod);
     }
   }
 }
