@@ -6,12 +6,18 @@ def BinPow(a, x, mod):
     return (temp * temp) % mod
   return (a * BinPow(a, x - 1, mod)) % mod
 
-mod = 1000000007
-a, b, c, d = map(int, input().split())
+mod = 7340033
 
-t1 = ((a * d + b * c) % mod + mod * 10) % mod
-t2 = ((b * d) % mod + 10 * mod) % mod
-t3 = BinPow(t2, mod - 2, mod)
 
-print((t1 * t3) % mod)
+kMod = 7340033
+kRoot = 5
+kRoot1 = 4404020
+kRootpw = 1 << 20
 
+kMod = 7
+kRoot = 3
+kRoot1 = 5
+kRootpw = 6
+
+print(BinPow(kRoot, kRootpw, kMod))
+print((kRoot * kRoot1) % kMod)
