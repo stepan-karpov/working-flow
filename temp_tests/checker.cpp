@@ -11,19 +11,59 @@ using namespace std;
 
 using ll = long long;
 using pll = pair<ll, ll>;
+using pii = pair<int, int>;
 using vll = vector<ll>;
 using vvll = vector<vll>;
 using ld = long double;
-using vb = vector<bool>;
 
 const ll INF = 1e16;
 const ld EPS = 1e-8;
-const string ALPH = "abcdefghijklmnopqrstuvwxyz";
+const string kALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-void solve() {
-  
+void output_test() {
+  freopen("test.txt", "r", stdin);
+  ll n; cin >> n;
+  cout << n << " ";
+  for (int i = 0; i < n; ++i) {
+    string s; cin >> s;
+    cout << s << " ";
+  }
+}
+
+void Solve() {
+  // ll n; cin >> n;
+  // vector<string> a(n);
+
+  // for (int i = 0; i < n; ++i) {
+  //   cin >> a[i];
+  // }
+
+  freopen("incorrect_answer.txt", "r", stdin);
+
+  ll k;
+  vll a;
+  while (cin >> k) {
+    a.push_back(k);
+  }
+
+  freopen("log.txt", "a", stdout);
+  for (int i = 0; i < a.size() - 1; ++i) {
+    if (a[i + 1] > a[i]) {
+      output_test();
+      return;
+    }
+  }
+
+  // for (int i = 0; i < n; ++i) {
+  //   sort(a[i].begin(), a[i].end());
+  //   if (a[i] != "inw") {
+  //     output_test();
+  //     return;
+  //   }
+  // }
+
 }
 
 int main() {
@@ -35,7 +75,7 @@ int main() {
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    solve();
+    Solve();
     // cout << solve() << endl;
     // if (solve())
     //    cout << "Yes" << endl;

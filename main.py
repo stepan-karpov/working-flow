@@ -1,23 +1,46 @@
-def BinPow(a, x, mod):
-  if (x == 0):
-    return 1
-  if (x % 2 == 0):
-    temp = BinPow(a, int(x / 2), mod)
-    return (temp * temp) % mod
-  return (a * BinPow(a, x - 1, mod)) % mod
+import numpy as np
 
-mod = 7340033
+class LaplaceDistribution:    
+    @staticmethod
+    def mean_abs_deviation_from_median(x: np.ndarray):
+        '''
+        Args:
+        - x: A numpy array of shape (n_objects, n_features) containing the data
+          consisting of num_train samples each of dimension D.
+        '''
+        ####
+        # Do not change the class outside of this block
+        # Your code here
+        ####
+
+    def __init__(self, features):
+        '''
+        Args:
+            feature: A numpy array of shape (n_objects, n_features). Every column represents all available values for the selected feature.
+        '''
+        ####
+        # Do not change the class outside of this block
+        self.loc = # YOUR CODE HERE
+        self.scale = # YOUR CODE HERE
+        ####
 
 
-kMod = 7340033
-kRoot = 5
-kRoot1 = 4404020
-kRootpw = 1 << 20
-
-kMod = 7
-kRoot = 3
-kRoot1 = 5
-kRootpw = 6
-
-print(BinPow(kRoot, kRootpw, kMod))
-print((kRoot * kRoot1) % kMod)
+    def logpdf(self, values):
+        '''
+        Returns logarithm of probability density at every input value.
+        Args:
+            values: A numpy array of shape (n_objects, n_features). Every column represents all available values for the selected feature.
+        '''
+        ####
+        # Do not change the class outside of this block
+        return 
+        ####
+        
+    
+    def pdf(self, values):
+        '''
+        Returns probability density at every input value.
+        Args:
+            values: A numpy array of shape (n_objects, n_features). Every column represents all available values for the selected feature.
+        '''
+        return np.exp(self.logpdf(value))
