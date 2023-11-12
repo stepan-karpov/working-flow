@@ -45,14 +45,21 @@ void DFS(int v, vector<vector<int>>& g, vector<int>& kek) {
   }
 }
 
+void CreatePoly() {
+  int n = random(1, 2);
+
+  std::cout << n << "\n";
+
+  for (int i = 0; i <= n; ++i) {
+    std::cout << random(0, 9) << " ";
+  }
+  std::cout << "\n";
+}
 
 int main() {
-  std::mt19937 mt(time(nullptr)); 
-  std::cout << "1\n";
-  int p = random(1, 100);
-  while (!is_prime(p)) {
-    p = random(1, 100);
-  }
-  std::cout << random(0, p - 1) << " " << p << "\n";
+  std::mt19937 mt(time(nullptr));
+  int m;
+  std::cout << random(1, 10) << " ";
+  CreatePoly();
   return 0;
 }
