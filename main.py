@@ -1,46 +1,27 @@
 import numpy as np
 
-class LaplaceDistribution:    
-    @staticmethod
-    def mean_abs_deviation_from_median(x: np.ndarray):
-        '''
-        Args:
-        - x: A numpy array of shape (n_objects, n_features) containing the data
-          consisting of num_train samples each of dimension D.
-        '''
-        ####
-        # Do not change the class outside of this block
-        # Your code here
-        ####
+def get_dominant_eigenvalue_and_eigenvector(data, num_steps):
+    """
+    data: np.ndarray – symmetric diagonalizable real-valued matrix
+    num_steps: int – number of power method steps
 
-    def __init__(self, features):
-        '''
-        Args:
-            feature: A numpy array of shape (n_objects, n_features). Every column represents all available values for the selected feature.
-        '''
-        ####
-        # Do not change the class outside of this block
-        self.loc = # YOUR CODE HERE
-        self.scale = # YOUR CODE HERE
-        ####
+    Returns:
+    eigenvalue: float – dominant eigenvalue estimation after `num_steps` steps
+    eigenvector: np.ndarray – corresponding eigenvector estimation
+    """
+    ### YOUR CODE HERE
+    n = data.shape[0]
+    current_r = np.random.rand(n)
 
+    for i in range(0, num_steps):
+        current_r = (1 / np.linalg.norm(data.dot(current_r))) * data.dot(current_r)
 
-    def logpdf(self, values):
-        '''
-        Returns logarithm of probability density at every input value.
-        Args:
-            values: A numpy array of shape (n_objects, n_features). Every column represents all available values for the selected feature.
-        '''
-        ####
-        # Do not change the class outside of this block
-        return 
-        ####
-        
-    
-    def pdf(self, values):
-        '''
-        Returns probability density at every input value.
-        Args:
-            values: A numpy array of shape (n_objects, n_features). Every column represents all available values for the selected feature.
-        '''
-        return np.exp(self.logpdf(value))
+    return (current_r @ data.dot(current_r)) / (current_r @ current_r)
+
+matrix = np.array([[5, 6, 3],
+                  [-1, 0, 1],
+                  [1, 2, -1]])
+
+# 2, -2, 4
+
+print(get_dominant_eigenvalue_and_eigenvector(matrix, 1000))
