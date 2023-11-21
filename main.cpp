@@ -22,15 +22,8 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-template <typename T, size_t N>
-size_t get_size(T(&)[N]) {
-  return N;
-}
-
 void solve() {
-  int x[10];
-
-  std::cout << get_size(x) << "\n";
+  
 }
 
 int main() {
