@@ -14,10 +14,10 @@ using pll = pair<ll, ll>;
 using pii = pair<int, int>;
 using vll = vector<ll>;
 using vvll = vector<vll>;
-using ld = long double;
+using Ld = long double;
 
 const ll INF = 1e16;
-const ld EPS = 1e-8;
+const Ld EPS = 1e-8;
 const string kALPH = "abcdefghijklmnopqrstuvwxyz";
 
 std::random_device rd;

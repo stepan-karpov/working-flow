@@ -11,40 +11,19 @@ using namespace std;
 
 using ll = long long;
 using pll = pair<ll, ll>;
-using pii = pair<int, int>;
 using vll = vector<ll>;
 using vvll = vector<vll>;
 using ld = long double;
+using vb = vector<bool>;
 
 const ll INF = 1e16;
 const ld EPS = 1e-8;
-const string kALPH = "abcdefghijklmnopqrstuvwxyz";
+const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-void Solve() {
-  int n;
-  cin >> n;
-  vector<pair<int, int>> v(n);
-  for (pair<int, int>& p : v) {
-    cin >> p.first >> p.second;
-  }
-  int mx = 0;
-  int ans_a, ans_b;
-  for (int i = 0; i < n; ++i) {
-    int a = v[i].first, b = v[i].second;
-    int cnt = 0;
-    for (int j = 0; j < n; ++j) {
-      if ((v[j].first <= a && v[j].second <= b) || (v[j].first <= b && v[j].second <= a)) {
-        cnt++;
-      }
-    }
-    if (a * b * cnt > max) {
-      max = a * b * cnt;
-      ans_a = a;
-      ans_b = b;
-    }
-  }
+void solve() {
+  
 }
 
 int main() {
@@ -56,7 +35,7 @@ int main() {
   // cout << fixed << setprecision(10);
   
   while (t--) {
-    Solve();
+    solve();
     // cout << solve() << endl;
     // if (solve())
     //    cout << "Yes" << endl;
