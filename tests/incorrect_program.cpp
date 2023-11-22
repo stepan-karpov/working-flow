@@ -23,7 +23,13 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
 void solve() {
-  
+  ll n, a, b; cin >> n >> a >> b;
+  ll groups = n / a;
+  if (n % a <= groups * (b - a)) {
+    cout << "YES\n";
+  } else {
+    cout << "NO\n";
+  }
 }
 
 int main() {
@@ -31,7 +37,7 @@ int main() {
   cin.tie(nullptr);
   cout.tie(nullptr);
   ll t = 1;
-  // cin >> t;
+  cin >> t;
   // cout << fixed << setprecision(10);
   
   while (t--) {

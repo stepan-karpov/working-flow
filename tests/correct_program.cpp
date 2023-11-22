@@ -22,8 +22,49 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
+bool possible(int e_i, int e_j, int r, vvll& table) {
+  int s_i = e_i - r + 1;
+  int s_j = e_j - r + 1;
+  if (s_i < 0 || s_i >= table.size()) {
+    return false;
+  }
+  if (s_j < 0 || s_j >= table[0].size()) {
+    return false;
+  }
+
+  for (int i = s_i; i <= e_i; ++i) {
+    for (int j = s_j; j <= e_j; ++j) {
+      if (table[i][j] == 0) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 void solve() {
-  
+  ll n, m; cin >> n >> m;
+  vvll table(n, vll(m, 0));
+
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < m; ++j) {
+      cin >> table[i][j];
+    }
+  }
+
+  ll ans = 0;
+
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < m; ++j) {
+      ll r = 1;
+      while (possible(i, j, r, table)) {
+        ans = std::max(ans, r);
+        ++r;
+      }
+    }
+  }
+
+  cout << ans << "\n";
 }
 
 int main() {
