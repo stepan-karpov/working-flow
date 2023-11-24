@@ -102,6 +102,31 @@ std::istream& operator>>(std::istream& input, Line& line) {
   return input;
 }
 
+struct Segment {
+  Vector point1, point2;
+  Segment() = default;
+  Segment(Vector point1, Vector point2) : point1(point1), point2(point2) {}
+};
+
+Ld operator||(const Segment& segment, const Vector& point) {
+  Vector point_c = point;
+  Vector point_a = segment.point1;
+  Vector point_b = segment.point2;
+
+  Ld line_distance = Line(point_a, point_b) || point_c;
+
+  Ld dist_to_a = point_a || point_c;
+  Ld dist_to_b = point_b || point_c;
+
+  Ld cross_product_cab = (point_c - point_a) * (point_b - point_a);
+  Ld cross_product_abc = (point_c - point_b) * (point_a - point_b);
+
+  if (cross_product_abc >= kEps && cross_product_cab >= kEps) {
+    return line_distance;
+  }
+  return std::min(dist_to_a, dist_to_b);
+}
+
 bool Between(Vector& p1, Vector& p2, Vector& point) {
   return std::min(p1.x_projection, p2.x_projection) <= point.x_projection &&
          point.x_projection <= std::max(p1.x_projection, p2.x_projection) &&
@@ -109,36 +134,84 @@ bool Between(Vector& p1, Vector& p2, Vector& point) {
          point.y_projection <= std::max(p1.y_projection, p2.y_projection);
 }
 
+struct Rectangle {
+  std::vector<Vector> vertices;
+
+  void Read(int n_size) {
+    vertices.resize(n_size);
+    for (int i = 0; i < n_size; ++i) {
+      std::cin >> vertices[i];
+    }
+  }
+
+  bool IsConvex() {
+    int n_size = vertices.size();
+    int state = -1;
+    for (int i = 0; i < n_size; ++i) {
+      Vector previous = vertices[(i - 1 + n_size) % n_size];
+      Vector current = vertices[i];
+      Vector next = vertices[(i + 1) % n_size];
+      Vector vector1 = previous - current;
+      Vector vector2 = next - current;
+
+      Ld cross_product = vector1 ^ vector2;
+      if (state == -1) {
+        if (!(abs(cross_product) <= kEps)) {
+          state = (int)(cross_product >= kEps);
+        }
+      } else if (state == 0) {
+        if (cross_product >= kEps) {
+          return false;
+        }
+      } else {
+        if (-cross_product >= kEps) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  bool IsInside(Vector point) {
+    Line baseline(point, {point.x_projection + 1, point.y_projection});
+    int cnt = 0;
+    int n_size = vertices.size();
+    for (int i = 0; i < n_size; ++i) {
+      Vector current = vertices[i];
+      Vector next = vertices[(i + 1) % n_size];
+      Line current_line(current, next);
+      Vector intersect = current_line % baseline;
+
+      if (Between(current, next, intersect)) {
+        ++cnt;
+      }
+    }
+    return cnt % 2 == 0;
+  }
+};
+
+ std::istream& operator>>(std::istream& input, Rectangle& rectangle) {
+  int n_size;
+  input >> n_size;
+  rectangle.vertices.resize(n_size);
+  for (int i = 0; i < n_size; ++i) {
+    input >> rectangle.vertices[i];
+  }
+  return input;
+}
+
 void Solve() {
-  Vector p1;
-  Vector p2;
-  Vector t1;
-  Vector t2;
-  std::cin >> p1 >> p2 >> t1 >> t2;
-  Line line1(p1, p2);
-  Line line2(t1, t2);
-
-  if (!line1.IsIntersect(line2)) {
-    std::cout << (line1 || t1) << "\n";
-    return;
+  int n_size;
+  std::cin >> n_size;
+  Vector point;
+  std::cin >> point;
+  Rectangle rect;
+  rect.Read(n_size);
+  if (rect.IsInside(point)) {
+    std::cout << "YES\n";
+  } else {
+    std::cout << "NO\n";
   }
-  Vector point = line1 % line2;
-
-  if (Between(p1, p2, point) && Between(t1, t2, point)) {
-    std::cout << "0.00000000000\n";
-    return;
-  }
-  std::vector<Ld> cand;
-  cand.push_back(p1 || t1);
-  cand.push_back(p1 || t2);
-  cand.push_back(p2 || t1);
-  cand.push_back(p2 || t2);
-  cand.push_back(line2 || p2);
-  cand.push_back(line2 || p1);
-  cand.push_back(line1 || t1);
-  cand.push_back(line1 || t2);
-  std::sort(cand.begin(), cand.end());
-  std::cout << cand[0] << "\n";
 }
 
 int main() {

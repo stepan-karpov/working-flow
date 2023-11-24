@@ -57,18 +57,9 @@ void CreatePoly() {
 
 int main() {
   std::mt19937 mt(time(nullptr)); 
-  int n = random(1, 4);
-  int m = random(1, 4);
-
-  std::cout << n << " " << m << "\n";
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < m; ++j) {
-      std::cout << random(0, 1) << " ";
-    }
-    std::cout << "\n";
+  
+  for (int i = 0; i < 8; ++i) {
+    std::cout << random(-3, 3) << " ";
   }
-
-
-
   return 0;
 }
