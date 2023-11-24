@@ -7,6 +7,7 @@
 
 using Ld = long double;
 
+const Ld kPi = 3.1415926535897932384626433832795028;
 const int kPrecision = 10;
 const Ld kEps = 1e-5;
 
@@ -42,9 +43,18 @@ Ld operator||(const Vector& first, const Vector& second) {
   return diff.Length();
 }
 
+Ld operator%(const Vector& first, const Vector& second) {
+  return atan2(first ^ second, first * second);
+}
+
 Vector operator+(const Vector& first, const Vector& second) {
   return Vector(first.x_projection + second.x_projection,
                 first.y_projection + second.y_projection);
+}
+
+bool operator==(const Vector& first, const Vector& second) {
+  return abs(first.x_projection - second.x_projection) <= kEps &&
+         abs(first.y_projection - second.y_projection) <= kEps;
 }
 
 Vector operator-(const Vector& first, const Vector& second) {
@@ -113,6 +123,16 @@ struct Segment {
   Vector point1, point2;
   Segment() = default;
   Segment(Vector point1, Vector point2) : point1(point1), point2(point2) {}
+
+  bool ContainsPoint(Vector point) {
+    if (!Between(point1, point2, point)) {
+      return false;
+    }
+    Vector t1 = point - point1;
+    Vector t2 = point2 - point1;
+    return abs(t1.x_projection * t2.y_projection -
+               t2.x_projection * t1.y_projection) <= kEps;
+  }
 };
 
 Ld operator||(const Segment& segment, const Vector& point) {
@@ -134,38 +154,87 @@ Ld operator||(const Segment& segment, const Vector& point) {
   return std::min(dist_to_a, dist_to_b);
 }
 
+struct Rectangle {
+  std::vector<Vector> vertices;
+
+  void Read(int n_size) {
+    vertices.resize(n_size);
+    for (int i = 0; i < n_size; ++i) {
+      std::cin >> vertices[i];
+    }
+  }
+
+  bool IsConvex() {
+    int n_size = vertices.size();
+    int state = -1;
+    for (int i = 0; i < n_size; ++i) {
+      Vector previous = vertices[(i - 1 + n_size) % n_size];
+      Vector current = vertices[i];
+      Vector next = vertices[(i + 1) % n_size];
+      Vector vector1 = previous - current;
+      Vector vector2 = next - current;
+
+      Ld cross_product = vector1 ^ vector2;
+      if (state == -1) {
+        if (!(abs(cross_product) <= kEps)) {
+          state = (int)(cross_product >= kEps);
+        }
+      } else if (state == 0) {
+        if (cross_product >= kEps) {
+          return false;
+        }
+      } else {
+        if (-cross_product >= kEps) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  bool IsInside(Vector point) {
+    int n_size = vertices.size();
+    for (int i = 0; i < n_size; ++i) {
+      if (point == vertices[i]) {
+        return true;
+      }
+    }
+    Ld angle = 0;
+    for (int i = 0; i < n_size; ++i) {
+      Vector current = vertices[i];
+      Vector next = vertices[(i + 1) % n_size];
+      if (Segment(current, next).ContainsPoint(point)) {
+        return true;
+      }
+      angle += (current - point) % (next - point);
+    }
+    return abs(angle - static_cast<Ld>(12) * kPi) <= kEps ||
+           abs(angle + static_cast<Ld>(12) * kPi) <= kEps;
+  }
+};
+
+std::istream& operator>>(std::istream& input, Rectangle& rectangle) {
+  int n_size;
+  input >> n_size;
+  rectangle.vertices.resize(n_size);
+  for (int i = 0; i < n_size; ++i) {
+    input >> rectangle.vertices[i];
+  }
+  return input;
+}
+
 void Solve() {
-  Vector p1;
-  Vector p2;
-  Vector t1;
-  Vector t2;
-  std::cin >> p1 >> p2 >> t1 >> t2;
-  Line line1(p1, p2);
-  Line line2(t1, t2);
-  Segment segment1(p1, p2);
-  Segment segment2(t1, t2);
-
-  if (!line1.IsIntersect(line2)) {
-    std::cout << (line1 || t1) << "\n";
-    return;
+  int n_size;
+  std::cin >> n_size;
+  Vector point;
+  std::cin >> point;
+  Rectangle rect;
+  rect.Read(n_size);
+  if (rect.IsInside(point)) {
+    std::cout << "YES\n";
+  } else {
+    std::cout << "NO\n";
   }
-  Vector point = line1 % line2;
-
-  if (Between(p1, p2, point) && Between(t1, t2, point)) {
-    std::cout << "0.0000000000\n";
-    return;
-  }
-  std::vector<Ld> cand;
-  cand.push_back(p1 || t1);
-  cand.push_back(p1 || t2);
-  cand.push_back(p2 || t1);
-  cand.push_back(p2 || t2);
-  cand.push_back(segment2 || p2);
-  cand.push_back(segment2 || p1);
-  cand.push_back(segment1 || t1);
-  cand.push_back(segment1 || t2);
-  std::sort(cand.begin(), cand.end());
-  std::cout << cand[0] << "\n";
 }
 
 int main() {
