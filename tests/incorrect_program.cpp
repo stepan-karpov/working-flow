@@ -1,245 +1,150 @@
-#include <math.h>
 
 #include <algorithm>
-#include <iomanip>
+#include <cassert>
+#include <cmath>
+#include <cstdio>
+#include <cstring>
 #include <iostream>
+#include <string>
 #include <vector>
 
 using Ld = long double;
-
-const Ld kPi = 3.1415926535897932384626433832795028;
-const int kPrecision = 10;
-const Ld kEps = 1e-5;
-
-void Init() {
-  std::ios_base::sync_with_stdio(false);
-  std::cin.tie(nullptr);
-  std::cout.tie(nullptr);
-}
+using ll = long long;
 
 struct Vector {
-  Ld x_projection = 0, y_projection = 0;
+  int x = 0, y = 0;
+
   Vector() = default;
-  Vector(Ld xx, Ld yy) : x_projection(xx), y_projection(yy) {}
+  Vector(int x, int y) : x(x), y(y) {}
 
-  Ld Length() const {
-    return sqrt(x_projection * x_projection + y_projection * y_projection);
-  }
+  inline Vector operator +( const Vector &p ) const { return Vector(x + p.x, y + p.y); }
+  inline Vector operator -( const Vector &p ) const { return Vector(x - p.x, y - p.y); }
+  inline ll operator *( const Vector &p ) const { return (ll)x * p.y - (ll)y * p.x; }
+  inline bool operator <( const Vector &p ) const { return x < p.x || (x == p.x && y < p.y); }
+
+  inline ll d2() const { return (ll)x * x + (ll)y * y; }
+  inline Ld ang() const { return atan2((Ld)y, (Ld)x); }
 };
 
-Ld operator*(const Vector& first, const Vector& second) {
-  return first.x_projection * second.x_projection +
-         first.y_projection * second.y_projection;
+inline bool pless( const Vector &a, const Vector &b ) {
+  ll x = a * b;
+  return x != 0 ? x < 0 : a.d2() < b.d2();
 }
 
-Ld operator^(const Vector& first, const Vector& second) {
-  return first.x_projection * second.y_projection -
-         first.y_projection * second.x_projection;
-}
-
-Ld operator||(const Vector& first, const Vector& second) {
-  Vector diff(first.x_projection - second.x_projection,
-              first.y_projection - second.y_projection);
-  return diff.Length();
-}
-
-Ld operator%(const Vector& first, const Vector& second) {
-  return atan2(first ^ second, first * second);
-}
-
-Vector operator+(const Vector& first, const Vector& second) {
-  return Vector(first.x_projection + second.x_projection,
-                first.y_projection + second.y_projection);
-}
-
-bool operator==(const Vector& first, const Vector& second) {
-  return abs(first.x_projection - second.x_projection) <= kEps &&
-         abs(first.y_projection - second.y_projection) <= kEps;
-}
-
-Vector operator-(const Vector& first, const Vector& second) {
-  return Vector(first.x_projection - second.x_projection,
-                first.y_projection - second.y_projection);
-}
-
-std::ostream& operator<<(std::ostream& output, const Vector& vector) {
-  output << vector.x_projection << " " << vector.y_projection;
-  return output;
-}
-
-std::istream& operator>>(std::istream& input, Vector& vector) {
-  input >> vector.x_projection >> vector.y_projection;
-  return input;
-}
-
-struct Line {
-  Ld a_coeff = 0, b_coeff = 0, c_coeff = 0;
-  Line() = default;
-  Line(Ld a_c, Ld b_c, Ld c_c) : a_coeff(a_c), b_coeff(b_c), c_coeff(c_c) {}
-  Line(Vector point1, Vector point2) {
-    a_coeff = point1.y_projection - point2.y_projection;
-    b_coeff = point2.x_projection - point1.x_projection;
-    c_coeff = point1.x_projection * point2.y_projection -
-              point2.x_projection * point1.y_projection;
-  }
-
-  bool IsIntersect(const Line& other) const {
-    Ld delta = a_coeff * other.b_coeff - b_coeff * other.a_coeff;
-    return abs(delta) >= kEps;
-  }
-};
-
-Ld operator||(const Line& line, const Vector& point) {
-  return abs(line.a_coeff * point.x_projection +
-             line.b_coeff * point.y_projection + line.c_coeff) /
-         Vector(line.a_coeff, line.b_coeff).Length();
-}
-
-Vector operator%(const Line& line1, const Line& line2) {
-  Ld delta = line1.a_coeff * line2.b_coeff - line1.b_coeff * line2.a_coeff;
-  Ld delta1 = -line1.c_coeff * line2.b_coeff + line2.c_coeff * line1.b_coeff;
-  Ld delta2 = -line1.a_coeff * line2.c_coeff + line2.a_coeff * line1.c_coeff;
-  return Vector(delta1 / delta, delta2 / delta);
-}
-
-std::ostream& operator<<(std::ostream& output, const Line& line) {
-  output << line.a_coeff << " " << line.b_coeff << " " << line.c_coeff;
-  return output;
-}
-
-std::istream& operator>>(std::istream& input, Line& line) {
-  input >> line.a_coeff >> line.b_coeff >> line.c_coeff;
-  return input;
-}
-
-bool Between(Vector& p1, Vector& p2, Vector& point) {
-  return std::min(p1.x_projection, p2.x_projection) <= point.x_projection &&
-         point.x_projection <= std::max(p1.x_projection, p2.x_projection) &&
-         std::min(p1.y_projection, p2.y_projection) <= point.y_projection &&
-         point.y_projection <= std::max(p1.y_projection, p2.y_projection);
-}
-
-struct Segment {
-  Vector point1, point2;
-  Segment() = default;
-  Segment(Vector point1, Vector point2) : point1(point1), point2(point2) {}
-
-  bool ContainsPoint(Vector point) {
-    if (!Between(point1, point2, point)) {
-      return false;
+std::vector<Vector> ConvexHull(std::vector<Vector> points_set) {
+  int initial_size = int(points_set.size());
+  int initial_point = 0;
+  for (int i = 0; i < initial_size; ++i) {
+    if (points_set[initial_point] < points_set[i]) {
+      initial_point = i;
     }
-    Vector t1 = point - point1;
-    Vector t2 = point2 - point1;
-    return abs(t1.x_projection * t2.y_projection -
-               t2.x_projection * t1.y_projection) <= kEps;
   }
-};
-
-Ld operator||(const Segment& segment, const Vector& point) {
-  Vector point_c = point;
-  Vector point_a = segment.point1;
-  Vector point_b = segment.point2;
-
-  Ld line_distance = Line(point_a, point_b) || point_c;
-
-  Ld dist_to_a = point_a || point_c;
-  Ld dist_to_b = point_b || point_c;
-
-  Ld cross_product_cab = (point_c - point_a) * (point_b - point_a);
-  Ld cross_product_abc = (point_c - point_b) * (point_a - point_b);
-
-  if (cross_product_abc >= kEps && cross_product_cab >= kEps) {
-    return line_distance;
+  std::swap(points_set[0], points_set[initial_point]);
+  for (int i = 1; i < initial_size; i++) {
+    points_set[i] = points_set[i] - points_set[0];
   }
-  return std::min(dist_to_a, dist_to_b);
+  std::sort(points_set.begin() + 1, points_set.end(), pless);
+
+  int rn = 0;
+  std::vector<Vector> convex(initial_size);
+  convex[rn++] = points_set[0];
+  for (int i = 1; i < initial_size; i++) {
+    Vector current_direction = points_set[i] + points_set[0];
+    while (rn >= 2 && (convex[rn - 1] - convex[rn - 2]) *
+                      (current_direction - convex[rn - 2]) >= 0) {
+      --rn;
+    }
+    convex[rn++] = current_direction;
+  }
+  convex.resize(rn);
+  return convex;
 }
 
-struct Rectangle {
-  std::vector<Vector> vertices;
+struct MagicStructure {
+  int convex_size;
+  Vector st;
+  std::vector<Vector> p;
+  std::vector<Vector> pointset;
+  std::vector<Ld> ang;
 
-  void Read(int n_size) {
-    vertices.resize(n_size);
-    for (int i = 0; i < n_size; ++i) {
-      std::cin >> vertices[i];
+  MagicStructure(std::vector<Vector>& initial)
+    : p(ConvexHull(initial)), pointset(initial) {
+    convex_size = int(p.size());
+    reverse(p.begin(), p.end());
+ 
+    ang.resize(convex_size);
+
+    for (int i = 0; i < convex_size; ++i) {
+      ang[i] = (p[(i + 1) % convex_size] - p[i]).ang();
+    }
+    for (int i = 0; i < convex_size; ++i) {
+      if (i && ang[i] < ang[i - 1]) {
+        ang[i] += 2 * M_PI;
+      }
     }
   }
 
-  bool IsConvex() {
-    int n_size = vertices.size();
-    int state = -1;
-    for (int i = 0; i < n_size; ++i) {
-      Vector previous = vertices[(i - 1 + n_size) % n_size];
-      Vector current = vertices[i];
-      Vector next = vertices[(i + 1) % n_size];
-      Vector vector1 = previous - current;
-      Vector vector2 = next - current;
+  ll GetMax(int aa, int bb) {
+    if (convex_size < 3) {
+      ll ma = -(ll)8e18;
+      for (int l = 0; l < convex_size; ++l) {
+        ma = std::max(ma, (ll)aa * p[l].x + (ll)bb * p[l].y);
+      }
+      return ma;
+    }
 
-      Ld cross_product = vector1 ^ vector2;
-      if (state == -1) {
-        if (!(abs(cross_product) <= kEps)) {
-          state = (int)(cross_product >= kEps);
-        }
-      } else if (state == 0) {
-        if (cross_product >= kEps) {
-          return false;
-        }
+    int left_border = 0, right_border = convex_size - 1;
+    Ld xx = atan2(aa, -bb);
+    while (xx < ang[0]) {
+      xx += 2 * M_PI;
+    }
+    while (left_border != right_border) {
+      int m = (left_border + right_border + 1) / 2;
+      if (ang[m] < xx) {
+        left_border = m;
       } else {
-        if (-cross_product >= kEps) {
-          return false;
-        }
+        right_border = m - 1;
       }
     }
-    return true;
-  }
-
-  bool IsInside(Vector point) {
-    int n_size = vertices.size();
-    for (int i = 0; i < n_size; ++i) {
-      if (point == vertices[i]) {
-        return true;
-      }
-    }
-    Ld angle = 0;
-    for (int i = 0; i < n_size; ++i) {
-      Vector current = vertices[i];
-      Vector next = vertices[(i + 1) % n_size];
-      if (Segment(current, next).ContainsPoint(point)) {
-        return true;
-      }
-      angle += (current - point) % (next - point);
-    }
-    return abs(angle - static_cast<Ld>(12) * kPi) <= kEps ||
-           abs(angle + static_cast<Ld>(12) * kPi) <= kEps;
+    left_border = (left_border + 1) % convex_size;
+    return (ll)aa * p[left_border].x + (ll)bb * p[left_border].y;
   }
 };
 
-std::istream& operator>>(std::istream& input, Rectangle& rectangle) {
-  int n_size;
-  input >> n_size;
-  rectangle.vertices.resize(n_size);
-  for (int i = 0; i < n_size; ++i) {
-    input >> rectangle.vertices[i];
-  }
-  return input;
-}
+struct MegaMagic {
+  int n_size = 1;
+  std::vector<MagicStructure*> line;
 
-void Solve() {
-  int n_size;
-  std::cin >> n_size;
-  Vector point;
-  std::cin >> point;
-  Rectangle rect;
-  rect.Read(n_size);
-  if (rect.IsInside(point)) {
-    std::cout << "YES\n";
-  } else {
-    std::cout << "NO\n";
+  MegaMagic(int total) {
+    int n_size = log(total) + 5;
+    line.assign(n_size, nullptr);
   }
-}
+
+  void Add(Vector point) {
+  }
+};
 
 int main() {
-  std::cout << std::fixed << std::setprecision(kPrecision);
-  Init();
-  Solve();
-  return 0;
+  int n_size;
+  std::cin >> n_size;
+  std::vector<Vector> initial(n_size);
+  for (int i = 0; i < n_size; ++i) {
+    std::cin >> initial[i].x >> initial[i].y;
+  }
+
+  MagicStructure tempo(initial);
+
+  int query_number;
+  std::cin >> query_number;
+
+  for (int i = 0; i < query_number; ++i) {
+    std::string query;
+    std::cin >> query;
+    if (query == "get") {
+      int aa, bb;
+      std::cin >> aa >> bb;
+      std::cout << tempo.GetMax(aa, bb) << "\n";
+    }
+  }
+
 }
