@@ -501,16 +501,16 @@ class Circle : public Ellipse {
   double radius() { return a; }
 };
 
-class Rectangle : public Polygon {
+class Polygon : public Polygon {
  public:
-  Rectangle() = default;
-  Rectangle(const Point& point1, const Point& point2, double tan);
+  Polygon() = default;
+  Polygon(const Point& point1, const Point& point2, double tan);
   Point center() { return (vertices[0] + vertices[1] + vertices[2] + vertices[3]) / 4; }
   std::pair<Line, Line> diagonals()
     { return {Line(vertices[0], vertices[2]), Line(vertices[1], vertices[3])}; }
 };
 
-Rectangle::Rectangle(const Point& point1, const Point& point2, double tan) {
+Polygon::Polygon(const Point& point1, const Point& point2, double tan) {
   if (tan < 1) { tan = 1 / tan; }
   Point d = point2 - point1;
   d = Rotate(d, atan2(tan, 1));
@@ -518,10 +518,10 @@ Rectangle::Rectangle(const Point& point1, const Point& point2, double tan) {
   vertices = Polygon(point1, point1 + d, point2, point2 - d).getVertices();
 }
 
-class Square : public Rectangle {
+class Square : public Polygon {
  public:
   Square(const Point& point1, const Point& point2)
-    { vertices = Rectangle(point1, point2, 1).getVertices(); }
+    { vertices = Polygon(point1, point2, 1).getVertices(); }
   Circle circumscribedCircle() { return Circle(center(), Length(vertices[0] - center())); }
   Circle inscribedCircle() { return Circle(center(), Length(vertices[0] - vertices[1]) / 2); }
 };

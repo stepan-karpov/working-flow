@@ -1,222 +1,205 @@
-#include <math.h>
-
 #include <algorithm>
-#include <iomanip>
+#include <cmath>
 #include <iostream>
+#include <string>
 #include <vector>
 
-using Ld = long double;
+typedef double Db;
+typedef long long Ll;
 
-const int kPrecision = 10;
-const Ld kEps = 1e-5;
+const Db PI = acos(-1);
+const Ll kInf = 4e18;
+const Ll KInfInf = -8e18;
 
-void Init() {
+void Fastios() {
   std::ios_base::sync_with_stdio(false);
-  std::cin.tie(nullptr);
-  std::cout.tie(nullptr);
+  std::cin.tie(0);
 }
 
-struct Vector {
-  Ld x_projection = 0, y_projection = 0;
-  Vector() = default;
-  Vector(Ld xx, Ld yy) : x_projection(xx), y_projection(yy) {}
+struct Point {
+  Ll x;
+  Ll y;
 
-  Ld Length() const {
-    return sqrt(x_projection * x_projection + y_projection * y_projection);
+  Point() = default;
+  Point(long coord_x, Ll coord_y) : x(coord_x), y(coord_y) {}
+  Point operator+(Point other) const { return Point(x + other.x, y + other.y); }
+  Point operator-(Point other) const { return Point(x - other.x, y - other.y); }
+  Ll operator*(Point other) const { return x * other.y - y * other.x; }
+  Ll operator%(Point other) const { return x * other.x + y * other.y; }
+  Point operator-() const { return Point(-x, -y); }
+  bool operator==(Point other) const { return x == other.x && y == other.y; }
+  bool operator<(const Point& p) const {
+    return x < p.x || (x == p.x && y < p.y);
   }
+  Ll Len2() const { return (Ll)x * x + (Ll)y * y; }
+  Db Ang() const { return atan2(static_cast<Db>(y), static_cast<Db>(x)); }
 };
 
-Ld operator*(const Vector& first, const Vector& second) {
-  return first.x_projection * second.x_projection +
-         first.y_projection * second.y_projection;
+bool Cmp(const Point& lhs, const Point& rhs) {
+  Ll temp = lhs * rhs;
+  return temp != 0 ? temp < 0 : lhs.Len2() < rhs.Len2();
 }
 
-Ld operator^(const Vector& first, const Vector& second) {
-  return first.x_projection * second.y_projection -
-         first.y_projection * second.x_projection;
+std::istream& operator>>(std::istream& in, Point& input_point) {
+  in >> input_point.x >> input_point.y;
+  return in;
 }
 
-Ld operator||(const Vector& first, const Vector& second) {
-  Vector diff(first.x_projection - second.x_projection,
-              first.y_projection - second.y_projection);
-  return diff.Length();
+std::ostream& operator<<(std::ostream& out, Point output_point) {
+  out << output_point.x << ' ' << output_point.y;
+  return out;
 }
 
-Vector operator+(const Vector& first, const Vector& second) {
-  return Vector(first.x_projection + second.x_projection,
-                first.y_projection + second.y_projection);
-}
-
-Vector operator-(const Vector& first, const Vector& second) {
-  return Vector(first.x_projection - second.x_projection,
-                first.y_projection - second.y_projection);
-}
-
-std::ostream& operator<<(std::ostream& output, const Vector& vector) {
-  output << vector.x_projection << " " << vector.y_projection;
-  return output;
-}
-
-std::istream& operator>>(std::istream& input, Vector& vector) {
-  input >> vector.x_projection >> vector.y_projection;
-  return input;
-}
-
-struct Line {
-  Ld a_coeff = 0, b_coeff = 0, c_coeff = 0;
-  Line() = default;
-  Line(Ld a_c, Ld b_c, Ld c_c) : a_coeff(a_c), b_coeff(b_c), c_coeff(c_c) {}
-  Line(Vector point1, Vector point2) {
-    a_coeff = point1.y_projection - point2.y_projection;
-    b_coeff = point2.x_projection - point1.x_projection;
-    c_coeff = point1.x_projection * point2.y_projection -
-              point2.x_projection * point1.y_projection;
+std::vector<Point> ConvexHull(std::vector<Point> points) {
+  int len_points = points.size();
+  int mi = 0;
+  for (int i = 0; i < len_points; ++i) {
+    if (points[mi] < points[i]) {
+      mi = i;
+    }
   }
+  std::swap(points[0], points[mi]);
+  for (int i = 1; i < len_points; i++)
+    points[i] = points[i] - points[0];
+  std::sort(points.begin() + 1, points.end(), Cmp);
 
-  bool IsIntersect(const Line& other) const {
-    Ld delta = a_coeff * other.b_coeff - b_coeff * other.a_coeff;
-    return abs(delta) >= kEps;
+  int id = 0;
+  std::vector<Point> result(len_points);
+  result[id] = points[0];
+  id++;
+  for (int i = 1; i < len_points; i++) {
+    Point cur_vec = points[i] + points[0];
+    while (id >= 2 &&
+           (result[id - 1] - result[id - 2]) * (cur_vec - result[id - 2]) >= 0)
+      id--;
+    result[id] = cur_vec;
+    id++;
   }
-};
-
-Ld operator||(const Line& line, const Vector& point) {
-  return abs(line.a_coeff * point.x_projection +
-             line.b_coeff * point.y_projection + line.c_coeff) /
-         Vector(line.a_coeff, line.b_coeff).Length();
+  result.resize(id);
+  return result;
 }
 
-Vector operator%(const Line& line1, const Line& line2) {
-  Ld delta = line1.a_coeff * line2.b_coeff - line1.b_coeff * line2.a_coeff;
-  Ld delta1 = -line1.c_coeff * line2.b_coeff + line2.c_coeff * line1.b_coeff;
-  Ld delta2 = -line1.a_coeff * line2.c_coeff + line2.a_coeff * line1.c_coeff;
-  return Vector(delta1 / delta, delta2 / delta);
-}
+struct FastGetter {
+  int len_points;
+  Point st;
+  std::vector<Point> points;
+  std::vector<Db> Ang;
 
-std::ostream& operator<<(std::ostream& output, const Line& line) {
-  output << line.a_coeff << " " << line.b_coeff << " " << line.c_coeff;
-  return output;
-}
-
-std::istream& operator>>(std::istream& input, Line& line) {
-  input >> line.a_coeff >> line.b_coeff >> line.c_coeff;
-  return input;
-}
-
-struct Segment {
-  Vector point1, point2;
-  Segment() = default;
-  Segment(Vector point1, Vector point2) : point1(point1), point2(point2) {}
-};
-
-Ld operator||(const Segment& segment, const Vector& point) {
-  Vector point_c = point;
-  Vector point_a = segment.point1;
-  Vector point_b = segment.point2;
-
-  Ld line_distance = Line(point_a, point_b) || point_c;
-
-  Ld dist_to_a = point_a || point_c;
-  Ld dist_to_b = point_b || point_c;
-
-  Ld cross_product_cab = (point_c - point_a) * (point_b - point_a);
-  Ld cross_product_abc = (point_c - point_b) * (point_a - point_b);
-
-  if (cross_product_abc >= kEps && cross_product_cab >= kEps) {
-    return line_distance;
-  }
-  return std::min(dist_to_a, dist_to_b);
-}
-
-bool Between(Vector& p1, Vector& p2, Vector& point) {
-  return std::min(p1.x_projection, p2.x_projection) <= point.x_projection &&
-         point.x_projection <= std::max(p1.x_projection, p2.x_projection) &&
-         std::min(p1.y_projection, p2.y_projection) <= point.y_projection &&
-         point.y_projection <= std::max(p1.y_projection, p2.y_projection);
-}
-
-struct Rectangle {
-  std::vector<Vector> vertices;
-
-  void Read(int n_size) {
-    vertices.resize(n_size);
-    for (int i = 0; i < n_size; ++i) {
-      std::cin >> vertices[i];
+  FastGetter(const std::vector<Point>& values) : points(ConvexHull(values)) {
+    len_points = points.size();
+    std::reverse(points.begin(), points.end());
+    Ang.resize(len_points);
+    for (int i = 0; i < len_points; ++i) {
+      Ang[i] = (points[(i + 1) % len_points] - points[i]).Ang();
+    }
+    for (int i = 0; i < len_points; ++i) {
+      if (i && Ang[i] < Ang[i - 1]) {
+        Ang[i] += 2 * PI;
+      }
     }
   }
 
-  bool IsConvex() {
-    int n_size = vertices.size();
-    int state = -1;
-    for (int i = 0; i < n_size; ++i) {
-      Vector previous = vertices[(i - 1 + n_size) % n_size];
-      Vector current = vertices[i];
-      Vector next = vertices[(i + 1) % n_size];
-      Vector vector1 = previous - current;
-      Vector vector2 = next - current;
-
-      Ld cross_product = vector1 ^ vector2;
-      if (state == -1) {
-        if (!(abs(cross_product) <= kEps)) {
-          state = (int)(cross_product >= kEps);
-        }
-      } else if (state == 0) {
-        if (cross_product >= kEps) {
-          return false;
-        }
+  Ll GetMax(Ll arg1, Ll arg2) {
+    if (len_points < 3) {
+      Ll mx = KInfInf;
+      for (int i = 0; i < len_points; ++i) {
+        mx = std::max(mx, static_cast<Ll>(arg1 * points[i].x) +
+                              static_cast<Ll>(arg2 * points[i].y));
+      }
+      return mx;
+    }
+    int lb = 0;
+    int rb = len_points - 1;
+    Db angle = atan2(arg1, -arg2);
+    while (angle < Ang[0]) {
+      angle += 2 * PI;
+    }
+    while (lb != rb) {
+      int mid = (lb + rb + 1) / 2;
+      if (Ang[mid] < angle) {
+        lb = mid;
       } else {
-        if (-cross_product >= kEps) {
-          return false;
-        }
+        rb = mid - 1;
       }
     }
-    return true;
+    lb = (lb + 1) % len_points;
+    return static_cast<Ll>(arg1 * points[lb].x) +
+           static_cast<Ll>(arg2 * points[lb].y);
   }
 
-  bool IsInside(Vector point) {
-    Line baseline(point, {point.x_projection + 1, point.y_projection});
-    int cnt = 0;
-    int n_size = vertices.size();
-    for (int i = 0; i < n_size; ++i) {
-      Vector current = vertices[i];
-      Vector next = vertices[(i + 1) % n_size];
-      Line current_line(current, next);
-      Vector intersect = current_line % baseline;
-
-      if (Between(current, next, intersect)) {
-        ++cnt;
-      }
-    }
-    return cnt % 2 == 0;
+  void SaveValues(std::vector<Point>& carry) {
+    std::copy(points.begin(), points.end(), std::back_inserter(carry));
   }
 };
 
- std::istream& operator>>(std::istream& input, Rectangle& rectangle) {
-  int n_size;
-  input >> n_size;
-  rectangle.vertices.resize(n_size);
-  for (int i = 0; i < n_size; ++i) {
-    input >> rectangle.vertices[i];
-  }
-  return input;
-}
+class TaskSolver {
+  int sz;
+  int storage_sz;
+  std::vector<char> empty;
+  std::vector<FastGetter> storage;
 
-void Solve() {
-  int n_size;
-  std::cin >> n_size;
-  Vector point;
-  std::cin >> point;
-  Rectangle rect;
-  rect.Read(n_size);
-  if (rect.IsInside(point)) {
-    std::cout << "YES\n";
-  } else {
-    std::cout << "NO\n";
+  Ll GetMaximum(Ll arg1, Ll arg2) {
+    Ll res = -kInf;
+    for (int i = 0; i < storage_sz; ++i) {
+      res = std::max(res, storage[i].GetMax(arg1, arg2));
+    }
+    return res;
   }
-}
+
+  void Add(Point extra) {
+    std::vector<Point> carry;
+    carry.push_back(extra);
+    for (int i = 0; i < storage_sz; ++i) {
+      if (empty[i]) {
+        storage[i] = FastGetter(carry);
+        carry.clear();
+        empty[i] = false;
+        break;
+      } else {
+        storage[i].SaveValues(carry);
+        empty[i] = true;
+      }
+    }
+    if (!carry.empty()) {
+      storage.push_back(FastGetter(carry));
+      empty.push_back(false);
+      storage_sz++;
+    }
+    sz++;
+  }
+
+ public:
+  TaskSolver() : sz(0), storage_sz(0) {}
+
+  void Input() {
+    Fastios();
+    int n;
+    std::cin >> n;
+    Point pt;
+    for (int i = 0; i < n; ++i) {
+      std::cin >> pt;
+      Add(pt);
+    }
+  }
+
+  void ProcessQueries() {
+    int queries;
+    std::cin >> queries;
+    std::string type;
+    Point value;
+    for (int i = 0; i < queries; ++i) {
+      std::cin >> type >> value;
+      if (type == "add") {
+        Add(value);
+      } else {
+        std::cout << GetMaximum(value.x, value.y) << '\n';
+      }
+    }
+  }
+};
 
 int main() {
-  std::cout << std::fixed << std::setprecision(kPrecision);
-  Init();
-  Solve();
-  return 0;
+  TaskSolver solver;
+  solver.Input();
+  solver.ProcessQueries();
 }

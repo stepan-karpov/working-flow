@@ -127,7 +127,7 @@ int testGeometry() {
     Point k(3, 1);
     Polygon bfkce(c, k, f, b, e);
  
-    Rectangle rec_ae1 = Rectangle(e, a, 1);
+    Polygon rec_ae1 = Polygon(e, a, 1);
     Square sq_ae = Square(a, e);
     const Shape& rec_ae1_shape = rec_ae1;
     const Shape& sq_ae_shape = sq_ae;
