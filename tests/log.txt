@@ -1,411 +1,126 @@
-0 test is ok
-10 test is ok
-20 test is ok
-30 test is ok
-40 test is ok
-50 test is ok
-60 test is ok
-70 test is ok
-80 test is ok
-90 test is ok
-100 test is ok
-110 test is ok
-120 test is ok
-130 test is ok
-140 test is ok
-150 test is ok
-160 test is ok
-170 test is ok
-180 test is ok
-190 test is ok
-200 test is ok
-210 test is ok
-220 test is ok
-230 test is ok
-240 test is ok
-250 test is ok
-260 test is ok
-270 test is ok
-280 test is ok
-290 test is ok
-300 test is ok
-310 test is ok
-320 test is ok
-330 test is ok
-340 test is ok
-350 test is ok
-360 test is ok
-370 test is ok
-380 test is ok
-390 test is ok
-400 test is ok
-410 test is ok
-420 test is ok
-430 test is ok
-440 test is ok
-450 test is ok
-460 test is ok
-470 test is ok
-480 test is ok
-490 test is ok
-500 test is ok
-510 test is ok
-520 test is ok
-530 test is ok
-540 test is ok
-550 test is ok
-560 test is ok
-570 test is ok
-580 test is ok
-590 test is ok
-600 test is ok
-610 test is ok
-620 test is ok
-630 test is ok
-640 test is ok
-650 test is ok
-660 test is ok
-670 test is ok
-680 test is ok
-690 test is ok
-700 test is ok
-710 test is ok
-720 test is ok
-730 test is ok
-740 test is ok
-750 test is ok
-760 test is ok
-770 test is ok
-780 test is ok
-790 test is ok
-800 test is ok
-810 test is ok
-820 test is ok
-830 test is ok
-840 test is ok
-850 test is ok
-860 test is ok
-870 test is ok
-880 test is ok
-890 test is ok
-900 test is ok
-910 test is ok
-920 test is ok
-930 test is ok
-940 test is ok
-950 test is ok
-960 test is ok
-970 test is ok
-980 test is ok
-990 test is ok
-1000 test is ok
-1010 test is ok
-1020 test is ok
-1030 test is ok
-1040 test is ok
-1050 test is ok
-1060 test is ok
-1070 test is ok
-1080 test is ok
-1090 test is ok
-1100 test is ok
-1110 test is ok
-1120 test is ok
-1130 test is ok
-1140 test is ok
-1150 test is ok
-1160 test is ok
-1170 test is ok
-1180 test is ok
-1190 test is ok
-1200 test is ok
-1210 test is ok
-1220 test is ok
-1230 test is ok
-1240 test is ok
-1250 test is ok
-1260 test is ok
-1270 test is ok
-1280 test is ok
-1290 test is ok
-1300 test is ok
-1310 test is ok
-1320 test is ok
-1330 test is ok
-1340 test is ok
-1350 test is ok
-1360 test is ok
-1370 test is ok
-1380 test is ok
-1390 test is ok
-1400 test is ok
-1410 test is ok
-1420 test is ok
-1430 test is ok
-1440 test is ok
-1450 test is ok
-1460 test is ok
-1470 test is ok
-1480 test is ok
-1490 test is ok
-1500 test is ok
-1510 test is ok
-1520 test is ok
-1530 test is ok
-1540 test is ok
-1550 test is ok
-1560 test is ok
-1570 test is ok
-1580 test is ok
-1590 test is ok
-1600 test is ok
-1610 test is ok
-1620 test is ok
-1630 test is ok
-1640 test is ok
-1650 test is ok
-1660 test is ok
-1670 test is ok
-1680 test is ok
-1690 test is ok
-1700 test is ok
-1710 test is ok
-1720 test is ok
-1730 test is ok
-1740 test is ok
-1750 test is ok
-1760 test is ok
-1770 test is ok
-1780 test is ok
-1790 test is ok
-1800 test is ok
-1810 test is ok
-1820 test is ok
-1830 test is ok
-1840 test is ok
-1850 test is ok
-1860 test is ok
-1870 test is ok
-1880 test is ok
-1890 test is ok
-1900 test is ok
-1910 test is ok
-1920 test is ok
-1930 test is ok
-1940 test is ok
-1950 test is ok
-1960 test is ok
-1970 test is ok
-1980 test is ok
-1990 test is ok
-2000 test is ok
-2010 test is ok
-2020 test is ok
-2030 test is ok
-2040 test is ok
-2050 test is ok
-2060 test is ok
-2070 test is ok
-2080 test is ok
-2090 test is ok
-2100 test is ok
-2110 test is ok
-2120 test is ok
-2130 test is ok
-2140 test is ok
-2150 test is ok
-2160 test is ok
-2170 test is ok
-2180 test is ok
-2190 test is ok
-2200 test is ok
-2210 test is ok
-2220 test is ok
-2230 test is ok
-2240 test is ok
-2250 test is ok
-2260 test is ok
-2270 test is ok
-2280 test is ok
-2290 test is ok
-2300 test is ok
-2310 test is ok
-2320 test is ok
-2330 test is ok
-2340 test is ok
-2350 test is ok
-2360 test is ok
-2370 test is ok
-2380 test is ok
-2390 test is ok
-2400 test is ok
-2410 test is ok
-2420 test is ok
-2430 test is ok
-2440 test is ok
-2450 test is ok
-2460 test is ok
-2470 test is ok
-2480 test is ok
-2490 test is ok
-2500 test is ok
-2510 test is ok
-2520 test is ok
-2530 test is ok
-2540 test is ok
-2550 test is ok
-2560 test is ok
-2570 test is ok
-2580 test is ok
-2590 test is ok
-2600 test is ok
-2610 test is ok
-2620 test is ok
-2630 test is ok
-2640 test is ok
-2650 test is ok
-2660 test is ok
-2670 test is ok
-2680 test is ok
-2690 test is ok
-2700 test is ok
-2710 test is ok
-2720 test is ok
-2730 test is ok
-2740 test is ok
-2750 test is ok
-2760 test is ok
-2770 test is ok
-2780 test is ok
-2790 test is ok
-2800 test is ok
-2810 test is ok
-2820 test is ok
-2830 test is ok
-2840 test is ok
-2850 test is ok
-2860 test is ok
-2870 test is ok
-2880 test is ok
-2890 test is ok
-2900 test is ok
-2910 test is ok
-2920 test is ok
-2930 test is ok
-2940 test is ok
-2950 test is ok
-2960 test is ok
-2970 test is ok
-2980 test is ok
-2990 test is ok
-3000 test is ok
-3010 test is ok
-3020 test is ok
-3030 test is ok
-3040 test is ok
-3050 test is ok
-3060 test is ok
-3070 test is ok
-3080 test is ok
-3090 test is ok
-3100 test is ok
-3110 test is ok
-3120 test is ok
-3130 test is ok
-3140 test is ok
-3150 test is ok
-3160 test is ok
-3170 test is ok
-3180 test is ok
-3190 test is ok
-3200 test is ok
-3210 test is ok
-3220 test is ok
-3230 test is ok
-3240 test is ok
-3250 test is ok
-3260 test is ok
-3270 test is ok
-3280 test is ok
-3290 test is ok
-3300 test is ok
-3310 test is ok
-3320 test is ok
-3330 test is ok
-3340 test is ok
-3350 test is ok
-3360 test is ok
-3370 test is ok
-3380 test is ok
-3390 test is ok
-3400 test is ok
-3410 test is ok
-3420 test is ok
-3430 test is ok
-3440 test is ok
-3450 test is ok
-3460 test is ok
-3470 test is ok
-3480 test is ok
-3490 test is ok
-3500 test is ok
-3510 test is ok
-3520 test is ok
-3530 test is ok
-3540 test is ok
-3550 test is ok
-3560 test is ok
-3570 test is ok
-3580 test is ok
-3590 test is ok
-3600 test is ok
-3610 test is ok
-3620 test is ok
-3630 test is ok
-3640 test is ok
-3650 test is ok
-3660 test is ok
-3670 test is ok
-3680 test is ok
-3690 test is ok
-3700 test is ok
-3710 test is ok
-3720 test is ok
-3730 test is ok
-3740 test is ok
-3750 test is ok
-3760 test is ok
-3770 test is ok
-3780 test is ok
-3790 test is ok
-3800 test is ok
-3810 test is ok
-3820 test is ok
-3830 test is ok
-3840 test is ok
-3850 test is ok
-3860 test is ok
-3870 test is ok
-3880 test is ok
-3890 test is ok
-3900 test is ok
-3910 test is ok
-3920 test is ok
-3930 test is ok
-3940 test is ok
-3950 test is ok
-3960 test is ok
-3970 test is ok
-3980 test is ok
-3990 test is ok
-4000 test is ok
-4010 test is ok
-4020 test is ok
-4030 test is ok
-4040 test is ok
-4050 test is ok
-4060 test is ok
-4070 test is ok
-4080 test is ok
-4090 test is ok
-4100 test is ok
+======== test ========
+8 -5 4 -1 5 3 2 -1 -4 -3 0 2 3 1 2 3 -5 12 add -4 3 get -5 -2 add -5 3 add -3 -5 get -4 -3 get 5 3 get 2 -5 add 1 3 get 5 -3 get 4 4 get -3 -5 get 0 -4
+
+======== test ========
+4 1 -1 1 0 -1 4 0 -1 10 get 2 5 add 2 4 get 4 -1 add -5 2 add 2 -2 get 0 -5 add 5 -5 get -5 1 add 1 4 get 2 -3
+
+======== test ========
+7 -5 -5 -5 5 -1 5 1 0 -1 -4 1 -1 -3 1 14 add 0 5 add 1 0 add -5 4 add -5 2 add 3 0 add -1 -3 get 1 -1 add 1 0 add -2 1 get 5 2 get 3 5 get -4 -3 get 4 -3 add -4 -3
+
+======== test ========
+10 -4 0 2 -2 2 -4 0 -5 0 -4 -1 -2 -5 4 -4 -4 -2 -1 -5 -4 14 add -5 4 add 1 0 add -3 0 add -5 -1 get -2 -1 add -5 0 add 2 -4 get -4 0 add 2 -3 add 5 -4 add 5 -3 add -1 -4 get 3 -5 add 4 4
+
+======== test ========
+8 2 1 2 -2 2 -2 4 4 4 -5 2 -1 0 4 2 -2 11 add -1 -3 add 5 -3 get -4 -5 add 5 -1 add -1 -1 get 1 4 get 5 -3 get -1 -5 get -1 -2 add 3 5 add -1 2
+
+======== test ========
+10 1 3 2 4 3 2 -3 -3 -4 -5 -1 -4 2 2 1 -5 3 0 -1 3 11 add 4 -5 get 3 -1 add 1 -5 add 0 1 get 1 3 add -2 5 add 3 -3 get 3 -1 add 0 4 add -3 -4 add -5 -1
+
+======== test ========
+8 1 3 2 -4 3 3 -4 4 2 5 0 -3 3 -2 -1 1 7 add 1 -4 add 4 -3 add 0 -5 get 5 4 get 2 -1 add -3 -1 add 2 -3
+
+======== test ========
+9 -3 1 -4 -3 -1 3 1 -3 3 0 3 4 -3 0 -5 0 -5 -2 15 add -1 0 add -1 3 get -1 2 get -2 3 add 5 2 get 0 -2 get -3 -4 get 0 3 get -3 0 get 4 -3 add 5 5 get 4 3 add 0 3 add 2 -4 add 0 4
+
+======== test ========
+9 3 4 4 3 0 -2 -5 1 -3 1 -4 4 4 1 -2 1 1 -1 8 get 2 2 get 2 5 add 5 -4 get 3 -4 add 4 2 add -3 2 add -3 -2 add 1 2
+
+======== test ========
+6 3 3 3 -5 -2 4 -1 -2 -5 -5 2 4 10 add 4 -2 add -5 -4 get 1 -2 get -3 0 get -5 5 add 3 -4 add 0 -4 get 2 -5 add -5 4 get -1 4
+
+======== test ========
+10 -3 -3 -2 0 -5 4 4 2 -1 -2 -1 -2 0 2 2 -4 3 0 4 -3 7 add 5 -4 get 1 -3 add 4 0 get 3 4 add -5 -1 add -5 -1 get 2 -4
+
+======== test ========
+8 -5 -3 2 4 2 0 -5 -4 0 5 1 0 -2 -3 1 5 5 get 1 3 get 3 1 add 4 -5 get 1 -4 add -4 -2
+
+======== test ========
+8 -2 3 -4 5 -4 3 3 2 0 -2 3 -1 -5 4 -1 4 9 add 5 -2 add 0 1 get -4 -1 get 5 -5 add 0 -2 add 2 -1 add 3 1 get -1 0 get 4 1
+
+======== test ========
+9 0 2 2 -4 2 5 -1 5 4 0 4 -5 -4 4 1 -4 0 0 15 add 5 -4 get -3 5 add 5 -5 add 0 5 get -1 0 get -5 -2 add -3 -1 add 5 4 add -4 -2 get 3 -1 get 2 -3 get -3 -1 add -4 -5 get -5 2 add 3 -2
+
+======== test ========
+7 -1 -2 -5 5 2 2 -5 2 2 -3 2 0 1 -1 14 get -2 -4 add -4 4 add 5 1 add -4 -1 add 3 -5 get 0 -4 add 3 -5 add -5 0 add -5 -5 get -4 -4 get 5 -2 get -3 0 add -4 -3 add -1 -2
+
+======== test ========
+4 -1 -5 1 -2 1 -3 -5 1 15 get 0 -3 add 2 -4 add 4 -2 add -5 2 add 0 1 get -5 3 add 3 -2 get 3 4 get 5 -4 add 2 -4 get -3 2 get 5 4 get 2 1 add 4 3 get -5 1
+
+======== test ========
+6 1 5 0 -5 -4 -3 -1 -5 1 1 -5 -2 6 add 5 -4 get 2 -1 add 5 1 add -1 -3 get -4 3 get 3 -1
+
+======== test ========
+5 -2 -2 -1 0 1 4 1 5 -2 -4 14 add 4 2 get -4 2 add 2 -3 add 5 -3 get -4 -5 add -2 -1 get -1 1 add 4 -1 add 2 -2 add -2 -1 get 0 5 get 2 3 get 3 5 get -5 -3
+
+======== test ========
+9 0 -5 -4 4 1 -1 1 -4 -1 -3 -3 -4 1 4 -4 -4 -2 -1 12 get 0 2 get 2 5 add 5 -1 get -3 -5 get 2 -2 get -2 5 add 0 -4 add 0 4 add 3 -5 get 4 2 add -3 4 add -5 -4
+
+======== test ========
+4 -1 -5 0 -2 0 4 -2 0 10 add -5 -3 get -3 -5 add 4 -4 get 1 3 add 2 5 get -5 -5 get -4 1 get 4 -1 add -2 -4 add -3 2
+
+======== test ========
+6 -3 4 -4 3 -2 -4 -2 -2 -5 -1 -5 -5 14 get 3 -4 get 1 4 add -1 1 add 1 -4 add 2 -3 get -4 -5 get -1 1 add 5 -4 get 0 -5 get 1 1 get -4 5 get 0 1 add 5 -3 get 4 1
+
+======== test ========
+6 -5 0 3 -3 1 -2 0 -5 -2 -4 3 4 10 add 4 -4 get -1 -4 add -1 1 add -1 5 add 4 -2 get 1 -4 get 2 -4 add 5 -2 add -1 2 add 3 -2
+
+======== test ========
+9 -4 4 3 -2 1 4 3 3 1 -3 -1 -5 -2 4 -4 0 2 -1 10 add 4 -3 add 5 -3 add 0 5 add 5 -4 get 4 0 add 0 1 add 5 4 get 4 2 get 2 -5 add 1 -3
+
+======== test ========
+8 -2 1 4 3 -1 0 -3 4 -5 -1 4 0 -1 -1 3 -2 12 get 0 -1 add -2 4 add 1 -1 add 5 -2 get -3 -1 get 0 -5 add -2 -2 add 1 -3 get -4 -3 get 3 -3 add 2 -4 get 0 5
+
+======== test ========
+10 -2 -1 -4 -3 -1 4 2 4 -4 -1 2 5 -4 4 -2 2 0 4 -2 5 13 add 4 -3 get -2 0 get 4 -5 get 5 5 add 1 -5 add 0 -4 add 5 2 get 3 -3 get 3 5 add -1 3 get -3 -3 add 5 -3 add 2 -5
+
+======== test ========
+3 2 1 2 -3 0 -3 13 add 2 0 get 0 -4 add -2 5 get 1 -1 add -5 4 add 3 -3 get -4 -2 add 4 -2 add -5 5 add 2 5 add 5 3 add -1 5 get 1 -4
+
+======== test ========
+10 -4 1 -4 5 -2 -2 -5 4 -4 3 3 4 3 -5 4 3 -3 3 4 4 11 get -1 -5 get 4 -1 get 3 4 get 1 5 add 5 0 add 5 2 add -4 3 get 4 -4 get -3 3 get 5 -1 add -4 -1
+
+======== test ========
+10 3 -3 -5 5 -2 -2 3 3 -4 -5 -3 0 3 5 2 0 1 3 3 0 8 get 4 4 add 5 -4 add 2 5 add 5 2 add -3 3 get 1 -4 add 0 1 add -1 5
+
+======== test ========
+5 3 -1 3 5 -4 0 -3 -4 1 -2 10 get 1 5 get -3 -4 get 5 -1 get 4 3 get -1 -5 add 4 5 add 4 -3 get -3 3 get 2 -2 get 2 -3
+
+======== test ========
+8 -1 5 -4 -4 -1 0 -4 0 1 -5 1 5 2 5 2 -2 6 add 0 2 get 2 -5 add 4 -2 get 2 -4 get 1 4 add -1 1
+
+======== test ========
+3 -5 2 0 -2 0 5 11 get -5 2 get 3 -3 add -5 3 get 2 -5 get 3 -3 add 1 3 get 3 -1 get 2 1 get -4 4 add -3 -4 add -3 -5
+
+======== test ========
+4 -5 -3 2 0 0 3 2 3 7 get 4 -1 add -5 -2 add -5 5 get 2 -4 get -2 -2 get -3 3 add -1 -1
+
+======== test ========
+5 0 5 0 -1 0 3 -1 -3 -2 1 15 add -2 1 add -5 -5 add 3 3 get -1 -4 add 3 4 add 3 0 get 4 -3 add 4 -3 add -3 4 get -4 -5 add -1 -3 get 1 2 add -5 -2 get 1 3 get 0 4
+
+======== test ========
+4 -4 1 3 -2 3 0 2 -3 10 add -1 -5 add -4 4 add -1 -4 add 4 -4 add 3 0 get 5 -5 get 5 -3 get 5 1 get 2 -4 add 4 -2
+
+======== test ========
+3 0 0 -3 -4 0 -5 13 get -4 3 add 3 -3 get 0 -3 add -2 3 add -3 5 add -3 2 get 3 -5 get 4 3 add 5 1 get -2 -4 get 1 0 add 3 4 get 1 1
+
+======== test ========
+7 3 5 -5 -5 2 -1 3 1 -3 -4 -3 4 -4 -5 15 add -3 -5 add -2 -2 add 0 -1 get 0 -1 add 4 0 add -4 2 get 5 -3 get -5 -3 add -1 4 get 1 -2 add 2 5 get -3 1 get 2 -2 get -2 -4 get -4 -1
+
+======== test ========
+6 4 2 2 -2 4 -4 -2 -4 -2 2 4 -5 14 get -5 3 add -2 2 get -2 -3 get 0 -4 get -2 -5 add 3 2 add -2 -5 get 1 -3 add 2 -3 get 4 -2 add 0 3 get 1 -5 get 0 0 get 1 -3
+
+======== test ========
+6 1 2 -5 2 -1 3 -2 -1 0 -5 1 -1 11 get 0 0 add -1 -5 add -5 -5 get -5 2 add 3 0 get 4 -3 add -1 0 get 3 1 get -5 -3 add -4 3 get 0 -5
+
+======== test ========
+5 0 3 -4 2 2 4 2 0 1 -1 11 add 3 -2 get -3 -5 add -4 -2 get -3 -3 add -5 -1 add 0 5 get 5 -2 get 4 -4 add 3 -2 get 5 3 get 0 -4
+
+======== test ========
+10 3 -4 3 3 -5 -3 0 2 -3 -1 -1 -4 -1 -4 -5 -4 1 0 -3 -1 7 get -4 -3 add -5 2 get 1 -5 add 0 0 get 0 -3 get -3 -5 get -5 1
+
+======== test ========
+9 -4 3 -4 -3 -4 3 -1 -2 0 4 -1 4 2 -1 0 -2 2 2 12 get -3 -1 add -2 -3 get -5 -2 get 0 2 add -3 2 add 5 -1 add 4 -2 get 0 3 get 5 -4 add 0 -5 get 5 -1 get 0 -2
+
+======== test ========
+3 2 1 3 -5 3 2 6 get 0 -5 get 3 -1 get -5 -3 get 5 1 add -5 -4 get 0 -3
+

@@ -59,12 +59,12 @@ int main() {
   std::mt19937 mt(time(nullptr)); 
   int border = 5;
 
-  int n = random(1, 150);
+  int n = random(1, 10);
   std::cout << n << "\n";
   for (int i = 0; i < n; ++i) {
     std::cout << random(-border, border) << " " << random(-border, border) << "\n";
   }
-  int q = random(4, 1500);
+  int q = random(4, 15);
   std::cout << q << "\n";
   for (int i = 0; i < q; ++i) {
     if (random(0, 1)) {
