@@ -13,7 +13,7 @@ long long random(long long low, long long high) {
 }
 
 std::string CreateString(int size) {
-  const std::string ALPH = "a";
+  const std::string ALPH = "abcdefg";
   // const std::string ALPH = "abcdefghijklmopq";
   std::string ans = "";
 
@@ -35,44 +35,44 @@ bool is_prime(int n){
   return f;   
 }
 
-void DFS(int v, vector<vector<int>>& g, vector<int>& kek) {
-  kek[v] = true;
-  for (auto& to : g[v]) {
-    if (kek[to]) {
-      continue;
-    }
-    DFS(to, g, kek);
-  }
-}
-
-void CreatePoly() {
-  int n = random(1, 5);
-  std::cout << n << " ";
-  std::cout << random(0, 9) << " ";
-  for (int i = 0; i < n; ++i) {
-    std::cout << random(0, 9) << " ";
-  }
-  std::cout << "\n";
-}
-
 int main() {
   std::mt19937 mt(time(nullptr)); 
-  int border = 2;
 
-  int n = random(1, 150);
-  std::cout << n << "\n";
+
+  const std::string ALPH = "abcdefghijklmopq";
+  int n = random(4, 5);
+  int m = random(n, n * (n - 1) / 2);
+  int q = 1000;
+
+  std::cout << n << " " << m << " " << q << "\n";
+
   for (int i = 0; i < n; ++i) {
-    std::cout << random(-border, border) << " " << random(0, border) << "\n";
+    cout << random(0, 10) << " ";
   }
-  int q = random(4, 15000);
-  std::cout << q << "\n";
+  cout << "\n";
+
+  set<pair<int, int>> used;
+
+  for (int i = 0; i < m; ++i) {
+    int u = random(0, n - 1);
+    int v = random(0, n - 1);
+    while (u == v || used.find({u, v}) != used.end()) {
+      v = random(0, n - 1);
+      u = random(0, n - 1);
+    }
+    used.insert({u, v});
+    used.insert({v, u});
+    cout << u + 1 << " " << v + 1 << "\n";
+  }
+
   for (int i = 0; i < q; ++i) {
     if (random(0, 1)) {
-      std::cout << "get " << random(-border, border) << " " << random(-border, border) << "\n";
+      cout << "? " << random(1, n) << "\n";
     } else {
-      std::cout << "add " << random(-border, border) << " " << random(-border, border) << "\n";
+      cout << "+ " << random(1, n) << " " << random(1, 100) << "\n";
     }
   }
+
 
   return 0;
 }
