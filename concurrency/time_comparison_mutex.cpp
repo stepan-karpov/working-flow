@@ -26,7 +26,7 @@ void thread2() {
     x += 1;
   }
 }
-
+ 
 int main() {
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
   std::vector<std::thread> threads;
