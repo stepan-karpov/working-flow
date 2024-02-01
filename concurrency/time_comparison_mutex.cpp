@@ -15,14 +15,14 @@ std::mutex mtx;
 
 void thread1() {
   std::unique_lock lock(mtx);
-  for (int i = 0; i < 1e8; ++i) {
+  for (int i = 0; i < 1e9; ++i) {
     x += 1;
   }
 }
 
 void thread2() {
   std::unique_lock lock(mtx);
-  for (int i = 0; i < 1e8; ++i) {
+  for (int i = 0; i < 1e9; ++i) {
     x += 1;
   }
 }
