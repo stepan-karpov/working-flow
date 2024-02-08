@@ -11,12 +11,12 @@ func TimeComparison() {
 
 	var c = 0
 
-	for i := 0; i < 1e11; i++ {
+	for i := 0; i < 1e10; i++ {
 		c++
 	}
 
 	fmt.Println("c = ", c)
 
 	elapsed := time.Since(start)
-	fmt.Printf("Binomial took %s", elapsed)
+	fmt.Printf("1e10 incrementations in took %s", elapsed)
 }
