@@ -11,7 +11,7 @@ using namespace std;
 
 using ll = long long;
 using pll = pair<ll, ll>;
-using pii = pair<int, int>;
+using pii = pair<ll, ll>;
 using vll = vector<ll>;
 using vvll = vector<vll>;
 using ld = long double;
@@ -23,7 +23,7 @@ const string kALPH = "abcdefghijklmnopqrstuvwxyz";
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
 ll find(string& str, char s) {
-  for (int i = 0; i < str.size(); ++i) {
+  for (ll i = 0; i < str.size(); ++i) {
     if (str[i] == s) {
       return i;
     }
@@ -40,9 +40,9 @@ string get_string(string s, ll k, vector<pair<ll, ll>>& usage) {
   ll ans = INF;
   ll to_start = -1;
 
-  for (int i = 0; i <= kALPH.size() - k; ++i) {
+  for (ll i = 0; i <= kALPH.size() - k; ++i) {
     ll cur_ans = 0;
-    for (int j = i; j < i + k; ++j) {
+    for (ll j = i; j < i + k; ++j) {
       cur_ans += abs(t - usage[j].first);
     }
     if (cur_ans <= ans) {
@@ -54,14 +54,14 @@ string get_string(string s, ll k, vector<pair<ll, ll>>& usage) {
   string new_alph = "";
   vll rest(30, 0);
 
-  for (int i = to_start; i < to_start + k; ++i) {
+  for (ll i = to_start; i < to_start + k; ++i) {
     rest[usage[i].second] = t;
     new_alph += kALPH[usage[i].second];
   }
 
   vll fixed(n, 0);
 
-  for (int i = 0; i < n; ++i) {
+  for (ll i = 0; i < n; ++i) {
     ll pos = find(new_alph, s[i]);
     if (pos != new_alph.size()) {
       ll pos_in_alph = kALPH.find(new_alph[pos]);
@@ -72,10 +72,10 @@ string get_string(string s, ll k, vector<pair<ll, ll>>& usage) {
     }
   }
 
-  for (int i = 0; i < n; ++i) {
+  for (ll i = 0; i < n; ++i) {
     if (fixed[i] == 0) {
       ll v = 0;
-      for (int j = 0; j < 30; ++j) {
+      for (ll j = 0; j < 30; ++j) {
         if (rest[j] != 0) {
           v = j;
           break;
@@ -96,11 +96,11 @@ void Solve() {
   string s;
   cin >> s;
   vll coords(kALPH.size(), 0);
-  for (int i = 0; i < s.size(); ++i) {
+  for (ll i = 0; i < s.size(); ++i) {
     ++coords[kALPH.find(s[i])];
   }
   vector<pair<ll, ll>> used;
-  for (int i = 0; i < kALPH.size(); ++i) {
+  for (ll i = 0; i < kALPH.size(); ++i) {
     used.push_back({coords[i], i});
   }
 
@@ -109,14 +109,14 @@ void Solve() {
   string ans = "";
   ll cur_d = INF;
 
-  for (int i = 1; i <= kALPH.size(); ++i) {
+  for (ll i = 1; i <= kALPH.size(); ++i) {
     if (n % i != 0) {
       continue;
     }
     string new_s = get_string(s, i, used);
     
     ll cnt = 0;
-    for (int i = 0; i < n; ++i ) {
+    for (ll i = 0; i < n; ++i ) {
       if (s[i] != new_s[i]) {
         ++cnt;
       }
@@ -132,7 +132,7 @@ void Solve() {
 
 }
 
-int main() {
+ll main() {
   ios_base::sync_with_stdio(false);
   cin.tie(nullptr);
   cout.tie(nullptr);
