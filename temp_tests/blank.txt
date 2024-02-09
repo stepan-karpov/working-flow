@@ -1,3 +1,0 @@
-      int ans1 = FindRoot(aa, pp);
-      int ans2 = pp - ans1;
-      std::cout << std::min(ans1, ans2) << "\n";

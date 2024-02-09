@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	program_examples.TimeComparison()
+	program_examples.Goroutines()
 }
