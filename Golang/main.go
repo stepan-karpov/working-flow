@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	program_examples.Goroutines()
+	program_examples.Generics()
 }
