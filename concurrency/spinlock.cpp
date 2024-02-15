@@ -1,31 +1,30 @@
+#include <iostream>
+#include <thread>
 #include <atomic>
 
 class SpinLock {
-private:
-    std::atomic_flag flag = ATOMIC_FLAG_INIT;
-
-public:
-    void lock() {
-        while (flag.test_and_set(std::memory_order_acquire)) {
-            // Spin until the lock is acquired
-        }
+ public:
+  void Lock() {
+    while (thread_count_.fetch_add(1) > 0) {
+      thread_count_.fetch_sub(1);  // Step back
     }
+  }
 
-    void unlock() {
-        flag.clear(std::memory_order_release);
-    }
+  void Unlock() {
+    thread_count_.fetch_sub(1);
+  }
+
+ private:
+  std::atomic<size_t> thread_count_{0};
 };
-
-#include <iostream>
-#include <thread>
 
 SpinLock spinlock;
 
 void increment_counter(int &counter) {
     for (int i = 0; i < 100000; ++i) {
-        spinlock.lock();
+        spinlock.Lock();
         counter++;
-        spinlock.unlock();
+        spinlock.Unlock();
     }
 }
 
