@@ -1,3 +1,11 @@
-a = {123, 23, 2, 4, 2}
+def change_key_values(dictionary: dict):
+  return dict(
+    ((v, k) for k, v in dictionary.items()) 
+  )
 
-print(a)
+a = {
+  1: 2,
+  "FDGH": 1
+}
+
+print(change_key_values(a))
