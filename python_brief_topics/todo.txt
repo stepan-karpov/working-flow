@@ -1,0 +1,11 @@
+done:           generators + comprehensions https://www.youtube.com/watch?v=JBKu84gQ16o 55:27
+not neccecary:  типы словарей https://www.youtube.com/watch?v=BTZ0-PkkJPQ 24:31
+not neccecary:  GIL
+done:           iterators in python
+done:           bits in integer
+done:           @staticmethod, @classmethod
+done:           .join
+done:           https://www.youtube.com/watch?v=BTZ0-PkkJPQ 1:01:08
+done:           https://www.youtube.com/watch?v=RJFYyx3a9a0 12:40
+done:           lambda functions 
+done:           with as https://www.youtube.com/watch?v=25xUoLye53w 53:51
