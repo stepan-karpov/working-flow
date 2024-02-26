@@ -5,6 +5,7 @@
 #include <chrono>
 
 int square(int x) {
+  std::cout << "start square\n";
   int time_sleep = 2000;
   std::this_thread::sleep_for(std::chrono::milliseconds(time_sleep));
   return x * x;
@@ -17,6 +18,10 @@ int main() {
   std::future<int> asyncFunction1 = std::async(&square, 1);
   std::future<int> asyncFunction2 = std::async(&square, 2);
   std::future<int> asyncFunction3 = std::async(&square, 3);
+
+  std::cout << "start sleeping in main thread!\n";
+  std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+  std::cout << "end sleeping in main thread!\n";
 
   int result1 = asyncFunction1.get();
   int result2 = asyncFunction2.get();
