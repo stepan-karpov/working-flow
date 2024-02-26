@@ -11,16 +11,16 @@ struct BankAccount {
   std::condition_variable cond;
 
   void thread1(long long& balance) { /* add money */
-    std::unique_lock<std::mutex> guard(this->mtx);
+    std::unique_lock<std::mutex> lock(this->mtx);
     balance += 500;
     std::cout << "Some money added! Current balance is: " << balance << "\n";
     cond.notify_one(); /* cond.notify_all(); */
   }
 
   void thread2(long long& balance) { /* withdraw money */
-    std::unique_lock<std::mutex> guard(this->mtx);
+    std::unique_lock<std::mutex> lock(this->mtx);
     while (balance < 500) {
-      cond.wait(guard, [&balance]() { return balance >= 500; });
+      cond.wait(lock, [&balance]() { return balance >= 500; });
     }
 
     if (balance < 500) { /* protection anyway */
