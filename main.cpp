@@ -1,11 +1,32 @@
+#include <algorithm>
 #include <iostream>
-using namespace std;
+#include <vector>
 
-using ll = long long;
+void Init() {
+  std::ios_base::sync_with_stdio(false);
+  std::cin.tie(nullptr);
+  std::cout.tie(nullptr);
+}
+
+struct A {
+  A() {
+    std::cout << "Constr\n";
+  }
+
+  ~A() {
+    std::cout << "Destr\n";
+  }
+};
 
 int main() {
-  int n[3];
+  Init();
 
-  cout << n << "\n";
-  cout << n + 1 << "\n";
+  std::vector<A> vv(4);
+
+  vv.clear();
+
+  std::cout << "sdf\n";
+
+
+  return 0;
 }
