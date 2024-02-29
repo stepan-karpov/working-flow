@@ -1,7 +1,14 @@
-import time
-start_time = time.time()
-cnt = 0
-for i in range(0, int(1e9)):
-  cnt += 1
-print(cnt)
-print("--- %s seconds ---" % (time.time() - start_time))
+def foo(tmp=None):
+  if tmp is None:
+    tmp = []
+  tmp.append(1)
+  return tmp
+
+def bar(tmp=()):
+  tmp += (1,)
+  return tmp
+
+print(bar())
+print(bar())
+print(bar())
+print(bar())
