@@ -1,3 +1,19 @@
-error: no viable conversion from 
-'std::optional<function<config<true, false, capacity_default>, property<true, false, void ()>>>' to 'Task' (aka 
-'function<detail::config<true, false, capacity_default>, detail::property<true, false, void ()>>')
+/usr/bin/ld: CMakeFiles/task_fiber_coro_unit_tests.dir/coroutine.cpp.o: in function `fu2::abi_400::detail::type_erasure::internal_capacity_holder<fu2::capacity_default>::capacity()':
+/tmp/clippy-build/Debug/_deps/function2-src/include/function2/function2.hpp:1143: multiple definition of `ITrampolineCoro::ITrampolineCoro(Coroutine*, fu2::abi_400::detail::function<fu2::abi_400::detail::config<true, false, fu2::capacity_default>, fu2::abi_400::detail::property<true, false, void (Coroutine::SuspendContext)> >, bool*)'; CMakeFiles/task_fiber_coro_unit_tests.dir/tests/unit.cpp.o:/workspace/concurrency-course/tasks/fiber/coro/tests/../coroutine.hpp:64: first defined here
+/usr/bin/ld: CMakeFiles/task_fiber_coro_unit_tests.dir/coroutine.cpp.o:(.data.rel.ro+0x0): multiple definition of `vtable for ITrampolineCoro'; CMakeFiles/task_fiber_coro_unit_tests.dir/tests/unit.cpp.o:(.data.rel.ro+0x0): first defined here
+/usr/bin/ld: CMakeFiles/task_fiber_coro_unit_tests.dir/coroutine.cpp.o: in function `~ITrampolineCoro':
+/tmp/clippy-build/Debug/_deps/function2-src/include/function2/function2.hpp:1145: multiple definition of `ITrampolineCoro::~ITrampolineCoro()'; CMakeFiles/task_fiber_coro_unit_tests.dir/tests/unit.cpp.o:/workspace/concurrency-course/tasks/fiber/coro/tests/../coroutine.hpp:67: first defined here
+/usr/bin/ld: CMakeFiles/task_fiber_coro_unit_tests.dir/coroutine.cpp.o: in function `~ITrampolineCoro':
+/workspace/concurrency-course/tasks/fiber/coro/coroutine.hpp:67: multiple definition of `ITrampolineCoro::~ITrampolineCoro()'; CMakeFiles/task_fiber_coro_unit_tests.dir/tests/unit.cpp.o:/workspace/concurrency-course/tasks/fiber/coro/tests/../coroutine.hpp:67: first defined here
+/usr/bin/ld: CMakeFiles/task_fiber_coro_unit_tests.dir/coroutine.cpp.o: in function `~ITrampolineCoro':
+/tmp/clippy-build/Debug/_deps/function2-src/include/function2/function2.hpp:1145: multiple definition of `ITrampolineCoro::~ITrampolineCoro()'; CMakeFiles/task_fiber_coro_unit_tests.dir/tests/unit.cpp.o:/workspace/concurrency-course/tasks/fiber/coro/tests/../coroutine.hpp:67: first defined here
+/usr/bin/ld: CMakeFiles/task_fiber_coro_unit_tests.dir/coroutine.cpp.o: in function `ITrampolineCoro::Run()':
+/workspace/concurrency-course/tasks/fiber/coro/coroutine.hpp:70: multiple definition of `ITrampolineCoro::Run()'; CMakeFiles/task_fiber_coro_unit_tests.dir/tests/unit.cpp.o:/workspace/concurrency-course/tasks/fiber/coro/tests/../coroutine.hpp:70: first defined here
+/usr/bin/ld: CMakeFiles/task_fiber_coro_unit_tests.dir/coroutine.cpp.o: in function `fu2::abi_400::detail::type_erasure::internal_capacity_holder<fu2::capacity_default>::capacity()':
+/tmp/clippy-build/Debug/_deps/function2-src/include/function2/function2.hpp:1143: multiple definition of `ITrampolineCoro::ITrampolineCoro(Coroutine*, fu2::abi_400::detail::function<fu2::abi_400::detail::config<true, false, fu2::capacity_default>, fu2::abi_400::detail::property<true, false, void (Coroutine::SuspendContext)> >, bool*)'; CMakeFiles/task_fiber_coro_unit_tests.dir/tests/unit.cpp.o:/workspace/concurrency-course/tasks/fiber/coro/tests/../coroutine.hpp:64: first defined here
+/usr/bin/ld: CMakeFiles/task_fiber_coro_unit_tests.dir/coroutine.cpp.o:(.data.rel.ro+0x28): multiple definition of `typeinfo for ITrampolineCoro'; CMakeFiles/task_fiber_coro_unit_tests.dir/tests/unit.cpp.o:(.data.rel.ro+0x28): first defined here
+/usr/bin/ld: CMakeFiles/task_fiber_coro_unit_tests.dir/coroutine.cpp.o:(.rodata+0x176): multiple definition of `typeinfo name for ITrampolineCoro'; CMakeFiles/task_fiber_coro_unit_tests.dir/tests/unit.cpp.o:(.rodata+0x2b6): first defined here
+clang++-17: error: linker command failed with exit code 1 (use -v to see invocation)
+make[3]: *** [tasks/fiber/coro/CMakeFiles/task_fiber_coro_unit_tests.dir/build.make:128: tasks/fiber/coro/bin/task_fiber_coro_unit_tests] Error 1
+make[2]: *** [CMakeFiles/Makefile2:5614: tasks/fiber/coro/CMakeFiles/task_fiber_coro_unit_tests.dir/all] Error 2
+make[1]: *** [CMakeFiles/Makefile2:5621: tasks/fiber/coro/CMakeFiles/task_fiber_coro_unit_tests.dir/rule] Error 2
