@@ -2,84 +2,171 @@
 
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+	"strconv"
+	"strings"
+)
 
-type Node struct {
-	color int
-	edges []string
+type Evaluator struct {
+	newCommands map[string]string
+	stack       []int
 }
 
-func getReversed(prereqs map[string][]string) map[string]Node {
-	reversed := make(map[string]Node)
-
-	for subject, requisites := range prereqs {
-		_, ok := reversed[subject]
-		if !ok {
-			reversed[subject] = Node{color: -1, edges: make([]string, 0)}
-		}
-		for _, req := range requisites {
-			reversed[req] = Node{color: -1, edges: append(reversed[req].edges, subject)}
-		}
-	}
-
-	return reversed
+// NewEvaluator creates evaluator.
+func NewEvaluator() *Evaluator {
+	return &Evaluator{}
 }
 
-func Dfs(current_vertex string, graph map[string]Node, found_cycle *bool, sequence *[]string) {
-	if *found_cycle {
-		return
+func PerformOperation(command *string, stack *[]int) error {
+	if len(*stack) < 2 {
+		return errors.New("insufficient operands on the stack")
 	}
-	if graph[current_vertex].color == 2 {
-		return
-	}
+	operand2 := (*stack)[len(*stack)-1]
+	operand1 := (*stack)[len(*stack)-2]
+	*stack = (*stack)[:len(*stack)-2]
 
-	graph[current_vertex] = Node{1, graph[current_vertex].edges}
-
-	for _, to := range graph[current_vertex].edges {
-		if graph[to].color == 1 {
-			*found_cycle = true
-		} else {
-			Dfs(to, graph, found_cycle, sequence)
+	switch *command {
+	case "+":
+		*stack = append(*stack, operand1+operand2)
+	case "-":
+		*stack = append(*stack, operand1-operand2)
+	case "*":
+		*stack = append(*stack, operand1*operand2)
+	case "/":
+		if operand2 == 0 {
+			return errors.New("division by zero")
 		}
+		*stack = append(*stack, operand1/operand2)
 	}
-
-	*sequence = append(*sequence, current_vertex)
-	graph[current_vertex] = Node{2, graph[current_vertex].edges}
+	return nil
 }
 
-func GetCourseList(prereqs map[string][]string) []string {
-	graph := getReversed(prereqs)
+func Open(to_open string, newCommands *map[string]string) string {
+	result := to_open
 
-	// for k, v := range graph {
-	// 	fmt.Printf("%v %v\n", k, v)
-	// }
-
-	sequence := make([]string, 0)
-	found_cycle := false
-
-	for k, v := range graph {
-		if v.color == -1 {
-			Dfs(k, graph, &found_cycle, &sequence)
-		}
-		if found_cycle {
-			panic("hahaha")
-		}
-	}
-	answer := make([]string, 0)
-	for i := 0; i < len(sequence); i++ {
-		answer = append(answer, sequence[len(sequence) - i - 1])
+	for key, value := range *newCommands {
+		result = strings.ReplaceAll(result, key, value)
 	}
 
-	return answer
+	return result
+}
+
+func HandleCommand(command *string, index int,
+	stack *[]int, newCommands *map[string]string,
+	parts *[]string, e *Evaluator) (int, error) {
+	if body, ok := (*newCommands)[strings.ToLower(*command)]; ok {
+		err := GoJohnyGo(body, stack, e)
+		if err != nil {
+			return index + 1, err
+		}
+		return index + 1, nil
+	}
+	if *command == "+" || *command == "-" || *command == "*" || *command == "/" {
+		err := PerformOperation(command, stack)
+		if err != nil {
+			return index, err
+		}
+		return index + 1, nil
+	}
+	if strings.ToLower(*command) == "dup" {
+		if len(*stack) == 0 {
+			return index, errors.New("stack is empty, nothing to dup")
+		}
+		*stack = append(*stack, (*stack)[len(*stack)-1])
+		return index + 1, nil
+	}
+	if strings.ToLower(*command) == "over" {
+		if len(*stack) <= 1 {
+			return index, errors.New("stack is empty, nothing to over")
+		}
+		*stack = append(*stack, (*stack)[len(*stack)-2])
+		return index + 1, nil
+	}
+	if strings.ToLower(*command) == "drop" {
+		if len(*stack) == 0 {
+			return index, errors.New("stack is empty, nothing to drop")
+		}
+		*stack = (*stack)[:len(*stack)-1]
+		return index + 1, nil
+	}
+	if strings.ToLower(*command) == "swap" {
+		if len(*stack) <= 1 {
+			return index, errors.New("stack is empty, nothing to swap")
+		}
+		operand2 := (*stack)[len(*stack)-1]
+		operand1 := (*stack)[len(*stack)-2]
+		*stack = (*stack)[:len(*stack)-2]
+		*stack = append(*stack, operand2)
+		*stack = append(*stack, operand1)
+		return index + 1, nil
+	}
+	if *command == ":" {
+		name := (*parts)[index+1]
+		index += 2
+		newCommand := ""
+
+		_, err := strconv.Atoi(name)
+		if err == nil {
+			return index + 1, errors.New("you try to redefine number")
+		}
+
+		fmt.Println("Defining ", name)
+		for (*parts)[index] != ";" {
+			newCommand += Open((*parts)[index], newCommands) + " "
+			index++
+		}
+		// if name != "dup" && name != "swap" && name != "drop" && name != "over" {
+			(*newCommands)[name] = newCommand[:len(newCommand)-1]
+		// }
+		return index + 1, nil
+	}
+
+	// assuming *command is int
+	num, err := strconv.Atoi(*command)
+	if err != nil {
+		return index, errors.New("invalid number format")
+	}
+	*stack = append(*stack, num)
+	return index + 1, nil
+}
+
+func GoJohnyGo(row string, stack *[]int, e *Evaluator) error {
+	parts := strings.Split(row, " ")
+
+	for index := 0; index < len(parts); {
+		newIndex, err := HandleCommand(&parts[index], index, stack, &e.newCommands, &parts, e)
+		if err != nil {
+			return err
+		}
+		index = newIndex
+	}
+
+	return nil
+}
+
+// Process evaluates sequence of words or definition.
+//
+// Returns resulting stack state and an error.
+func (e *Evaluator) Process(row string) ([]int, error) {
+	if e.newCommands == nil {
+		e.newCommands = make(map[string]string)
+	}
+
+	err := GoJohnyGo(row, &e.stack, e)
+
+	if err != nil {
+		return e.stack, err
+	}
+
+	fmt.Println(e.stack)
+	return e.stack, nil
 }
 
 func main() {
-	var naiveScience = map[string][]string{
-		"A": {},
-		"B": {"A"},
-		"C": {"B", "A"},
-		"D": {"B", "C"},
-	}
+	e := NewEvaluator()
+	stack, _ := e.Process(": swap dup dup dup ; 1 swap")
 
-	fmt.Println(GetCourseList(naiveScience))
+	fmt.Println(stack)
 }
