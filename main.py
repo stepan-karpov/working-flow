@@ -1,30 +1,17 @@
-from collections import defaultdict
+import pandas as pd
+import numpy as np
 
-def download_update(n, k):
-    parts = defaultdict(int)
-    devices = defaultdict(list)
-    
-    for i in range(1, k+1):
-        parts[i] = 0
-    
-    time_slots = 0
-    while True:
-        # Check if all devices have received all parts of the update
-        if all(len(devices[i]) == k for i in range(2, n+1)):
-            break
-        
-        for device_id in range(2, n+1):
-            min_part = min(parts.keys(), key=lambda x: (parts[x], x))
-            devices[device_id].append(min_part)
-            parts[min_part] += 1
-        
-        for device_id in range(2, n+1):
-            parts[devices[device_id].pop(0)] -= 1
-        
-        time_slots += 1
-    
-    return time_slots
+# Create a small example DataFrame
+data = {
+    'A': [1000, 2000, np.nan, 4000, 5000],
+    'B': [np.nan, 20, 30, np.nan, 50],
+    'C': [10, np.nan, 30, 40, 50]
+}
 
-n, k = map(int, input().split())
-result = download_update(n, k)
-print(result)
+df = pd.DataFrame(data)
+cols_to_fill = ['A', 'B', 'C']
+
+# Fill NaN values with the average value in each column
+df[cols_to_fill] = df[cols_to_fill].fillna(df[cols_to_fill].mean())
+
+print(df)
