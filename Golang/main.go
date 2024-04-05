@@ -1,12 +1,10 @@
 package main
 
-import (
-	"mainModule/program_examples"
-)
+// Add a function that we will test
+func Add(a, b int) int {
+	return a + b
+}
 
 func main() {
-	sh := program_examples.Rectangle{Width: 5, Height: 6}
-
-	program_examples.PrintShapeDetails(sh)
-
+	// This is just a placeholder for the main package
 }

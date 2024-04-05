@@ -1,0 +1,12 @@
+=== RUN   TestAdd
+    main_test.go:32: 
+                Error Trace:    /Users/stepan/Desktop/working-flow/Golang/main_test.go:32
+                Error:          Not equal: 
+                                expected: 1
+                                actual  : 2
+                Test:           TestAdd
+                Messages:       1 != 2%!(EXTRA string=2 != 3, string=4 != 3)
+--- FAIL: TestAdd (0.00s)
+FAIL
+exit status 1
+FAIL    mainModule      0.192s
