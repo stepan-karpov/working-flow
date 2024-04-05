@@ -40,37 +40,9 @@ int main() {
 
 
   const std::string ALPH = "abcdefghijklmopq";
-  int n = random(4, 5);
-  int m = random(n, n * (n - 1) / 2);
-  int q = 1000;
 
-  std::cout << n << " " << m << " " << q << "\n";
-
-  for (int i = 0; i < n; ++i) {
-    cout << random(0, 10) << " ";
-  }
-  cout << "\n";
-
-  set<pair<int, int>> used;
-
-  for (int i = 0; i < m; ++i) {
-    int u = random(0, n - 1);
-    int v = random(0, n - 1);
-    while (u == v || used.find({u, v}) != used.end()) {
-      v = random(0, n - 1);
-      u = random(0, n - 1);
-    }
-    used.insert({u, v});
-    used.insert({v, u});
-    cout << u + 1 << " " << v + 1 << "\n";
-  }
-
-  for (int i = 0; i < q; ++i) {
-    if (random(0, 1)) {
-      cout << "? " << random(1, n) << "\n";
-    } else {
-      cout << "+ " << random(1, n) << " " << random(1, 100) << "\n";
-    }
+  for (int i = 0; i < 4; ++i) {
+    cout << random(1, 300) << "\n";
   }
 
 

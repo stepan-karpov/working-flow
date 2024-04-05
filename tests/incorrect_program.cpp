@@ -22,60 +22,8 @@ const string ALPH = "abcdefghijklmnopqrstuvwxyz";
 
 // v2 = rand() % 100 + 1;  --- v2 in the range 1 to 100
 
-int SQRT = 320;
-
-struct Node {
-  vll neighbors;
-  ll count = 0;
-  ll to_add = 0;
-  vll heavy;
-  Node() = default;
-};
-
 void solve() {
-  ll n, m, q; cin >> n >> m >> q;
-  vector<Node> graph(n);
-
-  for (int i = 0; i < n; ++i) {
-    cin >> graph[i].count;
-  }
-  for (int i = 0; i < m; ++i) {
-    int u, v; cin >> u >> v; --u; --v;
-    graph[u].neighbors.push_back(v);
-    graph[v].neighbors.push_back(u);
-  }
-
-  for (int i = 0; i < n; ++i) {
-    for (auto to : graph[i].neighbors) {
-      bool is_heavy = graph[to].neighbors.size() >= SQRT;
-      if (is_heavy) {
-        graph[i].heavy.push_back(to);
-      }
-    }
-  }
-
-  for (int i = 0; i < q; ++i) {
-    string query; cin >> query;
-    if (query == "?") {
-      ll v; cin >> v; --v;
-      ll answer = graph[v].count;
-      for (auto to : graph[v].heavy) {
-        answer += graph[to].to_add;
-      }
-      cout << answer << "\n";
-    } else {
-      ll v, x; cin >> v >> x; --v;
-      if (graph[v].neighbors.size() >= SQRT) {
-        graph[v].to_add += x;
-      } else {
-        for (auto to : graph[v].neighbors) {
-          graph[to].count += x;
-        }
-      }
-    }
-  } 
-
-
+  
 }
 
 int main() {
